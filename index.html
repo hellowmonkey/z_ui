@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+	<title>z-ui 手册</title>
+	<link rel="stylesheet" href="css/z.min.css">
+	<script src="libs/jquery.min.js"></script>
+	<script src="js/z.min.js"></script>
+</head>
+<body>
+	<div class="z-nav z-nav-blue z-action-mobilenav" zdata-class="z-nav-blue">
+		<div class="z-content">
+			<div class="z-nav-item z-logo"><a href="#jianjie" style="padding: 5px 20px;font-size: 2em;text-shadow: 1px 1px 1px #333">z ui</a></div>
+			<ul class="z-nav-ul z-pull-right z-sm-hide">
+				<li class="z-nav-item"><a href="#jianjie">简介</a></li>
+				<li class="z-nav-item z-dropdown"><a href="javascript:;">css共有样式 <span class="z-caret"></span></a>
+					<ul class="z-dropdown-menu">
+						<li><a href="#zttb">字体图标</a></li>
+						<li><a href="#jc">基础样式</a></li>
+						<li><a href="#an">按钮</a></li>
+						<li><a href="#biaodan">表单</a></li>
+						<li><a href="#biaoge">表格</a></li>
+					</ul>
+				</li>
+				<li class="z-nav-item z-dropdown"><a href="javascript:;">css组件 <span class="z-caret"></span></a>
+					<ul class="z-dropdown-menu">
+						<li><a href="#anniuzu">按钮组</a></li>
+						<li><a href="#xialadaohang">下拉导航</a></li>
+						<li><a href="#shurukuang">输入框组</a></li>
+						<li><a href="#daohang">导航菜单</a></li>
+						<li><a href="#tab">Tab选项卡</a></li>
+						<li><a href="#jindutiao">进度条</a></li>
+						<li><a href="#jinggao">警告框</a></li>
+						<li><a href="#tanchu">弹出区域</a></li>
+						<li><a href="#mianban">面板</a></li>
+						<li><a href="#huandeng">幻灯</a></li>
+						<li><a href="#daimaxiushiqi">代码修饰器</a></li>
+						<li><a href="#yingyong">引用</a></li>
+						<li><a href="#ziduanjihe">字段集合</a></li>
+					</ul>
+				</li>
+				<li class="z-nav-item z-dropdown"><a href="javascript:;">js组件 <span class="z-caret"></span></a>
+					<ul class="z-dropdown-menu">
+						<li><a href="#include">动态加载js、css</a></li>
+						<li><a href="#resetform">重置radio和checkbox</a></li>
+						<li><a href="#alert">弹框</a></li>
+						<li><a href="#tagname">标签名称</a></li>
+						<li><a href="#zdata">获取属性</a></li>
+						<li><a href="#button">按钮loading</a></li>
+						<li><a href="#datepicker">日期选择</a></li>
+						<li><a href="#waterfall">瀑布流</a></li>
+						<li><a href="#modal">模态框</a></li>
+						<li><a href="#sendForm">ajax提交表单</a></li>
+						<li><a href="#tips">提示</a></li>
+						<li><a href="#move">移动组件</a></li>
+						<li><a href="#slider">幻灯</a></li>
+						<li><a href="#gotop">返回顶部</a></li>
+						<li><a href="#code">代码修饰器</a></li>
+						<li><a href="#aniBox">动态进入</a></li>
+						<li><a href="#mobileNav">移动端导航</a></li>
+						<li><a href="#numberbox">数字输入框</a></li>
+						<li><a href="#flow">滚动加载</a></li>
+						<li><a href="#lazyimg">图片懒加载</a></li>
+						<li><a href="#loadimg">动态载入图片</a></li>
+					</ul>
+				</li>
+				<li class="z-nav-item"><a href="http://git.oschina.net/631960109/z_ui/raw/master/z_ui.zip">下载</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="z-content">
+		<fieldset class="z-elem-field z-action-anibox" id="jianjie">
+			<legend>简介</legend>
+			<div class="z-field-box">
+				z ui 是一套轻便、简易的UI。以下是对z ui 的一个大致的介绍：
+				<hr>
+				共有<code>blue(primary)</code>、<code>green(success)</code>、<code>yellow(warning)</code>、<code>red(danger)</code>、<code>dark</code>五种颜色体系，并运用于导航(<code>z-nav</code>)、按钮(<code>z-btn</code>)等很多组件中。
+				<hr>
+				所有class名都有<code>z-</code>作为前缀，目的是防止全局污染。
+				<hr>
+				所有js所需的属性都是以<code>zdata-</code>作为前缀。z也提供了<code>$.fn.zdata()</code>作为获取办法。
+				<hr>
+				需要注意的是 在z里的所有元素盒子属性都被定义成<code>border-box</code>了，如果您需要使用常规的盒子属性，只需要在需要使用的地方加上class<code>z-box-content</code>
+				<hr>
+				z需要jQuery作为基础，所以在使用z时请确保在<code>z.js || z.min.js</code>之前先加载jquery，默认路径：<code>libs/jquery.js || libs/jquery.min.js</code>
+				<hr>
+				功能与样式分离：<br>
+				相信您一定有过这样的需求 -- 使用组件时只是想要它js功能并不想要它给定的样式，不然还需要重新一个个的覆盖它给定的样式。
+				在z里默认功能模块都是以class<code>z-action-</code>作为前缀的，比如说您想使用内置的幻灯组件，您只需要在您的幻灯元素上加上class<code>z-action-slider</code>即可，这时候z并不会给您的幻灯任何样式，您可以随意定义。当然slider组件还有别的配置办法，下边会说到。
+				<hr>
+				所有的组件配置方式都有三种：<br>
+				1、通过添加class<code>z-action-</code>来快速使用默认值配置。
+				2、通过<code>$.fn.*</code>调用，不写参数时使用默认参数，填写对应参数后会替换默认参数。
+				3、通过<code>zdata-</code>来指定最高优先级的配置项。
+			</div>
+		</fieldset>
+		<fieldset class="z-elem-field" id="gongyou">
+			<legend>css共有样式</legend>
+			<div class="z-field-box">
+				<div class="z-quote z-quote-blue" id="zttb">字体图标</div>
+				给元素添加class<code>z-icon</code>，挑选相应图标并获取字体编码，应用于页面
+		        <ul class="z-clearfix z-row z-text-center z-btn-group">
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe600;</i>
+	                    <div class="name">转发</div>
+	                    <div class="code">&amp;#xe600;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe61f;</i>
+	                    <div class="name">图片</div>
+	                    <div class="code">&amp;#xe61f;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe613;</i>
+	                    <div class="name">表情</div>
+	                    <div class="code">&amp;#xe613;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe754;</i>
+	                    <div class="name">刷新</div>
+	                    <div class="code">&amp;#xe754;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe634;</i>
+	                    <div class="name">位置</div>
+	                    <div class="code">&amp;#xe634;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe601;</i>
+	                    <div class="name">用户</div>
+	                    <div class="code">&amp;#xe601;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe6b5;</i>
+	                    <div class="name">音乐</div>
+	                    <div class="code">&amp;#xe6b5;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe605;</i>
+	                    <div class="name">左箭头</div>
+	                    <div class="code">&amp;#xe605;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe614;</i>
+	                    <div class="name">设置</div>
+	                    <div class="code">&amp;#xe614;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe606;</i>
+	                    <div class="name">刷新</div>
+	                    <div class="code">&amp;#xe606;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe61d;</i>
+	                    <div class="name">右箭头</div>
+	                    <div class="code">&amp;#xe61d;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe75a;</i>
+	                    <div class="name">聊天</div>
+	                    <div class="code">&amp;#xe75a;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe615;</i>
+	                    <div class="name">对号</div>
+	                    <div class="code">&amp;#xe615;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe66b;</i>
+	                    <div class="name">单选按钮</div>
+	                    <div class="code">&amp;#xe66b;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe616;</i>
+	                    <div class="name">赞</div>
+	                    <div class="code">&amp;#xe616;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe658;</i>
+	                    <div class="name">喇叭</div>
+	                    <div class="code">&amp;#xe658;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe62d;</i>
+	                    <div class="name">刷新</div>
+	                    <div class="code">&amp;#xe62d;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe653;</i>
+	                    <div class="name">聊天</div>
+	                    <div class="code">&amp;#xe653;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe619;</i>
+	                    <div class="name">赞</div>
+	                    <div class="code">&amp;#xe619;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe6be;</i>
+	                    <div class="name">箭头_上</div>
+	                    <div class="code">&amp;#xe6be;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe680;</i>
+	                    <div class="name">点赞</div>
+	                    <div class="code">&amp;#xe680;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe61a;</i>
+	                    <div class="name">链接</div>
+	                    <div class="code">&amp;#xe61a;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe673;</i>
+	                    <div class="name">点赞</div>
+	                    <div class="code">&amp;#xe673;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe6d1;</i>
+	                    <div class="name">视频</div>
+	                    <div class="code">&amp;#xe6d1;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe608;</i>
+	                    <div class="name">聊天</div>
+	                    <div class="code">&amp;#xe608;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe61b;</i>
+	                    <div class="name">下箭头</div>
+	                    <div class="code">&amp;#xe61b;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe61c;</i>
+	                    <div class="name">赞</div>
+	                    <div class="code">&amp;#xe61c;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe66f;</i>
+	                    <div class="name">赞</div>
+	                    <div class="code">&amp;#xe66f;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe629;</i>
+	                    <div class="name">首页-首页</div>
+	                    <div class="code">&amp;#xe629;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe998;</i>
+	                    <div class="name">单选 按钮</div>
+	                    <div class="code">&amp;#xe998;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe63f;</i>
+	                    <div class="name">语音</div>
+	                    <div class="code">&amp;#xe63f;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe7b0;</i>
+	                    <div class="name">语音</div>
+	                    <div class="code">&amp;#xe7b0;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe620;</i>
+	                    <div class="name">语音</div>
+	                    <div class="code">&amp;#xe620;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe621;</i>
+	                    <div class="name">搜索-搜索</div>
+	                    <div class="code">&amp;#xe621;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe602;</i>
+	                    <div class="name">客服</div>
+	                    <div class="code">&amp;#xe602;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe603;</i>
+	                    <div class="name">皇冠</div>
+	                    <div class="code">&amp;#xe603;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe604;</i>
+	                    <div class="name">国际</div>
+	                    <div class="code">&amp;#xe604;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe607;</i>
+	                    <div class="name">标签</div>
+	                    <div class="code">&amp;#xe607;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe609;</i>
+	                    <div class="name">消息</div>
+	                    <div class="code">&amp;#xe609;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe60a;</i>
+	                    <div class="name">账单</div>
+	                    <div class="code">&amp;#xe60a;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe60b;</i>
+	                    <div class="name">店铺</div>
+	                    <div class="code">&amp;#xe60b;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe60c;</i>
+	                    <div class="name">分享</div>
+	                    <div class="code">&amp;#xe60c;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe60d;</i>
+	                    <div class="name">列表</div>
+	                    <div class="code">&amp;#xe60d;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe60e;</i>
+	                    <div class="name">购物车</div>
+	                    <div class="code">&amp;#xe60e;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe60f;</i>
+	                    <div class="name">钱包</div>
+	                    <div class="code">&amp;#xe60f;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe610;</i>
+	                    <div class="name">点赞</div>
+	                    <div class="code">&amp;#xe610;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe611;</i>
+	                    <div class="name">通知</div>
+	                    <div class="code">&amp;#xe611;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe612;</i>
+	                    <div class="name">删除</div>
+	                    <div class="code">&amp;#xe612;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe617;</i>
+	                    <div class="name">视频</div>
+	                    <div class="code">&amp;#xe617;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe618;</i>
+	                    <div class="name">折扣</div>
+	                    <div class="code">&amp;#xe618;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe61e;</i>
+	                    <div class="name">闹钟</div>
+	                    <div class="code">&amp;#xe61e;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe623;</i>
+	                    <div class="name">加载</div>
+	                    <div class="code">&amp;#xe623;</div>
+	                </li>
+	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
+	                <i class="z-icon">&#xe76d;</i>
+	                    <div class="name">导航</div>
+	                    <div class="code">&amp;#xe76d;</div>
+	                </li>
+		        </ul>
+		        <pre class="z-action-code" zdata-encode="true"><i class="z-icon">&amp;#xe61e;</i></pre>
+		        <div class="z-quote z-quote-blue z-mt20 z-action-anibox" id="jc">基础</div>
+				<div class="z-mb10"><code>z-text-</code>color，<code>z-bg-</code>color获得相应的颜色</div>
+				<div class="z-text-blue">测试文字</div>
+				<div class="z-bg-blue">测试文字</div>
+				<pre class="z-action-code" zdata-encode="true"><div class="z-text-blue">测试文字</div>
+					<div class="z-bg-blue">测试文字</div></pre>
+				<div class="z-mb10">
+					关闭按钮：<code>z-close</code><button class="z-close z-action-close" style="float: none">&times;</button>
+					<pre class="z-action-code" zdata-encode="true"><button class="z-close z-action-close">&amp;times;</button></pre>
+				</div>
+				<div class="z-mb10">
+					三角形：<code>z-caret</code><span class="z-caret"></span>
+					<pre class="z-action-code" zdata-encode="true"><span class="z-caret"></span></pre>
+				</div>
+				<div class="z-quote-blue z-quote" id="zmb">主面板</div>
+				主区域：<code>z-content</code>它会自动给你相对浏览器屏幕合适的宽度，并居中。如果想铺满屏幕可以用<code>z-content-fluid</code>
+				<pre class="z-action-code" zdata-encode="true"><div class="z-content">主区域</div></pre>
+				<div class="z-quote-blue z-quote">栅格</div>
+				z提供了两种栅格尺寸：<code>z-col-lg-</code>和<code>z-col-sm-</code>。需要由<code>z-row</code>包裹。分界岭是屏幕尺寸介于<code>768px</code>宽的时候。
+				<div class="z-row">
+					<div class="z-col-lg-7 z-col-sm-5"><div class="z-box">测试</div></div>
+					<div class="z-col-lg-5 z-col-sm-5"><div class="z-box">测试</div></div>
+				</div>
+				<div>
+					还有
+					<code>z-sm-show || z-sm-hide</code>
+					<code>z-lg-show || z-lg-hide</code>对应尺寸的显示和隐藏
+				</div>
+				<pre class="z-action-code" zdata-encode="true"><div class="z-row">
+					<div class="z-col-lg-7 z-col-sm-5"><div class="z-box">测试</div></div>
+					<div class="z-col-lg-5 z-col-sm-5"><div class="z-box">测试</div></div>
+				</div></pre>
+				<div class="z-quote z-quote-blue" id="an">按钮</div>
+				<button class="z-btn">默认按钮</button>
+				<button class="z-btn z-btn-blue">蓝色按钮</button>
+				<button class="z-btn z-btn-primary">蓝色按钮的另一个名字</button>
+				<button class="z-btn z-btn-outlined z-btn-red">空心按钮</button>
+				<button class="z-btn z-btn-sm z-btn-success">小尺寸按钮</button>
+				<button class="z-btn z-btn-xs z-btn-dark">超小尺寸按钮</button>
+				<button class="z-btn z-btn-lg z-btn-yellow">大尺寸按钮</button>
+				<button class="z-btn z-btn-lg z-btn-blue z-show">块级按钮</button>
+				<pre class="z-action-code" zdata-encode="true"><button class="z-btn">默认按钮</button>
+				<button class="z-btn z-btn-blue">蓝色按钮</button>
+				<button class="z-btn z-btn-primary">蓝色按钮的另一个名字</button>
+				<button class="z-btn z-btn-outlined z-btn-red">空心按钮</button>
+				<button class="z-btn z-btn-sm z-btn-success">小尺寸按钮</button>
+				<button class="z-btn z-btn-xs z-btn-dark">超小尺寸按钮</button>
+				<button class="z-btn z-btn-lg z-btn-yellow">大尺寸按钮</button>
+				<button class="z-btn z-btn-lg z-btn-blue z-show">块级按钮</button></pre>
+				<div class="z-quote z-quote-blue" id="biaodan">表单</div>
+				<form action="" class="z-form">
+					<div class="z-form-item">
+						<div class="z-form-label">输入框</div>
+						<div class="z-input-block">
+							<input type="text" class="z-input">
+						</div>
+					</div>
+					<div class="z-form-item">
+						<div class="z-form-label">下拉菜单</div>
+						<div class="z-input-block">
+							<select class="z-input">
+								<option value="1">111</option>
+								<option value="1">111</option>
+								<option value="1">111</option>
+								<option value="1">111</option>
+							</select>
+						</div>
+					</div>
+					<div class="z-form-item">
+						<div class="z-form-label">单选按钮</div>
+						<div class="z-input-block">
+							<input type="radio" name="radio" value="1" checked title="男">
+							<input type="radio" name="radio" value="0" title="女">
+						</div>
+					</div>
+					<div class="z-form-item">
+						<div class="z-form-label">复选按钮</div>
+						<div class="z-input-block">
+							<input type="checkbox" value="1" name="checkbox" title="哈哈">
+							<input type="checkbox" value="2" name="checkbox" title="呵呵">
+						</div>
+					</div>
+					<div class="z-form-item">
+						<div class="z-form-label">原始样式</div>
+						<div class="z-input-block">
+							<label>哈哈<input type="checkbox" zdata-action="noreform" value="1" name="checkbox"></label>
+							<label>女<input type="radio" zdata-action="noreform" name="radio" value="0"></label>
+						</div>
+					</div>
+				</form>
+				<pre class="z-action-code" zdata-encode="true"><form action="" class="z-form">
+					<div class="z-form-item">
+						<div class="z-form-label">输入框</div>
+						<div class="z-input-block">
+							<input type="text" class="z-input">
+						</div>
+					</div>
+					<div class="z-form-item">
+						<div class="z-form-label">下拉菜单</div>
+						<div class="z-input-block">
+							<select class="z-input">
+								<option value="1">111</option>
+								<option value="1">111</option>
+								<option value="1">111</option>
+								<option value="1">111</option>
+							</select>
+						</div>
+					</div>
+					<div class="z-form-item">
+						<div class="z-form-label">单选按钮</div>
+						<div class="z-input-block">
+							<input type="radio" name="radio" value="1" checked title="男">
+							<input type="radio" name="radio" value="0" title="女">
+						</div>
+					</div>
+					<div class="z-form-item">
+						<div class="z-form-label">复选按钮</div>
+						<div class="z-input-block">
+							<input type="checkbox" value="1" name="checkbox" title="哈哈">
+							<input type="checkbox" value="2" name="checkbox" title="呵呵">
+						</div>
+					</div>
+					<div class="z-form-item">
+						<div class="z-form-label">原始样式</div>
+						<div class="z-input-block">
+							<label>哈哈<input type="checkbox" zdata-action="noreform" value="1" name="checkbox"></label>
+							<label>女<input type="radio" zdata-action="noreform" name="radio" value="0"></label>
+						</div>
+					</div>
+				</form></pre>
+				<div class="z-quote z-quote-blue" id="biaoge">表格</div>
+				<div class="z-box">
+					表格<code>z-table</code> 默认是有边框，隔行变色，鼠标经过变色的。如果不想要这个功能可以添加对应的class：<code>z-table-noborder</code><code>z-table-nostriped</code><code>z-table-nohover</code>
+				</div>
+				<pre class="z-action-code" zdata-encode="true"><table class="z-table">
+					<tr>
+						<th>11</th>
+						<th>ww</th>
+						<th>dd</th>
+					</tr>
+					<tr>
+						<td>22</td>
+						<td>33</td>
+						<td>44</td>
+					</tr>
+				</table></pre>
+			</div>
+		</fieldset>
+		<fieldset class="z-elem-field" id="css">
+			<legend>css组件</legend>
+			<div class="z-field-box">
+				<div class="z-quote z-quote-yellow" id="anniuzu">按钮组</div>
+				<div class="z-box z-mb10">按钮组是在<code>z-btn-group</code>包裹着<code>z-btn</code>形成的组件，可用于分页，垂直按钮组只需在<code>z-btn-group</code>上添加<code>z-btn-group-vertical</code></div>
+				<div class="z-btn-group">
+					<a href="javascript:;" class="z-btn z-disabled">上一页</a>
+					<a href="javascript:;" class="z-btn z-active z-btn-blue">1</a>
+					<a href="javascript:;" class="z-btn">2</a>
+					<a href="javascript:;" class="z-btn">下一页</a>
+				</div>
+				<div class="z-btn-group z-btn-group-vertical">
+					<button class="z-btn">垂直导航</button>
+					<button class="z-btn z-active z-btn-primary">垂直导航</button>
+					<button class="z-btn">垂直导航</button>
+					<button class="z-btn">垂直导航</button>
+				</div>
+				<pre class="z-action-code" zdata-encode="true"><div class="z-btn-group">
+					<a href="javascript:;" class="z-btn z-disabled">上一页</a>
+					<a href="javascript:;" class="z-btn z-active z-btn-blue">1</a>
+					<a href="javascript:;" class="z-btn">2</a>
+					<a href="javascript:;" class="z-btn">下一页</a>
+				</div>
+				<div class="z-btn-group z-btn-group-vertical">
+					<button class="z-btn">垂直导航</button>
+					<button class="z-btn z-active z-btn-primary">垂直导航</button>
+					<button class="z-btn">垂直导航</button>
+					<button class="z-btn">垂直导航</button>
+				</div></pre>
+				<div class="z-quote z-quote-yellow" id="xialadaohang">下拉导航</div>
+				<div class="z-box z-mb10">下拉菜单本身是没有过多样式的，可以灵活营运于按钮、导航等组件上，需要在<code>z-dropup || z-dropdown</code>下包裹<code>dropdown-menu</code>即可</div>
+				<button class="z-btn z-dropdown">下拉测试 <span class="z-caret"></span>
+				<ul class="z-dropdown-menu">
+					<li><a href="#">列表</a></li>
+					<li><a href="#">列表</a></li>
+					<li><a href="#">列表</a></li>
+				</ul>
+				</button>
+				<pre class="z-action-code" zdata-encode="true"><button class="z-btn z-dropdown">下拉测试 <span class="z-caret"></span>
+				<ul class="z-dropdown-menu">
+					<li><a href="#">列表</a></li>
+					<li><a href="#">列表</a></li>
+					<li><a href="#">列表</a></li>
+				</ul>
+				</button></pre>
+				<div class="z-quote z-quote-yellow" id="shurukuang">输入框组</div>
+				<div class="z-box z-mb10">于按钮组类似 <code>z-input-group</code> 可与<code>z-btn</code><code>z-input</code><code>z-btn-group</code>组合</div>
+				<div class="z-input-group">
+					<div class="z-input-group-addon">提示</div>
+					<input type="text" class="z-input">
+					<div class="z-input-group-btn">
+						<button class="z-btn z-dropdown">选择 <span class="z-caret"></span>
+						<ul class="z-dropdown-menu">
+							<li><a href="#">列表</a></li>
+							<li><a href="#">列表</a></li>
+							<li><a href="#">列表</a></li>
+						</ul>
+						</button>
+						<button class="z-btn">提交</button>
+					</div>
+				</div>
+				<pre class="z-action-code" zdata-encode="true"><div class="z-input-group">
+					<div class="z-input-group-addon">提示</div>
+					<input type="text" class="z-input">
+					<div class="z-input-group-btn">
+						<button class="z-btn z-dropdown">选择 <span class="z-caret"></span>
+						<ul class="z-dropdown-menu">
+							<li><a href="#">列表</a></li>
+							<li><a href="#">列表</a></li>
+							<li><a href="#">列表</a></li>
+						</ul>
+						</button>
+						<button class="z-btn">提交</button>
+					</div>
+				</div></pre>
+				<div class="z-quote z-quote-yellow" id="daohang">导航菜单</div>
+				<div class="z-box z-mb10">导航菜单默认为水平导航菜单，<code>z-nav</code>在此基础上添加<code>z-nav-tree</code>即可转变成垂直导航。树形导航默认是可全部伸缩，若想单个伸缩需在<code>z-nav-tree</code>上添加<code>z-nav-toggle</code>。
+				可以在导航上添加class<code>z-action-mobilenav</code>使导航在移动端设备中也有良好的展现</div>
+				<div class="z-nav z-nav-dark">
+					<ul class="z-nav-ul">
+						<li class="z-nav-item"><a href="">导航菜单</a></li>
+						<li class="z-nav-item"><a href="">导航菜单</a></li>
+						<li class="z-nav-item z-dropdown"><a href="">导航菜单 <span class="z-caret"></span></a>
+							<ul class="z-dropdown-menu">
+								<li><a href="#">列表</a></li>
+								<li><a href="#">列表</a></li>
+								<li><a href="#">列表</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<div class="z-nav z-nav-red z-nav-tree z-nav-toggle">
+					<li class="z-nav-item"><a href="">导航菜单</a></li>
+					<li class="z-nav-item z-active"><a href="javascript:;">导航菜单</a>
+						<ul class="z-nav-child">
+							<li class="z-nav-item"><a href="">子菜单</a></li>
+							<li class="z-nav-item"><a href="">子菜单</a></li>
+							<li class="z-nav-item"><a href="">子菜单</a></li>
+						</ul>
+					</li>
+					<li class="z-nav-item"><a href="javascript:;">导航菜单</a>
+						<ul class="z-nav-child">
+							<li class="z-nav-item"><a href="">子菜单</a></li>
+							<li class="z-nav-item"><a href="">子菜单</a></li>
+							<li class="z-nav-item"><a href="">子菜单</a></li>
+						</ul>
+					</li>
+				</div>
+				<pre class="z-action-code" zdata-encode="true"><div class="z-nav z-nav-dark">
+					<ul class="z-nav-ul">
+						<li class="z-nav-item"><a href="">导航菜单</a></li>
+						<li class="z-nav-item"><a href="">导航菜单</a></li>
+						<li class="z-nav-item z-dropdown"><a href="">导航菜单 <span class="z-caret"></span></a>
+							<ul class="z-dropdown-menu">
+								<li><a href="#">列表</a></li>
+								<li><a href="#">列表</a></li>
+								<li><a href="#">列表</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<div class="z-nav z-nav-red z-nav-tree z-nav-toggle">
+					<li class="z-nav-item"><a href="">导航菜单</a></li>
+					<li class="z-nav-item z-active"><a href="javascript:;">导航菜单</a>
+						<ul class="z-nav-child">
+							<li class="z-nav-item"><a href="">子菜单</a></li>
+							<li class="z-nav-item"><a href="">子菜单</a></li>
+							<li class="z-nav-item"><a href="">子菜单</a></li>
+						</ul>
+					</li>
+					<li class="z-nav-item"><a href="javascript:;">导航菜单</a>
+						<ul class="z-nav-child">
+							<li class="z-nav-item"><a href="">子菜单</a></li>
+							<li class="z-nav-item"><a href="">子菜单</a></li>
+							<li class="z-nav-item"><a href="">子菜单</a></li>
+						</ul>
+					</li>
+				</div></pre>
+				<div class="z-quote z-quote-yellow">路径导航</div>
+				<ul class="z-breadcrumb">
+					<li><a href="">导航</a></li>
+					<li><a href="">导航</a></li>
+					<li><span>导航</span></li>
+				</ul>
+				<pre class="z-action-code" zdata-encode="true"><ul class="z-breadcrumb">
+					<li><a href="">导航</a></li>
+					<li><a href="">导航</a></li>
+					<li><span>导航</span></li>
+				</ul></pre>
+				<div class="z-quote z-quote-yellow" id="tab">Tab选项卡</div>
+				<div class="z-box z-mb10">tab有默认、卡片(<code>z-tab-card</code>)、简约(<code>z-tab-brief</code>)三种风格</div>
+				<div class="z-tab z-tab-card">
+					<ul class="z-tab-title">
+						<li class="z-active">类别1</li>
+						<li>类别2</li>
+						<li>类别3</li>
+					</ul>
+					<div class="z-tab-content">
+						<div class="z-tab-item z-show">内容1</div>
+						<div class="z-tab-item">内容2</div>
+						<div class="z-tab-item">内容3</div>
+					</div>
+				</div>
+				<div class="z-tab z-tab-brief">
+					<ul class="z-tab-title">
+						<li class="z-active">类别1</li>
+						<li>类别2</li>
+						<li>类别3</li>
+					</ul>
+					<div class="z-tab-content">
+						<div class="z-tab-item z-show">内容1</div>
+						<div class="z-tab-item">内容2</div>
+						<div class="z-tab-item">内容3</div>
+					</div>
+				</div>
+				<pre class="z-action-code" zdata-encode="true"><div class="z-tab z-tab-card">
+					<ul class="z-tab-title">
+						<li class="z-active">类别1</li>
+						<li>类别2</li>
+						<li>类别3</li>
+					</ul>
+					<div class="z-tab-content">
+						<div class="z-tab-item z-show">内容1</div>
+						<div class="z-tab-item">内容2</div>
+						<div class="z-tab-item">内容3</div>
+					</div>
+				</div>
+				<div class="z-tab z-tab-brief">
+					<ul class="z-tab-title">
+						<li class="z-active">类别1</li>
+						<li>类别2</li>
+						<li>类别3</li>
+					</ul>
+					<div class="z-tab-content">
+						<div class="z-tab-item z-show">内容1</div>
+						<div class="z-tab-item">内容2</div>
+						<div class="z-tab-item">内容3</div>
+					</div>
+				</div></pre>
+				<div class="z-quote z-quote-yellow" id="jindutiao">进度条</div>
+				<div class="z-box z-mb10">进度条<code>z-progress</code> 可用颜色体系，可条纹色（添加<code>z-progress-striped</code>）添加<code>z-active</code>时，条纹色会有动态效果。包裹的部件有：进度条(<code>z-progress-bar</code>)、提示项(<code>z-progress-tag</code>)</div>
+				<div class="z-progress">
+					<div class="z-progress-tag">1、购买</div>
+					<div class="z-progress-tag">2、下单</div>
+					<div class="z-progress-tag">3、完成</div>
+					<div class="z-progress-bar" style="width: 33.33%"></div>
+				</div>
+				<div class="z-progress z-progress-striped">
+					<div class="z-progress-bar z-progress-bar-green" style="width: 50%">50 %</div>
+				</div>
+				<pre class="z-action-code" zdata-encode="true"><div class="z-progress">
+					<div class="z-progress-tag">1、购买</div>
+					<div class="z-progress-tag">2、下单</div>
+					<div class="z-progress-tag">3、完成</div>
+					<div class="z-progress-bar" style="width: 33.33%"></div>
+				</div>
+				<div class="z-progress z-progress-striped z-active">
+					<div class="z-progress-bar z-progress-bar-green" style="width: 50%">50 %</div>
+				</div></pre>
+				<div class="z-quote z-quote-yellow" id="jinggao">警告框</div>
+				<div class="z-alert z-alert-red z-alert-dismissible">
+					<button class="z-close z-action-close">&times;</button>
+					aaa
+				</div>
+				<div class="z-alert z-alert-blue">
+					aaa
+				</div>
+				<pre class="z-action-code" zdata-encode="true"><div class="z-alert z-alert-red z-alert-dismissible">
+					<button class="z-close z-action-close">&times;</button>
+					aaa
+				</div>
+				<div class="z-alert z-alert-blue">
+					aaa
+				</div></pre>
+				<div class="z-quote z-quote-yellow" id="tanchu">弹出区域</div>
+				<div class="z-box z-mb10">示例里用的<code>z-action-modal</code>和<code>z-action-close</code>既是提现功能跟样式分开的方便之处，不用写一行js也不用覆盖任何css就可以得到想要的功能。另一种调用的方式在js篇会说到：<code>$('#modal').modal()</code>。需要注意的是在关闭按钮上需要加上<code> zdata-remove="false"</code>不然这个modal组件关闭的时候会被移除。当然也需要用<code>zdata-target</code>指定要操作的dom选择器</div>
+				<button class="z-btn z-btn-blue z-action-modal" zdata-target="#modal">打开modal</button>
+				<div class="z-modal" id="modal">
+					<div class="z-modal-content">
+						<div class="z-modal-header">
+							<span class="z-modal-title">淡定的标题</span>
+							<button class="z-close z-action-close" zdata-remove="false">&times;</button>
+						</div>
+						<div class="z-modal-body">
+							哈哈哈
+						</div>
+						<div class="z-modal-footer">
+							<button class="z-btn z-action-close" zdata-remove="false">关闭</button>
+							<button class="z-btn z-btn-blue">确认</button>
+						</div>
+					</div>
+				</div>
+				<pre class="z-action-code" zdata-encode="true"><button class="z-btn z-btn-blue z-action-modal" zdata-target="#modal">打开modal</button>
+				<div class="z-modal" id="modal">
+					<div class="z-modal-content">
+						<div class="z-modal-header">
+							<span class="z-modal-title">淡定的标题</span>
+							<button class="z-close z-action-close" zdata-remove="false">&times;</button>
+						</div>
+						<div class="z-modal-body">
+							哈哈哈
+						</div>
+						<div class="z-modal-footer">
+							<button class="z-btn z-action-close" zdata-remove="false">关闭</button>
+							<button class="z-btn z-btn-blue">确认</button>
+						</div>
+					</div>
+				</div></pre>
+				<div class="z-quote z-quote-yellow" id="mianban">面板</div>
+				<div class="z-box z-mb10">面板<code>z-panel</code>支持颜色体系</div>
+				<div class="z-panel z-panel-blue">
+					<div class="z-panel-header">标题</div>
+					<div class="z-panel-body">内容</div>
+				</div>
+				<pre class="z-action-code" zdata-encode="true"><div class="z-panel z-panel-blue">
+					<div class="z-panel-header">标题</div>
+					<div class="z-panel-body">内容</div>
+				</div></pre>
+				<div class="z-quote z-quote-yellow" id="huandeng">幻灯</div>
+				<div class="z-box z-mb10">你可以使用<code>z-slider</code>来使用默认的样式，也可以通过<code>z-action-slider</code>只保留js功能</div>
+				<div class="z-slider z-action-slider">
+					<ul>
+						<li class="z-cover" style="background-image: url(images/1.jpg)">哈哈</li>
+						<li class="z-cover" style="background-image: url(images/2.jpg)">呵呵</li>
+						<li class="z-cover" style="background-image: url(images/3.jpg)">嘿嘿</li>
+					</ul>
+					<button class="z-slider-btn z-btn z-btn-outlined z-btn-red z-icon z-slider-prev">&#xe605;</button>
+					<button class="z-slider-btn z-btn z-btn-outlined z-btn-red z-icon z-slider-next">&#xe61d;</button>
+				</div>
+				<pre class="z-action-code" zdata-encode="true"><div class="z-slider z-action-slider">
+					<ul>
+						<li class="z-cover" style="background-image: url(images/1.jpg)">哈哈</li>
+						<li class="z-cover" style="background-image: url(images/2.jpg)">呵呵</li>
+						<li class="z-cover" style="background-image: url(images/3.jpg)">嘿嘿</li>
+					</ul>
+					<button class="z-slider-btn z-btn z-btn-outlined z-btn-red z-icon z-slider-prev">&amp;#xe605;</button>
+					<button class="z-slider-btn z-btn z-btn-outlined z-btn-red z-icon z-slider-next">&amp;#xe61d;</button>
+				</div></pre>
+				<div class="z-quote z-mt10 z-quote-yellow" id="daimaxiushiqi">代码修饰器</div>
+				<div class="z-box z-mb10">只需要在元素上添加class<code>z-action-code</code>即可。其他的配置有：标题（<code>zdata-title="string"</code>）、皮肤（<code>zdata-skin="string"</code>）、是否转义html标签（<code>zdata-encode="bool"</code>）、关于的链接（<code>zdata-about-link="string"</code>）、关于的文字（<code>zdata-about-text="string"</code>）</div>
+				<div class="z-quote z-quote-yellow" id="yingyong">引用</div>
+				<div class="z-box z-mb10"><code>z-quote</code>。 支持颜色体系</div>
+				<div class="z-quote z-quote-yellow" id="ziduanjihe">字段集合</div>
+				<pre class="z-action-code" zdata-encode="true"><fieldset class="z-elem-field">
+					<legend>字段集合</legend>
+					<div class="z-field-box">
+						字段集合
+					</div>
+				</fieldset></pre>
+			</div>
+		</fieldset>
+		<fieldset class="z-elem-field z-action-anibox">
+			<legend>js组件</legend>
+			<div class="z-field-box">
+				<div class="z-quote z-quote-red" id="include">动态加载js、css</div>
+				<div class="z-box z-mb10">在js组件调用的时候，你不必特意先去加载libs里的js，因为在调用的时候z会自动判断加载所需要的库。paths默认的使用路径是和z.js所在的目录，如果您不想写全路径，可以通过配置<code>z.root_path="string"</code>来全局配置默认路径</div>
+				<pre class="z-action-code">
+					$.loadJs(paths, cb)
+					$.loadCss(paths, cb)
+					// paths: 要调用的js路径 (数组 || 字符串)
+					// cb: 加载完成时候的回调 (函数)
+				</pre>
+				<div class="z-quote z-quote-red" id="resetform">重置radio和checkbox</div>
+				<div class="z-box z-mb10">动态生成的radio和checkbox需要重置一下才行</div>
+				<pre class="z-action-code">
+					$.resetForm(ele)
+					// ele：要重置的元素选择器 可选
+				</pre>
+				<div class="z-quote z-quote-red" id="alert">弹框</div>
+				<div class="z-box z-mb10">弹框是modal和move的整合的拓展</div>
+				<button class="z-btn z-btn-blue" onclick="$.alert('弹框','标题（可选）')">alert</button>
+				<button class="z-btn z-btn-green" onclick="$.confirm('我帅吗？','标题（可选）',['不帅','帅'])">confirm</button>
+				<button class="z-btn z-btn-red" onclick="$.prompt('输入弹框')">prompt</button>
+				<button class="z-btn z-btn-yellow" onclick="$.open('自定义弹框','标题（可选）')">open</button>
+				<pre class="z-action-code">
+					$.alert(content, title)
+					$.confirm(content, title, btns, cb)
+					$.prompt(title, btns, cb)
+					$.open(content, title)
+				</pre>
+				<button class="z-btn z-btn-blue" onclick="$.toast('提示')">toast</button>
+				<button class="z-btn z-btn-red" onclick="$.success('成功信息的提示')">success</button>
+				<button class="z-btn z-btn-dark" onclick="$.msg('我是提示')">msg</button>
+				<pre class="z-action-code">
+					$.toast(content, color)
+					$.success(content)
+					$.msg(content)
+				</pre>
+				<div class="z-quote z-quote-red" id="tagname">标签名称</div>
+				<button class="z-btn z-btn-primary" onclick="$.msg($(this).tagName(),'标签名称')">获取标签名称</button>
+				<pre class="z-action-code">
+					$(ele).tagName()
+				</pre>
+				<div class="z-quote z-quote-red" id="zdata">获取属性</div>
+				<button class="z-btn z-btn-red" zdata-title="我是zdata的title" onclick="$.msg($(this).zdata('title'))">获取属性</button>
+				<pre class="z-action-code">
+					$(ele).zdata(name, value)
+					// value 可选
+				</pre>
+				<div class="z-quote z-quote-red" id="button">按钮loading</div>
+				<div class="z-box z-mb10">loading的提示文字默认是'loading'，可以通过配置<code>zdata-loading-text="string"</code>来设置提示文字。</div>
+				<button class="z-btn z-btn-dark" zdata-loading-text="我是loading的提示文字" onclick="var _this=$(this);_this.button();setTimeout(function(){_this.button()},3000)">按钮loading</button>
+				<pre class="z-action-code">
+					$(ele).button(type)
+					// type string 可选 'loading' | 'reset'
+				</pre>
+				<div class="z-quote z-quote-red" id="datepicker">日期选择</div>
+				<div class="z-box z-mb10">两种调用方式：1、在input上添加class<code>z-action-datepicker</code>。2、通过js配置<code>$(ele).datepicker(opts)</code></div>
+				<input type="text" placeholder="点击选择日期" class="z-input z-action-datepicker">
+				<pre class="z-action-code" zdata-encode="true">
+					<input type="text" placeholder="点击选择日期" class="z-input z-action-datepicker">
+					$(ele).datepicker({
+						minView: "day",
+				        format : "yyyy-mm-dd",
+				        autoclose: true
+					})
+				</pre>
+				<div class="z-quote z-quote-red" id="waterfall">瀑布流</div>
+				<pre class="z-action-code">
+					$(ele).waterfall({
+						itemSelector: '.z-waterfall-item',
+		                gutter: 0,
+		                isAnimated: true
+					})
+				</pre>
+				<div class="z-quote z-quote-red" id="modal">模态框</div>
+				<button class="z-btn z-btn-yellow" onclick="$('#testModal').modal()">js打开模态框</button>
+				<div class="z-modal z-modal-lg" id="testModal">
+					<div class="z-modal-content">
+						<div class="z-modal-header">
+							<span class="z-modal-title">js打开的模态框</span>
+							<button class="z-close z-action-close" zdata-remove="false">&times;</button>
+						</div>
+						<div class="z-modal-body">
+							哈哈哈
+						</div>
+						<div class="z-modal-footer">
+							<button class="z-btn z-action-close" zdata-remove="false">关闭</button>
+							<button class="z-btn z-btn-blue">确认</button>
+						</div>
+					</div>
+				</div>
+				<pre class="z-action-code">
+					$(ele).modal(type)
+					// type string 可选 'show' | 'hide'
+				</pre>
+				<div class="z-quote z-quote-red" id="sendForm">ajax提交表单</div>
+				<pre class="z-action-code">
+					$.submit(ele, cb)
+					// ele 可以是要提交的form
+					// cb 完成的回调
+				</pre>
+				<div class="z-quote z-quote-red" id="tips">提示</div>
+				<div class="z-box z-mb10">两种调用方式：1、元素上添加<code>z-action-tips</code>2、手动指定要出发的元素。要显示的内容就是元素的title属性。所以<code>title</code>必须有。鼠标移到下边的按钮看看效果吧</div>
+				<button class="z-btn z-action-tips" title="提示呗">提示</button>
+				<pre class="z-action-code">
+					$(ele).tips()
+				</pre>
+				<div class="z-quote z-quote-red" id="move">移动组件</div>
+				<div class="z-box z-mb10">在弹框组件中已经使用了移动组件。也可以手动调用它</div>
+				<pre class="z-action-code">
+					$(ele).move({
+						box: '.z-move',
+						top: 0,
+						right: 0,
+						bottom: 0,
+						left: 0
+					})
+				</pre>
+				<div class="z-quote z-quote-red" id="slider">幻灯</div>
+				<pre class="z-action-code">
+					$(ele).slider({
+						speed: 500,              
+						delay: 3000,             
+						complete: function() {}, 
+						keys: true,              
+						dots: true,              
+						fluid: false ,
+						prev: '.z-slider-prev',
+						next: '.z-slider-next',
+						items: '>ul',
+						item: '>li'
+					})
+				</pre>
+				<div class="z-quote z-quote-red" id="gotop">返回顶部</div>
+				<div class="z-box z-mb10"><code>z-action-gotop</code>或手动指定</div>
+				<pre class="z-action-code">
+					$(ele).goTop()
+				</pre>
+				<div class="z-quote z-quote-red" id="code">代码修饰器</div>
+				<pre class="z-action-code">
+					$(ele).code()
+				</pre>
+				<div class="z-quote z-quote-red" id="aniBox">动态进入</div>
+				<div class="z-box z-mb10">
+					细心的你应该能发现在前面的浏览中有几个区域是动态从下向上进入的，那就是因为它们被添加了class<code>z-action-anibox</code>。动态进入也可以通过<code>$.fn.aniBox()</code>来调用。
+				</div>
+				<pre class="z-action-code z-action-anibox">
+					$(ele).aniBox({
+						aniName: 'z-anim-upbit',
+						aniTime: 500
+					})
+				</pre>
+				<div class="z-quote z-quote-red" id="mobileNav">移动端导航</div>
+				<div class="z-box z-mb10">
+					如果您自定义的导航想要在移动端拥有z提供的展现形式。可以在导航上添加<code>z-action-mobilenav</code>，也可以用过下边的调用方式来配置。
+				</div>
+				<pre class="z-action-code z-action-anibox">
+					$(ele).mobileNav({
+						item: '.z-nav-item',
+						logo: 'z-logo',
+						style: null,// {}
+						child: '.z-dropdown-menu',
+						toggle: true,
+						class: '',
+						menu: '&lt;span class="z-icon z-pull-right" style="line-height:1em;color:#fff;padding: 13px;font-size: 24px;"&gt;&amp;#xe60d;&lt;/span&gt;'
+					})
+				</pre>
+				<div class="z-quote z-quote-red" id="numberbox">数字输入框</div>
+				<div class="z-clearfix">
+					<div class="z-col-lg-2 z-col-sm-5">
+						<div class="z-input-group z-action-numberbox">
+							<div class="z-input-group-btn"><button class="z-btn sub">-</button></div>
+							<input type="text" class="z-input">
+							<div class="z-input-group-btn"><button class="z-btn add">+</button></div>
+						</div>
+					</div>
+				</div>
+				<pre class="z-action-code" zdata-encode="true">
+					<div class="z-input-group z-action-numberbox">
+						<div class="z-input-group-btn"><button class="z-btn sub">-</button></div>
+						<input type="text" class="z-input">
+						<div class="z-input-group-btn"><button class="z-btn add">+</button></div>
+					</div>
+				</pre>
+				<pre class="z-action-code">
+					$(ele).numberBox({
+						prev: '.z-btn.sub',
+						next: '.z-btn.add',
+						input: 'input',
+						min: 1,
+						max: null,
+						step: 1
+					})
+				</pre>
+				<div class="z-quote z-quote-red" id="flow">滚动加载</div>
+				<div class="z-box mb10">此组件的功能是在滚动到底部时自动触发加载内容。</div>
+				<pre class="z-action-code">
+					$('body').flow(function(page, next){
+						setTimeout(function(){
+							next('列表HTML片段', page < 7)				
+						},5000)
+					})
+				</pre>
+				<pre class="z-action-code">
+					$(ele).flow({
+						scrollElem: document,
+						isAuto: true,
+						endTxt: '没有更多了',
+						eleTxt: '加载更多',
+						loadingTxt: '加载中...',
+						isLazyimg: false,
+						mb: 50,
+						done: done
+					}, done)
+				</pre>
+				<div class="z-quote z-quote-red" id="lazyimg">图片懒加载</div>
+				<img src="" zdata-src="images/1.jpg" height="100" alt="" class="z-action-lazyimg">
+				<div class="z-box mb10">快速调用方法：在<code>img</code>标签上添加class<code>z-action-lazyimg</code>，<code>src</code>指定占位图片或不写。通过<code>zdata-src="string"</code>来指定需要动态加载的图片地址。当然也可以只用js配置。</div>
+				<pre class="z-action-code">
+					$(img).lazyimg(scrollElem) //默认为document
+				</pre>
+				<div class="z-quote z-quote-red" id="loadImg">图片加载判断</div>
+				<div class="z-box mb10">快速调用方法：在<code>img</code>标签上添加class<code>z-action-lazyimg</code>，<code>src</code>指定占位图片或不写。通过<code>zdata-src="string"</code>来指定需要动态加载的图片地址。当然也可以只用js配置。</div>
+				<pre class="z-action-code">
+					$.loadImg(imgurl, complete, error)
+				</pre>
+			</div>
+		</fieldset>
+	</div>
+	<button class="z-btn z-action-gotop z-gotop z-icon">&#xe6be;</button>
+</body>
+</html>

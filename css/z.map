@@ -1,0 +1,50 @@
+primary,blue {
+	color: #337ab7;
+}
+
+primary:hover,
+primary:focus,
+blue:hover,
+blue:focus {
+	color: #286090;
+}
+success,green {
+	color: #3c763d;
+}
+
+success:hover,
+success:focus,
+green:hover,
+green:focus {
+	color: #2b542c;
+}
+warning,yellow {
+	color: #8a6d3b;
+}
+
+warning:hover,
+warning:focus,
+yellow:hover,
+yellow:focus {
+	color: #66512c;
+}
+danger,red {
+	color: #a94442;
+}
+
+danger:hover,
+danger:focus,
+red:hover,
+red:focus {
+	color: #843534;
+}
+dark {
+	color: #393D49;
+}
+
+dark:hover,
+dark:focus {
+	color: #292C35;
+}
+
+lg,sm,xs
