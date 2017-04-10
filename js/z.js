@@ -5,11 +5,12 @@
 	var zIndex = 99
 	var loadingHtml = '<span class="z-anim-rotate z-icon">&#xe623;</span>'
 	var menuCode = '&#xe76d;'
+	var dateNow = new Date()
 
 	var winWidth = $(w).innerWidth()
 	var winHeight = $(w).innerHeight()
 
-	var transTime = 300
+	var transTime = 200
 
 	var aniBoxTops = []
 
@@ -25,20 +26,17 @@
 			form: {
 				src: libs_path + 'jquery.form.min'
 			},
-			unslider: {
-				src: libs_path + 'unslider.min'
-			},
-			masonry: {
+			waterfall: {
 				src: libs_path + 'masonry-docs.min'
 			},
 			jscrollpane: {
 				src: libs_path + 'jquery.jscrollpane.min'
 			},
-			datetimepicker: {
+			datepicker: {
 				src: libs_path + 'bootstrap-datetimepicker.min'
 			},
 			lazyload: {
-				src: libs_path + 'jqquery-lazyload.min'
+				src: libs_path + 'jquery-lazyload.min'
 			}
 		},
 		title: {
@@ -158,7 +156,7 @@
 			include('css', files, cb)
 		},
 		date: function(format, time){
-			var dt = new Date()
+			var dt = dateNow
 			var defaultFormat = 'yyyy/MM/dd H:mm'
 			var defaultTime = dt.getTime() 
 			var hasDt = false
@@ -302,11 +300,11 @@
 		waterfall: function(opts){
 			if(!$(this).length)	return
 			var container = $(this)
-			if($.fn.masonry && z.libs.masonry.isloaded){
+			if($.fn.masonry && z.libs.waterfall.isloaded){
 				doing()
 			}else{
-				$.loadJs(z.libs.masonry.src, function(){
-					z.libs.masonry.isloaded = true
+				$.loadJs(z.libs.waterfall.src, function(){
+					z.libs.waterfall.isloaded = true
 					doing()
 				})
 			}
@@ -326,12 +324,12 @@
 		datepicker: function(opts){
 			if(!$(this).length)	return
 			var container = $(this)
-			if($.fn.datetimepicker && z.libs.datetimepicker.isloaded){
+			if($.fn.datetimepicker && z.libs.datepicker.isloaded){
 				doing()
 			}else{
-				$.loadCss(z.libs.datetimepicker.src, function(){
-					$.loadJs(z.libs.datetimepicker.src, function(){
-						z.libs.masonry.isloaded = true
+				$.loadCss(z.libs.datepicker.src, function(){
+					$.loadJs(z.libs.datepicker.src, function(){
+						z.libs.datepicker.isloaded = true
 						doing()
 					})
 				})
@@ -461,8 +459,8 @@
 			var interval = 13
 			var speed = t/interval
 			var s_alpha = alpha/speed
-			var s_left = (Math.min(wid, 400))/speed
-			var s_skew = 15/speed
+			var s_left = (Math.min(wid, 100))/speed
+			var s_skew = 10/speed
 			t = t || transTime
 			var timer = setInterval(function(){
 				st = st + interval
@@ -953,18 +951,15 @@
 		rm = bool(rm)
 		if(box.hasClass('z-modal') && rm)	anibox = box.children('.z-modal-content').length?box.children('.z-modal-content'):box
 		if(rm)	anibox.flyOut(delay, doing)
-		else 	anibox.slideUp(delay, doing)
-		function doing(){
-			if($('.z-shade').length){
-				$('.z-shade').fadeOut(delay, fn)
-			}else{
-				fn()
-			}
+		else 	box.slideUp(delay, doing)
+		if($('.z-shade').length && box.hasClass('z-modal')){
+			$('.z-shade').fadeOut(delay * 1.5, function(){
+				$('.z-shade').remove()
+				$('body').removeClass('overflow')
+			})
 		}
-		function fn(){
+		function doing(){
 			if(rm)	box.remove()
-			$('.z-shade').remove()
-			$('body').removeClass('overflow')
 			if(cb)	cb()
 		}
 	}

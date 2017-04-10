@@ -9,7 +9,7 @@
 	<script src="js/z.min.js"></script>
 </head>
 <body>
-	<div class="z-nav z-nav-blue z-action-mobilenav" zdata-class="z-nav-blue">
+	<div class="z-nav z-nav-blue z-action-mobilenav z-nav-fixed-top" zdata-class="z-nav-blue">
 		<div class="z-content">
 			<div class="z-nav-item z-logo"><a href="#jianjie" style="padding: 5px 20px;font-size: 2em;text-shadow: 1px 1px 1px #333">z ui</a></div>
 			<ul class="z-nav-ul z-pull-right z-sm-hide">
@@ -63,9 +63,10 @@
 						<li><a href="#flow">滚动加载</a></li>
 						<li><a href="#lazyimg">图片懒加载</a></li>
 						<li><a href="#loadimg">动态载入图片</a></li>
+						<li><a href="#date">日期格式化</a></li>
 					</ul>
 				</li>
-				<li class="z-nav-item"><a href="http://git.oschina.net/631960109/z_ui/raw/master/z_ui.zip">下载</a></li>
+				<li class="z-nav-item"><a href="https://github.com/hellowmonkey/z_ui" target="_blank">下载</a></li>
 			</ul>
 		</div>
 	</div>
@@ -91,7 +92,7 @@
 				<hr>
 				所有的组件配置方式都有三种：<br>
 				1、通过添加class<code>z-action-</code>来快速使用默认值配置。
-				2、通过<code>$.fn.*</code>调用，不写参数时使用默认参数，填写对应参数后会替换默认参数。
+				2、通过<code>$.fn.</code>调用，不写参数时使用默认参数，填写对应参数后会替换默认参数。
 				3、通过<code>zdata-</code>来指定最高优先级的配置项。
 			</div>
 		</fieldset>
@@ -383,10 +384,10 @@
 					<pre class="z-action-code" zdata-encode="true"><span class="z-caret"></span></pre>
 				</div>
 				<div class="z-quote-blue z-quote" id="zmb">主面板</div>
-				主区域：<code>z-content</code>它会自动给你相对浏览器屏幕合适的宽度，并居中。如果想铺满屏幕可以用<code>z-content-fluid</code>
+				主区域：<code>z-content</code>它会自动给你相对浏览器屏幕合适的宽度，并居中。
 				<pre class="z-action-code" zdata-encode="true"><div class="z-content">主区域</div></pre>
 				<div class="z-quote-blue z-quote">栅格</div>
-				z提供了两种栅格尺寸：<code>z-col-lg-</code>和<code>z-col-sm-</code>。需要由<code>z-row</code>包裹。分界岭是屏幕尺寸介于<code>768px</code>宽的时候。
+				z提供了两种栅格尺寸：<code>z-col-lg-</code>和<code>z-col-sm-</code>。如果您需要默认的间隔，着使用<code>z-row</code>来包裹即可，若不需要，就是用<code>z-clearfix</code>包裹。分界岭是屏幕尺寸介于<code>768px</code>宽的时候。
 				<div class="z-row">
 					<div class="z-col-lg-7 z-col-sm-5"><div class="z-box">测试</div></div>
 					<div class="z-col-lg-5 z-col-sm-5"><div class="z-box">测试</div></div>
@@ -397,8 +398,8 @@
 					<code>z-lg-show || z-lg-hide</code>对应尺寸的显示和隐藏
 				</div>
 				<pre class="z-action-code" zdata-encode="true"><div class="z-row">
-					<div class="z-col-lg-7 z-col-sm-5"><div class="z-box">测试</div></div>
-					<div class="z-col-lg-5 z-col-sm-5"><div class="z-box">测试</div></div>
+					<div class="z-col-lg-7 z-col-sm-5">测试</div>
+					<div class="z-col-lg-5 z-col-sm-7">测试</div>
 				</div></pre>
 				<div class="z-quote z-quote-blue" id="an">按钮</div>
 				<button class="z-btn">默认按钮</button>
@@ -430,9 +431,9 @@
 						<div class="z-input-block">
 							<select class="z-input">
 								<option value="1">111</option>
-								<option value="1">111</option>
-								<option value="1">111</option>
-								<option value="1">111</option>
+								<option value="1">222</option>
+								<option value="1">333</option>
+								<option value="1">444</option>
 							</select>
 						</div>
 					</div>
@@ -470,9 +471,9 @@
 						<div class="z-input-block">
 							<select class="z-input">
 								<option value="1">111</option>
-								<option value="1">111</option>
-								<option value="1">111</option>
-								<option value="1">111</option>
+								<option value="1">222</option>
+								<option value="1">333</option>
+								<option value="1">444</option>
 							</select>
 						</div>
 					</div>
@@ -502,6 +503,18 @@
 				<div class="z-box">
 					表格<code>z-table</code> 默认是有边框，隔行变色，鼠标经过变色的。如果不想要这个功能可以添加对应的class：<code>z-table-noborder</code><code>z-table-nostriped</code><code>z-table-nohover</code>
 				</div>
+				<table class="z-table">
+					<tr>
+						<th>11</th>
+						<th>ww</th>
+						<th>dd</th>
+					</tr>
+					<tr>
+						<td>22</td>
+						<td>33</td>
+						<td>44</td>
+					</tr>
+				</table>
 				<pre class="z-action-code" zdata-encode="true"><table class="z-table">
 					<tr>
 						<th>11</th>
@@ -1052,6 +1065,27 @@
 				<div class="z-box mb10">快速调用方法：在<code>img</code>标签上添加class<code>z-action-lazyimg</code>，<code>src</code>指定占位图片或不写。通过<code>zdata-src="string"</code>来指定需要动态加载的图片地址。当然也可以只用js配置。</div>
 				<pre class="z-action-code">
 					$.loadImg(imgurl, complete, error)
+				</pre>
+				<div class="z-quote z-quote-red" id="date">日期格式化</div>
+				<div class="z-box mb10">快速获取指定格式的指定时间的日期。如：<code>$.date()</code>什么参数都不传时会获取到以<code>'yyyy/MM/dd H:mm'</code>为格式的当前时间的日期。即为：<script>document.write($.date())</script></div>
+				<pre class="z-action-code">
+					$.date(format, time)
+					/** format的格式：
+						"y" => 年份
+						"M" => 月份
+						"d" => 月份中的天数 
+						"H" => 小时24H制            
+						"h" => 小时12H制
+						"m" => 分钟
+						"s" => 秒
+						"ms" => 毫秒
+						"a" => AM/PM 标记 
+						"w" => 星期 数字格式
+						"W" => 星期 中文格式
+						"q" => 一月中的第几周
+						"z" => 时区
+					time的格式： ["string", "number", "date"]
+					**/
 				</pre>
 			</div>
 		</fieldset>

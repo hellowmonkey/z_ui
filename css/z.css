@@ -1,3 +1,15 @@
+/* 
+author: Parker;
+color: {
+	primary,blue: #337ab7 #286090,
+	success,green: #3c763d #2b542c,
+	warning,yellow: #8a6d3b #66512c,
+	danger,red: #a94442 #843534,
+	dark: #393D49 #292C35
+};
+size: lg, sm, xs;
+*/
+
 /** 初始化 **/
 
 * {
@@ -788,11 +800,13 @@ input[type="button"]:disabled {
 	transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
-.z-input:focus {
-	border-color: #66afe9;
-	outline: 0;
-	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
-	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+.z-input:focus, .z-input:hover:focus {
+	border-color: #2188ff;
+    outline: none;
+    box-shadow: inset 0 1px 2px rgba(27,31,35,0.075),0 0 0 0.2em rgba(3,102,214,0.3);
+}
+.z-input:hover{
+	border-color: #aaa;
 }
 
 .z-input::-webkit-input-placeholder,.z-input:-ms-input-placeholder,.z-input::-moz-placeholder {
@@ -1622,7 +1636,7 @@ input[type="search"] {
 
 .z-input-group-btn:first-child>.z-btn,
 .z-input-group-btn:first-child>.z-btn-group {
-	margin-right: -1px;
+	margin-right: -2px;
 }
 
 .z-input-group-btn:last-child>.z-btn,
