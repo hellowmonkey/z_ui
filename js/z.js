@@ -6,11 +6,15 @@
 	var loadingHtml = '<span class="z-anim-rotate z-icon">&#xe623;</span>'
 	var menuCode = '&#xe76d;'
 	var dateNow = new Date()
+	var zActive = 'z-active'
+	var zShade = null
+	var zBoxs = ['.z-alert', '.z-modal', '.z-album']
 
 	var winWidth = $(w).innerWidth()
 	var winHeight = $(w).innerHeight()
 
 	var transTime = 200
+	var closeTime = transTime * 0.6
 
 	var aniBoxTops = []
 
@@ -49,16 +53,16 @@
 	}
 
 	$.extend({
-		createShade: function(next, cb, opacity){
-			if(!$('.z-shade').length){
-				var html = $('<div class="z-shade" style="z-index:'+z.zIndex()+';'+function(){return opacity?'opacity:'+opacity:''}()+'"></div>')
-				$('body').addClass('overflow').append(html)
-				html.fadeIn(transTime, next)
+		createShade: function(createCb, closeCb, opacity){
+			if(!zShade){
+				zShade = $('<div class="z-shade" style="z-index:'+z.zIndex()+';'+function(){return opacity?'opacity:'+opacity:''}()+'"></div>')
+				$('body').addClass('overflow').append(zShade)
+				zShade.fadeIn(transTime, createCb)
 			}else{
-				next()
+				createCb()
 			}
-			html.on('click', function(){
-				if(cb)	cb()
+			zShade.on('click', function(){
+				if(closeCb)	closeCb()
 			})
 		},
 		resetForm: function(box){
@@ -78,7 +82,7 @@
 				}
 			}
 		},
-		submits: function(ele, cb, tip){
+		submit: function(ele, cb, tip){
 			var form = ele instanceof $ ? ele : $(ele)
 			var datatip = $.type(form.zdata('tip')) === 'undefined'
 			tip = ($.type(tip) === 'undefined' && datatip) ? '数据提交中...' : (datatip ? tip : form.zdata('tip'))
@@ -251,7 +255,8 @@
 			if(_this.is(':hidden')){
 				$.createShade(function(){
 					_this.css('zIndex',z.zIndex()).show().addClass('z-anim-downbit z-anim-ms3')
-					return _this
+				}, function(){
+					doClose(_this)
 				})
 			}else{
 				doClose(_this)
@@ -459,7 +464,7 @@
 			var interval = 13
 			var speed = t/interval
 			var s_alpha = alpha/speed
-			var s_left = (Math.min(wid, 100))/speed
+			var s_left = (Math.min(wid, 200))/speed
 			var s_skew = 10/speed
 			t = t || transTime
 			var timer = setInterval(function(){
@@ -473,7 +478,7 @@
 				})
 				if(st >= t){
 					clearInterval(timer)
-					cb()
+					cb && cb()
 				}
 			}, interval)
 		},
@@ -500,9 +505,100 @@
 			if(!$(this).length || $(this).tagName() !== 'img')	return
 			var sEle = scrollEle || d
 			lazyimg($(this), sEle)
+		},
+		album: function(opts){
+			if(!$(this).length || $(this).tagName() !== 'img')	return
+			var inits = {
+				
+			}
+			var options = $.extend({}, inits, opts)
+			album($(this), options)
+		},
+		dropdown: function(type){
+			var _this = $(this)
+			if(!_this.length)	  return false
+			var isTree = false
+			var selector = _this.selector
+			type = type || 'click'
+			if(type == 'hover'){
+				$('body').on('mouseenter', selector, function(){
+					var _this = $(this)
+					isTree = _this.parents('.z-nav-tree').length
+					if((isTree && bool(_this.parent().zdata('toggle'))) || !isTree)	_this.siblings(selector).removeClass(zActive)
+					_this.addClass(zActive)
+				})
+				$('body').on('mouseleave', selector, function(){
+					$(this).removeClass(zActive)
+				})
+			}else if(type == 'click'){
+				$('body').on('click', selector, function(e){
+					var _this = $(this)
+					var ev = e || event
+					ev.stopPropagation()
+					isTree = _this.parents('.z-nav-tree').length
+					if(isTree)	ev.preventDefault()
+					if(_this.hasClass(zActive))	_this.removeClass(zActive)
+					else{
+						if((isTree && bool(_this.parent().zdata('toggle'))) || !isTree)	_this.siblings(selector).removeClass(zActive)
+						_this.addClass(zActive)
+					}
+				})
+				$(d).on('click',function(){
+					_this.removeClass(zActive)
+				})
+			}
 		}
 	})
 
+	
+	function album(ele, opts){
+		ele.css('cursor', 'pointer')
+		$('body').on('click', ele.selector, function(){
+			if(!this.src || $(this).zdata('src'))	return
+			var src = $(this).zdata('bigsrc') || this.src
+			var htmls = [
+				'<div class="z-album">',
+					'<span class="z-close z-action-close" zdata-box=".z-album">&times;</span>',
+					'<div class="z-album-content z-anim-ms3 '+getAnim()+'">',
+					'</div>',
+					loadingHtml,
+				'</div>',
+			]
+			var html = $(htmls.join(''))
+			$.createShade(function(){
+				html.css('zIndex', z.zIndex())
+				$('body').append(html)
+				loadImg(src, function(img){
+					html.find('.z-anim-rotate').remove()
+					var box = html.find('.z-album-content')
+					var blank = winWidth > 768 ? 100 : 20
+					var imgWidth = img.width
+					var imgHeight = img.height
+					var wWidth = winWidth - blank
+					var wHeight = winHeight - blank
+					var width = imgWidth
+					var height = imgHeight
+					if(imgWidth > imgHeight){
+						width = Math.min(imgWidth, wWidth)
+						height = imgHeight * width / imgWidth
+						$(img).css('maxHeight', '100%')
+					}else{
+						height = Math.min(imgHeight, wHeight)
+						width = imgWidth * height / imgHeight
+						$(img).css('maxWidth', '100%')
+					}
+					box.width(width).height(height)
+					box.show().html(img).css({
+						'marginLeft': - width / 2 - 2,
+						'marginTop': - height / 2 - 2
+					})
+				})
+			}, function(){
+				doClose(html, null, true, html.children('.z-album-content'))
+			})
+		})
+	}
+	
 	function lazyimg(ele, sEle){
 		var index = 0, haveScroll;
 		var notDocment = sEle && sEle !== d
@@ -669,7 +765,7 @@
 	function mobileNav(nav, opts){
 		var can = true
 		var items = nav.find(opts.item)
-		var fixNav = $('<div class="z-nav z-nav-tree z-nav-mobile '+opts.class+'"></div>')
+		var fixNav = $('<ul class="z-nav z-nav-tree z-nav-mobile '+opts.class+'"></ul>')
 		var logo = ''
 		var menu = $(opts.menu)
 		items.each(function(){
@@ -698,12 +794,10 @@
 				}, '.12')
 				nav.css('zIndex', z.zIndex())
 			}else{
-				fixNav.animate({'left':'-200px'},transTime,function(){
+				fixNav.animate({'left':'-200px'}, transTime, function(){
 					fixNav.hide()
 					_this.html(menuCode)
-					$('.z-shade').fadeOut(transTime, function(){
-						$('.z-shade').remove()
-						$('body').removeClass('overflow')
+					closeShade(function(){
 						can = true
 					})
 				})
@@ -757,7 +851,7 @@
 				return true
 			}
 			if($.type($(this).zdata('name')) === 'undefined'){
-				var html = '<div class="z-unselect z-form-'+type+function(){return isCheck?" z-active":""}()+'" zdata-id="'+zid+'" zdata-name="'+zname+'"><i class="z-anim z-icon">'+function(){return type=='radio'?"&#xe998;":"&#xe615;"}()+'</i><span>'+this.title+'</span></div>'
+				var html = '<div class="z-unselect z-form-'+type+function(){return isCheck?" "+zActive:""}()+'" zdata-id="'+zid+'" zdata-name="'+zname+'"><i class="z-anim z-icon">'+function(){return type=='radio'?"&#xe998;":"&#xe615;"}()+'</i><span>'+this.title+'</span></div>'
 				$(this).zdata('id', zid)
 				$(this).after(html)
 			}
@@ -923,7 +1017,7 @@
 				marginLeft: -html.innerWidth()/2
 			})
 			setTimeout(function(){
-				html.hide(150, function(){
+				html.hide(closeTime, function(){
 					html.remove()
 				})
 			},delay)
@@ -944,20 +1038,14 @@
 	}
 
 
-	function doClose(box, cb, rm){
-		var anibox = box
-		var delay = 120
+	function doClose(box, cb, rm, anibox){
+		var anibox = anibox || box
+		var delay = closeTime
 		if($.type(rm) === 'undefined')	rm = true
 		rm = bool(rm)
-		if(box.hasClass('z-modal') && rm)	anibox = box.children('.z-modal-content').length?box.children('.z-modal-content'):box
-		if(rm)	anibox.flyOut(delay, doing)
+		if(rm)	anibox.flyOut(delay * 0.7, doing)
 		else 	box.slideUp(delay, doing)
-		if($('.z-shade').length && box.hasClass('z-modal')){
-			$('.z-shade').fadeOut(delay * 1.5, function(){
-				$('.z-shade').remove()
-				$('body').removeClass('overflow')
-			})
-		}
+		closeShade(delay * 1.5)
 		function doing(){
 			if(rm)	box.remove()
 			if(cb)	cb()
@@ -1108,7 +1196,7 @@
 			ele.append('<div class="z-dots">'+function(){
 				var li = ''
 				for(var i=0;i<leg;i++){
-					if(0===i)	li += '<a href="javascript:;" class="z-active"></a>'
+					if(0===i)	li += '<a href="javascript:;" class="'+zActive+'"></a>'
 					else	li += '<a href="javascript:;"></a>'
 				}
 			return li
@@ -1212,7 +1300,7 @@
 			}
 			box.animate({'marginLeft': mar}, opts.speed, function(){
 				index = parseInt((Math.abs(mar)-width)/width)
-				if(dots)	dots.removeClass('z-active').eq(index).addClass('z-active')
+				if(dots)	dots.removeClass(zActive).eq(index).addClass(zActive)
 				if(opts.complete)	opts.complete(item.eq(index+1))
 				canMove = true
 			})
@@ -1302,15 +1390,27 @@
 	function bool(type){
 		if($.type(type) === 'undefined')	return false
 		else if($.type(type) === 'boolean')	return type
-		if(w.JSON){
-			return JSON.parse(type)
-		}else{
-			return eval(type)
-		}
+		else if(type == 'false')	return false
+		return true
 	}
 
 	function isMobile(){
 		return navigator.userAgent.match(/mobile/i)
+	}
+
+	function closeShade(time, cb){
+		if(!zShade)	return false
+		if($.type(time) === 'function'){
+			cb = time
+			time = transTime
+		}
+		time = time || transTime
+		zShade.fadeOut(time, function(){
+			zShade.remove()
+			$('body').removeClass('overflow')
+			zShade = null
+			cb && cb()
+		})
 	}
  
 
@@ -1345,19 +1445,25 @@
 		// 图片懒加载
 		$('.z-action-lazyimg').lazyimg()
 
+		// 图片相册
+		$('.z-action-album').album()
+
 		// 数字输入框
 		$('.z-action-numberbox').numberBox()
 		
+		// 下拉导航 & 树形导航
+		$('.z-action-dropdown').dropdown()
+
 		// 替换单选框和复选框
 		$.resetForm()
 
 		// 单选框
 		$('body').on('click','.z-form-radio',function(){
-			if($(this).hasClass('z-active'))	return
+			if($(this).hasClass(zActive))	return
 			var zid = $(this).zdata('id')
 			var zname = $(this).zdata('name')
-			$('.z-form-radio[zdata-name="'+zname+'"]').removeClass('z-active')
-			$(this).addClass('z-active')
+			$('.z-form-radio[zdata-name="'+zname+'"]').removeClass(zActive)
+			$(this).addClass(zActive)
 			$('input[type="radio"][name="'+zname+'"]').each(function(){
 				this.checked = $(this).zdata('id') === zid
 			})
@@ -1366,8 +1472,8 @@
 		// 复选框
 		$('body').on('click','.z-form-checkbox',function(){
 			var zid = $(this).zdata('id')
-			$(this).toggleClass('z-active')
-			$('input[type="checkbox"][zdata-id="'+zid+'"]').attr('checked', $(this).hasClass('z-active'))
+			$(this).toggleClass(zActive)
+			$('input[type="checkbox"][zdata-id="'+zid+'"]').attr('checked', $(this).hasClass(zActive))
 		})
 
 		// modal
@@ -1378,15 +1484,22 @@
 		})
 
 		// 关闭按钮
-		$('body').on('click', '.z-alert .z-action-close,.z-modal .z-action-close', function(){
+		$('body').on('click', '.z-action-close', function(){
 			var _this = $(this)
 			var box = null
-			if(_this.parents('.z-alert').length){
-				box = _this.parents('.z-alert')
-			}else if(_this.parents('.z-modal').length){
-				box = _this.parents('.z-modal')
-			}
-			if(box)	doClose(box, null, _this.zdata('remove'))
+			var ibox = null
+			$.each(zBoxs, function(i, val){
+				if(_this.parents(val).length){
+					box = _this.parents(val)
+					if(i > 0){
+						ibox = box.find(val + '-content')
+					}
+					return false
+				}
+			})
+			if(!box)	box = _this.parents(_this.zdata('box'))
+			ibox = ibox || box
+			if(box && box.length)	doClose(box, null, _this.zdata('remove'), ibox)
 		})
 
 		// 上一页
@@ -1399,55 +1512,24 @@
 			$.reload()
 		})
 
-		// 树形导航
-		$('body').on('click','.z-nav-tree .z-nav-item',function(e){
-			var _this = $(this)
-			var ev = e || event
-			ev.stopPropagation() 
-			if(_this.hasClass('z-active')){
-				_this.removeClass('z-active')
-			}else{
-				var pnav = _this.parents('.z-nav-tree')
-				if(pnav.hasClass('z-nav-toggle')){
-					pnav.find('.z-nav-item').removeClass('z-active')
-				}
-				_this.addClass('z-active')
-			}
-		})
-
-		// 下拉导航
-		$('body').on('click', '.z-dropdown', function(e){
-			var _this = $(this)
-			var ev = e || event
-			ev.stopPropagation()
-			if(_this.hasClass('z-active'))	_this.removeClass('z-active')
-			else{
-				$('.z-dropdown').removeClass('z-active')
-				_this.addClass('z-active')
-			}
-		})
-
 		// tabs
 		$('body').on('click', '.z-tab-title li', function(){
 			var _this = $(this)
 			var lis = _this.parent().find('li')
 			var items = _this.parents('.z-tab').find('.z-tab-content .z-tab-item')
 			var index = _this.index()
-			if(_this.hasClass('z-active'))	return
-			lis.removeClass('z-active')
-			_this.addClass('z-active')
+			if(_this.hasClass(zActive))	return
+			lis.removeClass(zActive)
+			_this.addClass(zActive)
 			items.removeClass('z-show').eq(index).addClass('z-show')
 		})
 
 		// 固定导航
-		if($('.z-nav.z-nav-fixed-top').length)	$('body').css('paddingTop', '70px')
-		if($('.z-nav.z-nav-fixed-bottom').length)	$('body').css('paddingBottom', '70px')
+		if($('.z-nav.z-nav-fixed-top').length)	$('body').css('paddingTop', $('.z-nav.z-nav-fixed-top').innerHeight() + 20)
+		if($('.z-nav.z-nav-fixed-bottom').length)	$('body').css('paddingBottom', $('.z-nav.z-nav-fixed-bottom').innerHeight() + 20)
 
-		// 重置
-		$(d).on('click',function(){
-			$('.z-dropdown').removeClass('z-active')
-		})
-		$(d).on('click', '.z-disabled', function(e){
+		// 阻止默认
+		$(d).on('click', '.z-disabled,:disabled', function(e){
 			var ev = e || event
 			ev.stopPropagation()
 			ev.preventDefault()

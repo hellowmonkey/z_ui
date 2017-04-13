@@ -1431,7 +1431,7 @@ input[type="search"] {
 
 .z-dropdown {
 	position: relative;
-	z-index: 9!important;
+	z-index: 11!important;
 }
 .z-dropdown.z-active .z-dropdown-menu{
 	animation: z-upbit ease-in-out .2s;
@@ -1706,7 +1706,7 @@ input[type="search"] {
 	position: fixed;
 	width: 100%;
 	left: 0;
-	z-index: 11;
+	z-index: 12;
 }
 .z-nav.z-nav-fixed-top{
 	top: 0;
@@ -1719,7 +1719,6 @@ input[type="search"] {
 .z-nav-tree{
 	height: auto;
 	border-bottom: 0;
-	width: 200px;
 }
 .z-nav-tree .z-nav-item{
 	float: none;
@@ -1767,7 +1766,7 @@ input[type="search"] {
 .z-breadcrumb>li {
     display: inline-block;
 }
-.z-breadcrumb>li a{
+.z-breadcrumb>li>a{
 	color: #337ab7;
 }
 .z-breadcrumb>li+li:before {
@@ -2549,4 +2548,37 @@ html #zcss-skincodecss{
 }
 .z-field-title .z-field-box{
 	padding: 10px 0;
+}
+
+/* 相册 */
+.z-album{
+	position: fixed;
+}
+.z-album .z-close{
+	position: fixed;
+	top: 10px;
+	right: 10px;
+	font-size: 3em;
+	color: #fff;
+	filter: alpha(opacity=100);
+    opacity: 1;
+}
+.z-album .z-album-content{
+	border: 2px solid #fff;
+	border-radius: 3px;
+	max-height: 100%;
+	margin: auto;
+	background: #000;
+	display: none;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+}
+.z-album .z-anim-rotate{
+	font-size: 5em;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-top: -60px;
+	margin-left: -60px;
 }

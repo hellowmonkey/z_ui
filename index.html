@@ -4,9 +4,9 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
 	<title>z-ui 手册</title>
-	<link rel="stylesheet" href="css/z.min.css">
+	<link rel="stylesheet" href="css/z.css">
 	<script src="libs/jquery.min.js"></script>
-	<script src="js/z.min.js"></script>
+	<script src="js/z.js"></script>
 </head>
 <body>
 	<div class="z-nav z-nav-blue z-action-mobilenav z-nav-fixed-top" zdata-class="z-nav-blue">
@@ -14,7 +14,7 @@
 			<div class="z-nav-item z-logo"><a href="#jianjie" style="padding: 5px 20px;font-size: 2em;text-shadow: 1px 1px 1px #333">z ui</a></div>
 			<ul class="z-nav-ul z-pull-right z-sm-hide">
 				<li class="z-nav-item"><a href="#jianjie">简介</a></li>
-				<li class="z-nav-item z-dropdown"><a href="javascript:;">css共有样式 <span class="z-caret"></span></a>
+				<li class="z-nav-item z-dropdown z-action-dropdown"><a href="javascript:;">css共有样式 <span class="z-caret"></span></a>
 					<ul class="z-dropdown-menu">
 						<li><a href="#zttb">字体图标</a></li>
 						<li><a href="#jc">基础样式</a></li>
@@ -23,7 +23,7 @@
 						<li><a href="#biaoge">表格</a></li>
 					</ul>
 				</li>
-				<li class="z-nav-item z-dropdown"><a href="javascript:;">css组件 <span class="z-caret"></span></a>
+				<li class="z-nav-item z-dropdown z-action-dropdown"><a href="javascript:;">css组件 <span class="z-caret"></span></a>
 					<ul class="z-dropdown-menu">
 						<li><a href="#anniuzu">按钮组</a></li>
 						<li><a href="#xialadaohang">下拉导航</a></li>
@@ -40,7 +40,7 @@
 						<li><a href="#ziduanjihe">字段集合</a></li>
 					</ul>
 				</li>
-				<li class="z-nav-item z-dropdown"><a href="javascript:;">js组件 <span class="z-caret"></span></a>
+				<li class="z-nav-item z-dropdown z-action-dropdown"><a href="javascript:;">js组件 <span class="z-caret"></span></a>
 					<ul class="z-dropdown-menu">
 						<li><a href="#include">动态加载js、css</a></li>
 						<li><a href="#resetform">重置radio和checkbox</a></li>
@@ -64,6 +64,8 @@
 						<li><a href="#lazyimg">图片懒加载</a></li>
 						<li><a href="#loadimg">动态载入图片</a></li>
 						<li><a href="#date">日期格式化</a></li>
+						<li><a href="#dropdown">导航伸缩</a></li>
+						<li><a href="#album">相册</a></li>
 					</ul>
 				</li>
 				<li class="z-nav-item"><a href="https://github.com/hellowmonkey/z_ui" target="_blank">下载</a></li>
@@ -560,14 +562,14 @@
 				</div></pre>
 				<div class="z-quote z-quote-yellow" id="xialadaohang">下拉导航</div>
 				<div class="z-box z-mb10">下拉菜单本身是没有过多样式的，可以灵活营运于按钮、导航等组件上，需要在<code>z-dropup || z-dropdown</code>下包裹<code>dropdown-menu</code>即可</div>
-				<button class="z-btn z-dropdown">下拉测试 <span class="z-caret"></span>
+				<button class="z-btn z-dropdown z-action-dropdown">下拉测试 <span class="z-caret"></span>
 				<ul class="z-dropdown-menu">
 					<li><a href="#">列表</a></li>
 					<li><a href="#">列表</a></li>
 					<li><a href="#">列表</a></li>
 				</ul>
 				</button>
-				<pre class="z-action-code" zdata-encode="true"><button class="z-btn z-dropdown">下拉测试 <span class="z-caret"></span>
+				<pre class="z-action-code" zdata-encode="true"><button class="z-btn z-dropdown z-action-dropdown">下拉测试 <span class="z-caret"></span>
 				<ul class="z-dropdown-menu">
 					<li><a href="#">列表</a></li>
 					<li><a href="#">列表</a></li>
@@ -580,7 +582,7 @@
 					<div class="z-input-group-addon">提示</div>
 					<input type="text" class="z-input">
 					<div class="z-input-group-btn">
-						<button class="z-btn z-dropdown">选择 <span class="z-caret"></span>
+						<button class="z-btn z-dropdown z-action-dropdown">选择 <span class="z-caret"></span>
 						<ul class="z-dropdown-menu">
 							<li><a href="#">列表</a></li>
 							<li><a href="#">列表</a></li>
@@ -594,7 +596,7 @@
 					<div class="z-input-group-addon">提示</div>
 					<input type="text" class="z-input">
 					<div class="z-input-group-btn">
-						<button class="z-btn z-dropdown">选择 <span class="z-caret"></span>
+						<button class="z-btn z-dropdown z-action-dropdown">选择 <span class="z-caret"></span>
 						<ul class="z-dropdown-menu">
 							<li><a href="#">列表</a></li>
 							<li><a href="#">列表</a></li>
@@ -611,7 +613,7 @@
 					<ul class="z-nav-ul">
 						<li class="z-nav-item"><a href="">导航菜单</a></li>
 						<li class="z-nav-item"><a href="">导航菜单</a></li>
-						<li class="z-nav-item z-dropdown"><a href="">导航菜单 <span class="z-caret"></span></a>
+						<li class="z-nav-item z-dropdown z-action-dropdown"><a href="javascript:;">导航菜单 <span class="z-caret"></span></a>
 							<ul class="z-dropdown-menu">
 								<li><a href="#">列表</a></li>
 								<li><a href="#">列表</a></li>
@@ -620,28 +622,30 @@
 						</li>
 					</ul>
 				</div>
-				<div class="z-nav z-nav-red z-nav-tree z-nav-toggle">
+				<div style="width: 200px">
+				<ul class="z-nav z-nav-red z-nav-tree" zdata-toggle="true">
 					<li class="z-nav-item"><a href="">导航菜单</a></li>
-					<li class="z-nav-item z-active"><a href="javascript:;">导航菜单</a>
+					<li class="z-nav-item z-action-dropdown z-active"><a href="javascript:;">导航菜单</a>
 						<ul class="z-nav-child">
 							<li class="z-nav-item"><a href="">子菜单</a></li>
 							<li class="z-nav-item"><a href="">子菜单</a></li>
 							<li class="z-nav-item"><a href="">子菜单</a></li>
 						</ul>
 					</li>
-					<li class="z-nav-item"><a href="javascript:;">导航菜单</a>
+					<li class="z-nav-item z-action-dropdown"><a href="javascript:;">导航菜单</a>
 						<ul class="z-nav-child">
 							<li class="z-nav-item"><a href="">子菜单</a></li>
 							<li class="z-nav-item"><a href="">子菜单</a></li>
 							<li class="z-nav-item"><a href="">子菜单</a></li>
 						</ul>
 					</li>
+				</ul>
 				</div>
 				<pre class="z-action-code" zdata-encode="true"><div class="z-nav z-nav-dark">
 					<ul class="z-nav-ul">
 						<li class="z-nav-item"><a href="">导航菜单</a></li>
 						<li class="z-nav-item"><a href="">导航菜单</a></li>
-						<li class="z-nav-item z-dropdown"><a href="">导航菜单 <span class="z-caret"></span></a>
+						<li class="z-nav-item z-dropdown z-action-dropdown"><a href="">导航菜单 <span class="z-caret"></span></a>
 							<ul class="z-dropdown-menu">
 								<li><a href="#">列表</a></li>
 								<li><a href="#">列表</a></li>
@@ -650,23 +654,23 @@
 						</li>
 					</ul>
 				</div>
-				<div class="z-nav z-nav-red z-nav-tree z-nav-toggle">
+				<ul class="z-nav z-nav-red z-nav-tree" zdata-toggle="true">
 					<li class="z-nav-item"><a href="">导航菜单</a></li>
-					<li class="z-nav-item z-active"><a href="javascript:;">导航菜单</a>
+					<li class="z-nav-item z-action-dropdown z-active"><a href="javascript:;">导航菜单</a>
 						<ul class="z-nav-child">
 							<li class="z-nav-item"><a href="">子菜单</a></li>
 							<li class="z-nav-item"><a href="">子菜单</a></li>
 							<li class="z-nav-item"><a href="">子菜单</a></li>
 						</ul>
 					</li>
-					<li class="z-nav-item"><a href="javascript:;">导航菜单</a>
+					<li class="z-nav-item z-action-dropdown"><a href="javascript:;">导航菜单</a>
 						<ul class="z-nav-child">
 							<li class="z-nav-item"><a href="">子菜单</a></li>
 							<li class="z-nav-item"><a href="">子菜单</a></li>
 							<li class="z-nav-item"><a href="">子菜单</a></li>
 						</ul>
 					</li>
-				</div></pre>
+				</ul></pre>
 				<div class="z-quote z-quote-yellow">路径导航</div>
 				<ul class="z-breadcrumb">
 					<li><a href="">导航</a></li>
@@ -1086,6 +1090,21 @@
 						"z" => 时区
 					time的格式： ["string", "number", "date"]
 					**/
+				</pre>
+				<div class="z-quote z-quote-red" id="dropdown">导航伸缩</div>
+				<div class="z-box mb10">通过<code>z-action-dropdown</code>快速添加导航伸缩功能，默认是通过点击触发，也可以通过<code>$.fn.dropdown('hover')</code>来手动指定鼠标悬停触发。适用于下拉菜单导航和垂直导航。前边的导航都是通过默认方式调用的。</div>
+				<pre class="z-action-code">
+					$.fn.dropdown(type)
+					type: 'click' || 'hover'
+				</pre>
+				<div class="z-quote z-quote-red" id="album">相册</div>
+				<div class="z-box mb10">现在的相册功能是最基础的，可以当做图片放大使用，后续会继续完善。通过<code>z-action-album</code>快速调用，通过指定<code>zdata-bigsrc="string"</code>来指定显示的大图地址，不设定会使用图片的src。</div>
+				<img src="images/1.jpg" width="100" class="z-action-album">
+				<pre class="z-action-code" zdata-encode="true">
+					<img src="images/1.jpg" width="100" class="z-action-album">
+
+
+					$.fn.album()
 				</pre>
 			</div>
 		</fieldset>
