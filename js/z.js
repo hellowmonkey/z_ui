@@ -10,7 +10,7 @@
 	var zShade = null
 	var zBoxs = [{
 		cls: '.z-alert'
-	},{
+	},{ 
 		cls: '.z-modal',
 		ani: 'content'
 	},{
