@@ -8,7 +8,15 @@
 	var dateNow = new Date()
 	var zActive = 'z-active'
 	var zShade = null
-	var zBoxs = ['.z-alert', '.z-modal', '.z-album']
+	var zBoxs = [{
+		cls: '.z-alert'
+	},{
+		cls: '.z-modal',
+		ani: 'content'
+	},{
+		cls: '.z-album',
+		ani: 'content'
+	}]
 
 	var winWidth = $(w).innerWidth()
 	var winHeight = $(w).innerHeight()
@@ -544,7 +552,7 @@
 					}
 				})
 				$(d).on('click',function(){
-					_this.removeClass(zActive)
+					if(!isTree)	_this.removeClass(zActive)
 				})
 			}
 		}
@@ -726,9 +734,9 @@
 		var ipt = ele.find(opts.input)
 		var next = ele.find(opts.next)
 		var prev = ele.find(opts.prev)
-		var step = bool(opts.step)
-		var max = bool(opts.max)
-		var min = bool(opts.min)
+		var step = parseFloat(opts.step)
+		var max = parseFloat(opts.max)
+		var min = parseFloat(opts.min)
 		if(!ipt || !next || !prev || !ipt.length || !next.length || !prev.length)	return
 		if(max && max < min)	return
 		ipt.off('change').on('change', function(){
@@ -1489,11 +1497,11 @@
 			var box = null
 			var ibox = null
 			$.each(zBoxs, function(i, val){
-				if(_this.parents(val).length){
-					box = _this.parents(val)
-					if(i > 0){
-						ibox = box.find(val + '-content')
-					}
+				var cls = val.cls
+				var ani = val.ani
+				if(_this.parents(cls).length){
+					box = _this.parents(cls)
+					if(ani)	ibox = box.find(cls + '-content')
 					return false
 				}
 			})

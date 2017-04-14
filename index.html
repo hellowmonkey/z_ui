@@ -1094,7 +1094,7 @@
 				<div class="z-quote z-quote-red" id="dropdown">导航伸缩</div>
 				<div class="z-box mb10">通过<code>z-action-dropdown</code>快速添加导航伸缩功能，默认是通过点击触发，也可以通过<code>$.fn.dropdown('hover')</code>来手动指定鼠标悬停触发。适用于下拉菜单导航和垂直导航。前边的导航都是通过默认方式调用的。</div>
 				<pre class="z-action-code">
-					$.fn.dropdown(type)
+					$(ele).dropdown(type)
 					type: 'click' || 'hover'
 				</pre>
 				<div class="z-quote z-quote-red" id="album">相册</div>
@@ -1102,9 +1102,7 @@
 				<img src="images/1.jpg" width="100" class="z-action-album">
 				<pre class="z-action-code" zdata-encode="true">
 					<img src="images/1.jpg" width="100" class="z-action-album">
-
-
-					$.fn.album()
+					$(ele).album()
 				</pre>
 			</div>
 		</fieldset>
