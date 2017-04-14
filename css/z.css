@@ -430,32 +430,71 @@ input[type="button"]:disabled {
 
 
 /* 栅格 */
+@media (min-width: 768px) {
+	.z-row {
+		margin-right: -10px;
+		margin-left: -10px;
+	}
 
-.z-row {
-	margin-right: -10px;
-	margin-left: -10px;
+	.z-row .z-col-lg-1,
+	.z-row .z-col-lg-2,
+	.z-row .z-col-lg-3,
+	.z-row .z-col-lg-4,
+	.z-row .z-col-lg-5,
+	.z-row .z-col-lg-6,
+	.z-row .z-col-lg-7,
+	.z-row .z-col-lg-8,
+	.z-row .z-col-lg-9,
+	.z-row .z-col-lg-10,
+	.z-row .z-col-lg-11,
+	.z-row .z-col-lg-12{
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+
+	.z-col-lg-12 {
+	  width: 100%;
+	}
+	.z-col-lg-11 {
+	  width: 91.66666667%;
+	}
+	.z-col-lg-10 {
+	  width: 83.33333333%;
+	}
+	.z-col-lg-9 {
+	  width: 75%;
+	}
+	.z-col-lg-8 {
+	  width: 66.66666667%;
+	}
+	.z-col-lg-7 {
+	  width: 58.33333333%;
+	}
+	.z-col-lg-6 {
+	  width: 50%;
+	}
+	.z-col-lg-5 {
+	  width: 41.66666667%;
+	}
+	.z-col-lg-4 {
+	  width: 33.33333333%;
+	}
+	.z-col-lg-3 {
+	  width: 25%;
+	}
+	.z-col-lg-2 {
+	  width: 16.66666667%;
+	}
+	.z-col-lg-1 {
+	  width: 8.33333333%;
+	}
 }
+
 .z-row:after {
 	display: table;
 	height: 0;
 	content: '';
 	clear: both;
-}
-
-.z-row .z-col-lg-1,
-.z-row .z-col-lg-2,
-.z-row .z-col-lg-3,
-.z-row .z-col-lg-4,
-.z-row .z-col-lg-5,
-.z-row .z-col-lg-6,
-.z-row .z-col-lg-7,
-.z-row .z-col-lg-8,
-.z-row .z-col-lg-9,
-.z-row .z-col-lg-10,
-.z-row .z-col-lg-11,
-.z-row .z-col-lg-12{
-	padding-left: 10px;
-	padding-right: 10px;
 }
 
 .z-col-lg-1,
@@ -487,48 +526,12 @@ input[type="button"]:disabled {
 	float: left;
 }
 
-.z-col-lg-12 {
-  width: 100%;
-}
-.z-col-lg-11 {
-  width: 91.66666667%;
-}
-.z-col-lg-10 {
-  width: 83.33333333%;
-}
-.z-col-lg-9 {
-  width: 75%;
-}
-.z-col-lg-8 {
-  width: 66.66666667%;
-}
-.z-col-lg-7 {
-  width: 58.33333333%;
-}
-.z-col-lg-6 {
-  width: 50%;
-}
-.z-col-lg-5 {
-  width: 41.66666667%;
-}
-.z-col-lg-4 {
-  width: 33.33333333%;
-}
-.z-col-lg-3 {
-  width: 25%;
-}
-.z-col-lg-2 {
-  width: 16.66666667%;
-}
-.z-col-lg-1 {
-  width: 8.33333333%;
-}
-
 @media (max-width: 768px) {
 	.z-row {
 		margin-right: -5px;
 		margin-left: -5px;
 	}
+
 	.z-row .z-col-sm-1,
 	.z-row .z-col-sm-2,
 	.z-row .z-col-sm-3,
@@ -581,9 +584,7 @@ input[type="button"]:disabled {
 	.z-col-sm-1 {
 	  width: 8.33333333%;
 	}
-
 }
-
 
 
 /* 按钮 */
