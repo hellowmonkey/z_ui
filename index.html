@@ -864,9 +864,9 @@
 				<div class="z-quote z-quote-red" id="alert">弹框</div>
 				<div class="z-box z-mb10">弹框是modal和move的整合的拓展</div>
 				<button class="z-btn z-btn-blue" onclick="$.alert('弹框','标题（可选）')">alert</button>
-				<button class="z-btn z-btn-green" onclick="$.confirm('我帅吗？','标题（可选）',['不帅','帅'])">confirm</button>
-				<button class="z-btn z-btn-red" onclick="$.prompt('输入弹框')">prompt</button>
-				<button class="z-btn z-btn-yellow" onclick="$.open('自定义弹框','标题（可选）')">open</button>
+				<button class="z-btn z-btn-green" onclick="$.confirm('我帅吗？',['不帅','帅'], function(){$.msg('就喜欢你的诚实')})">confirm</button>
+				<button class="z-btn z-btn-red" onclick="$.prompt('输入弹框', function(v){$.msg(v)})">prompt</button>
+				<button class="z-btn z-btn-yellow" onclick="$.open('自定义弹框', ['哈哈', '呵呵', '嘿嘿'], function(i, obj){$.msg(i);return i})">open</button>
 				<pre class="z-action-code">
 					$.alert(content, title)
 					$.confirm(content, title, btns, cb)
