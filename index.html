@@ -1098,8 +1098,10 @@
 					type: 'click' || 'hover'
 				</pre>
 				<div class="z-quote z-quote-red" id="album">相册</div>
-				<div class="z-box mb10">现在的相册功能是最基础的，可以当做图片放大使用，后续会继续完善。通过<code>z-action-album</code>快速调用，通过指定<code>zdata-bigsrc="string"</code>来指定显示的大图地址，不设定会使用图片的src。</div>
-				<img src="images/1.jpg" width="100" class="z-action-album">
+				<div class="z-box mb10">通过<code>z-action-album</code>快速调用，通过指定<code>zdata-bigsrc="string"</code>来指定显示的大图地址，不设定会使用图片的src。通过指定<code>zdata-group="number"</code>来指定分组。通过<code>zdata-index="number"</code>来指定显示顺序。通过设置<code>title</code>或<code>zdata-title</code>属性指定图片说明。</div>
+				<img src="images/1.jpg" zdata-index="2" width="100" zdata-group="1" class="z-action-album" title="图片说明">
+				<img src="images/2.jpg" zdata-index="1" width="100" zdata-group="1" class="z-action-album" title="图片说明">
+				<img src="images/3.jpg" zdata-index="3" width="100" zdata-group="1" class="z-action-album" title="图片说明">
 				<pre class="z-action-code" zdata-encode="true">
 					<img src="images/1.jpg" width="100" class="z-action-album">
 					$(ele).album()

@@ -225,9 +225,7 @@
 		back: function(){
 			w.history.go(-1)
 		},
-		reload: function(){
-			location.reload()
-		},
+		reload: location.reload,
 		supportCss3: supportCss3,
 		loadImg: loadImg
 	})
@@ -514,13 +512,9 @@
 			var sEle = scrollEle || d
 			lazyimg($(this), sEle)
 		},
-		album: function(opts){
+		album: function(){
 			if(!$(this).length || $(this).tagName() !== 'img')	return
-			var inits = {
-				
-			}
-			var options = $.extend({}, inits, opts)
-			album($(this), options)
+			album($(this))
 		},
 		dropdown: function(type){
 			var _this = $(this)
@@ -562,23 +556,63 @@
 	function album(ele, opts){
 		ele.css('cursor', 'pointer')
 		$('body').on('click', ele.selector, function(){
-			if(!this.src || $(this).zdata('src'))	return
-			var src = $(this).zdata('bigsrc') || this.src
+			var self = this
+			var _this = $(this)
+			if(!this.src || _this.zdata('src'))	return
+			var src = _this.zdata('bigsrc') || this.src
+			var tip = _this.zdata('tip') || this.title
+			var groups = []
+			var group = _this.zdata('group')
+			var index = 0
+			if($.type(group) !== 'undefined'){
+				$(ele.selector + '[zdata-group="'+group+'"]').each(function(){
+					groups.push(this)
+				})
+			}
+			if(groups.length){
+				groups.sort(function(a, b){
+					var aint = $.type($(a).zdata('index')) === 'undefined' ? parseInt($(a).index()) : parseInt($(a).zdata('index'))
+					var bint = $.type($(b).zdata('index')) === 'undefined' ? parseInt($(b).index()) : parseInt($(b).zdata('index'))
+					return aint - bint
+				})
+				$.each(groups, function(k, v){
+					if(v === self)	index = k
+				})
+			}
+			var group = _this.zdata('group')
 			var htmls = [
 				'<div class="z-album">',
 					'<span class="z-close z-action-close" zdata-box=".z-album">&times;</span>',
 					'<div class="z-album-content z-anim-ms3 '+getAnim()+'">',
+						'<div class="z-imgbox"></div>',
+						'<div class="z-tipbox"></div>',
+						function(){
+							return groups.length && !z.isMobile ? '<button class="z-album-btn z-btn z-btn-outlined z-btn-red z-icon z-album-prev">&#xe605;</button><button class="z-album-btn z-btn z-btn-outlined z-btn-red z-icon z-album-next">&#xe61d;</button>' : ''
+						}(),
 					'</div>',
-					loadingHtml,
 				'</div>',
 			]
 			var html = $(htmls.join(''))
+			var loading = $(loadingHtml)
+			var box = html.find('.z-album-content')
+			var imgbox = html.find('.z-imgbox')
+			var tipbox = html.find('.z-tipbox')
 			$.createShade(function(){
-				html.css('zIndex', z.zIndex())
 				$('body').append(html)
+				showImg()
+			}, function(){
+				doClose(html, null, true, box)
+			})
+
+			function showImg(){
+				html.css('zIndex', z.zIndex())
+				html.append(loading)
+				if(index > groups.length - 1)	index = 0
+				if(index < 0)	index = groups.length - 1
+				var image = groups[index]
+				src = image.src
+				tip = $(image).zdata('tip') || image.title
 				loadImg(src, function(img){
-					html.find('.z-anim-rotate').remove()
-					var box = html.find('.z-album-content')
 					var blank = winWidth > 768 ? 100 : 20
 					var imgWidth = img.width
 					var imgHeight = img.height
@@ -586,7 +620,7 @@
 					var wHeight = winHeight - blank
 					var width = imgWidth
 					var height = imgHeight
-					if(imgWidth > imgHeight){
+					if(imgWidth/imgHeight > wWidth/wHeight){
 						width = Math.min(imgWidth, wWidth)
 						height = imgHeight * width / imgWidth
 						$(img).css('maxHeight', '100%')
@@ -596,14 +630,37 @@
 						$(img).css('maxWidth', '100%')
 					}
 					box.width(width).height(height)
-					box.show().html(img).css({
+					box.show().css({
 						'marginLeft': - width / 2 - 2,
 						'marginTop': - height / 2 - 2
 					})
+					loading.remove()
+					imgbox.html(img)
+					if(tip && tip.length)	tipbox.show().html(index + 1 + '/<b>' + groups.length + '</b>&nbsp;&nbsp;' + tip)
+					else tipbox.hide()
 				})
-			}, function(){
-				doClose(html, null, true, html.children('.z-album-content'))
-			})
+			}
+
+			if(z.isMobile){
+				html.swipeleft(function(e){
+					e.stopPropagation()
+					e.preventDefault()
+					--index
+					showImg()
+				})
+				html.swiperight(function(e){
+					e.stopPropagation()
+					e.preventDefault()
+					++index
+					showImg()
+				})
+			}else{
+				html.find('.z-album-btn').on('click', function(){
+					if($(this).hasClass('z-album-next'))	++index
+					else --index
+					showImg()
+				})
+			}
 		})
 	}
 	
@@ -641,7 +698,7 @@
 			            
 			            next[0] && render(next)
 			            index++
-					});
+					})
 				}
 			}
 	    }
@@ -650,17 +707,17 @@
 			var start = sEle.scrollTop(), end = start + height
 
 			if(othis){
-				show(othis, height);
+				show(othis, height)
 			} else {
 				for(var i = 0; i < ele.length; i++){
 					var item = ele.eq(i), elemTop = notDocment ? function(){
 						return item.offset().top - sEle.offset().top + start;
-					}() : item.offset().top;
+					}() : item.offset().top
 
-					show(item, height);
-					index = i;
+					show(item, height)
+					index = i
 
-					if(elemTop > end) break;
+					if(elemTop > end) break
 				}
 			}
 		}
@@ -710,7 +767,7 @@
 				if(scrollHeight - top - height <= opts.mb){
 					lock || done()
 				}
-			}, 100);
+			}, 100)
 	    });
 
     	return ele
@@ -842,7 +899,7 @@
             ev = e.originalEvent.changedTouches[0]
             var offset = 'left' === type ? (sx - ev.clientX) : (ev.clientX - sx)
             if(offset > 50 && Math.abs(sy - ev.clientY) < 50){
-            	if(cb && can)	cb()
+            	if(cb && can)	cb(e)
             	if(timer)	clearTimeout(timer)
             }
         })
@@ -1044,7 +1101,6 @@
 			},delay)
 		}
 	}
-
 
 	function doClose(box, cb, rm, anibox){
 		var anibox = anibox || box
