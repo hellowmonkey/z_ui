@@ -819,8 +819,8 @@
 						<li class="z-cover" style="background-image: url(images/2.jpg)">呵呵</li>
 						<li class="z-cover" style="background-image: url(images/3.jpg)">嘿嘿</li>
 					</ul>
-					<button class="z-slider-btn z-btn z-btn-outlined z-btn-red z-icon z-slider-prev">&#xe605;</button>
-					<button class="z-slider-btn z-btn z-btn-outlined z-btn-red z-icon z-slider-next">&#xe61d;</button>
+					<button class="z-slider-btn z-icon z-slider-prev">&#xe605;</button>
+					<button class="z-slider-btn z-icon z-slider-next">&#xe61d;</button>
 				</div>
 				<pre class="z-action-code" zdata-encode="true"><div class="z-slider z-action-slider">
 					<ul>
@@ -866,7 +866,7 @@
 				<button class="z-btn z-btn-blue" onclick="$.alert('弹框','标题（可选）')">alert</button>
 				<button class="z-btn z-btn-green" onclick="$.confirm('我帅吗？',['不帅','帅'], function(){$.msg('就喜欢你的诚实')})">confirm</button>
 				<button class="z-btn z-btn-red" onclick="$.prompt('输入弹框', function(v){$.msg(v)})">prompt</button>
-				<button class="z-btn z-btn-yellow" onclick="$.open('自定义弹框', ['哈哈', '呵呵', '嘿嘿'], function(i, obj){$.msg(i);return i})">open</button>
+				<button class="z-btn z-btn-yellow" onclick="$.open('自定义弹框', ['哈哈', '呵呵', '嘿嘿'], function(i, obj){$.msg(i);return i<1})">open</button>
 				<pre class="z-action-code">
 					$.alert(content, title)
 					$.confirm(content, title, btns, cb)

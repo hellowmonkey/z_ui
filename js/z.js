@@ -1,5 +1,5 @@
 ;
-(function(w, d, $) {
+(function(w, d, $, undefined) {
 	var root_path = getZsrc()
 	var libs_path = root_path.replace('js/', '') + 'libs/'
 	var isMobile = isMobile()
@@ -58,6 +58,8 @@
 			prompt: '输入框',
 			open: '提示窗体'
 		},
+		btns: ['取消', '确认'],
+		color: ['default', 'blue', 'yellow', 'red', 'dark'],
 		isMobile: isMobile
 	}
 
@@ -78,7 +80,7 @@
 		},
 		resetForm: function(box) {
 			var boxs = []
-			if ($.type(box) === 'undefined') {
+			if (bool(box, true)) {
 				var radios = $('input[type="radio"]')
 				if (radios.length) boxs.push(radios)
 				var checkboxs = $('input[type="checkbox"]')
@@ -95,8 +97,8 @@
 		},
 		submit: function(ele, cb, tip) {
 			var form = ele instanceof $ ? ele : $(ele)
-			var datatip = $.type(form.zdata('tip')) === 'undefined'
-			tip = ($.type(tip) === 'undefined' && datatip) ? '数据提交中...' : (datatip ? tip : form.zdata('tip'))
+			var datatip = bool(form.zdata('tip'), true)
+			tip = (bool(tip, true) && datatip) ? '数据提交中...' : (datatip ? tip : form.zdata('tip'))
 			if (!form || !form.length || !form.attr('action')) return false
 			if ($.fn.ajaxSubmit && z.libs.form.isloaded) {
 				doing()
@@ -141,25 +143,31 @@
 			}
 		},
 		alert: function(content, title) {
-			showMsg('alert', content, title || z.title.alert, ['', '确认'], function(obj, i) {
+			showMsg('alert', content, title, function(obj, i) {
 				doClose(obj)
 			})
 		},
 		open: function(content, title, btns, cb) {
-			if($.type(title) === 'array'){
-				cb = btns
-				btns = title
-				title = ''
-			}
-			showMsg('open', content, title || z.title.open, btns, function(obj, i) {
-				if ((cb && cb(i, obj)) || !cb) doClose(obj)
+			cb = getCb(arguments)
+			showMsg('open', content, title, btns, function(obj, i) {
+				if ((cb && !cb(i, obj)) || !cb) doClose(obj)
 			})
 		},
 		confirm: function(content, title, btns, cb) {
-			pro_firm('confirm', content, title, btns, cb)
+			cb = getCb(arguments)
+			showMsg('confirm', content, title, btns, function(obj, i) {
+				cb && i > 0 && cb(i, obj)
+				doClose(obj)
+			})
 		},
 		prompt: function(title, btns, cb) {
-			pro_firm('prompt', '', title, btns, cb)
+			cb = getCb(arguments)
+			showMsg('prompt', '<input type="text" autofocus class="z-input" placeholder="' + function() {
+				return title || z.title['prompt']
+			}() + '" />', title, btns, function(obj, i) {
+				cb && i > 0 && cb(obj.find('.z-input').val())
+				doClose(obj)
+			})
 		},
 		toast: function(content, color) {
 			showMsg('toast', content, color || 'red')
@@ -184,11 +192,11 @@
 			if ($.type(format) === 'date' || $.type(format) === 'number') {
 				time = format
 				format = defaultFormat
-			} else if ($.type(format) === 'undefined') {
+			} else if (bool(format, true)) {
 				format = defaultFormat
 				time = defaultTime
 			}
-			if ($.type(time) === 'undefined') {
+			if (bool(time, true)) {
 				time = defaultTime
 			} else if ($.type(time) === 'string') {
 				time = parseInt(time)
@@ -244,7 +252,7 @@
 			return this[0].tagName.toLowerCase()
 		},
 		zdata: function(name, val) {
-			if ($.type(val) === 'undefined') {
+			if (bool(val, true)) {
 				return $(this).attr('zdata-' + name)
 			} else {
 				$(this).attr('zdata-' + name, val)
@@ -438,8 +446,8 @@
 		numberBox: function(opts) {
 			if (!$(this).length) return
 			var inits = {
-				prev: '.z-btn.sub',
-				next: '.z-btn.add',
+				prev: '.z-btn.z-sub',
+				next: '.z-btn.z-add',
 				input: 'input',
 				min: 1,
 				max: null,
@@ -563,6 +571,16 @@
 		}
 	})
 
+	function getCb(args) {
+		var cb
+		$.each(args, function(i, v) {
+			if ($.type(v) === 'function') {
+				cb = v
+				return false
+			}
+		})
+		return cb
+	}
 
 	function album(ele, opts) {
 		ele.css('cursor', 'pointer')
@@ -575,15 +593,15 @@
 			var groups = []
 			var group = _this.zdata('group')
 			var index = 0
-			if ($.type(group) !== 'undefined') {
+			if (!bool(group, true)) {
 				$(ele.selector + '[zdata-group="' + group + '"]').each(function() {
 					groups.push(this)
 				})
 			}
 			if (groups.length) {
 				groups.sort(function(a, b) {
-					var aint = $.type($(a).zdata('index')) === 'undefined' ? parseInt($(a).index()) : parseInt($(a).zdata('index'))
-					var bint = $.type($(b).zdata('index')) === 'undefined' ? parseInt($(b).index()) : parseInt($(b).zdata('index'))
+					var aint = bool($(a).zdata('index'), true) ? parseInt($(a).index()) : parseInt($(a).zdata('index'))
+					var bint = bool($(b).zdata('index'), true) ? parseInt($(b).index()) : parseInt($(b).zdata('index'))
 					return aint - bint
 				})
 				$.each(groups, function(k, v) {
@@ -598,7 +616,7 @@
 				'<div class="z-imgbox"></div>',
 				'<div class="z-tipbox"></div>',
 				function() {
-					return groups.length && !z.isMobile ? '<button class="z-album-btn z-btn z-btn-outlined z-btn-red z-icon z-album-prev">&#xe605;</button><button class="z-album-btn z-btn z-btn-outlined z-btn-red z-icon z-album-next">&#xe61d;</button>' : ''
+					return groups.length && !z.isMobile ? '<button class="z-slider-btn z-icon z-slider-prev">&#xe605;</button><button class="z-slider-btn z-icon z-slider-next">&#xe61d;</button>' : ''
 				}(),
 				'</div>',
 				'</div>',
@@ -666,8 +684,8 @@
 					showImg()
 				})
 			} else {
-				html.find('.z-album-btn').on('click', function() {
-					if ($(this).hasClass('z-album-next')) ++index
+				html.find('.z-slider-btn').on('click', function() {
+					if ($(this).hasClass('z-slider-next')) ++index
 					else --index
 					showImg()
 				})
@@ -937,7 +955,7 @@
 				$(this).show()
 				return true
 			}
-			if ($.type($(this).zdata('name')) === 'undefined') {
+			if (bool($(this).zdata('name'), true)) {
 				var html = '<div class="z-unselect z-form-' + type + function() {
 					return isCheck ? " " + zActive : ""
 				}() + '" zdata-id="' + zid + '" zdata-name="' + zname + '"><i class="z-anim z-icon">' + function() {
@@ -969,7 +987,7 @@
 				if (file.substr(-(suffix.length)) !== suffix) {
 					file += suffix
 				}
-				if (file.indexOf('http://') === -1 && file.indexOf('https://') === -1) {
+				if (file.indexOf('http://') === -1 && file.indexOf('https://') === -1 && file.indexOf('file://') === -1) {
 					file = z.root_path + file
 				}
 				if ('js' === type) {
@@ -1013,44 +1031,6 @@
 		return false
 	}
 
-	function pro_firm(type, content, title, btns, cb) {
-		if ($.type(title) === 'array') {
-			cb = btns
-			btns = title
-			title = ''
-		}
-		if ($.type(title) === 'function') {
-			cb = title
-			title = ''
-			btns = []
-		}
-		if ($.type(btns) === 'function') {
-			cb = btns
-			btns = []
-		}
-		if ($.type(btns) === 'string') {
-			btns = ['取消', btns]
-		} else if (!btns || !btns.length) {
-			btns = ['取消', '确认']
-		} else if (btns.length < 2) {
-			btns.unshift('取消')
-		}
-		if ('confirm' === type) {
-			title = title || z.title.confirm
-		} else if ('prompt' === type) {
-			content = '<input type="text" autofocus class="z-input" placeholder="' + title + '" />'
-			title = title || z.title.prompt
-		}
-		btns = btns.slice(0, 2)
-		showMsg(type, content || '', title, btns, function(obj, i) {
-			doClose(obj, function() {
-				if (i > 0) {
-					cb && cb(obj.find('.z-input').val())
-				}
-			})
-		})
-	}
-
 	function getAnim() {
 		return z.anims[Math.floor(Math.random() * (z.anims.length - 1))]
 	}
@@ -1060,13 +1040,23 @@
 		var htmls = []
 		var modal_arr = ['alert', 'confirm', 'prompt', 'open']
 		var delay = 4000
-		if($.type(content) === 'undefined')	content = ''
 		if ($.inArray(type, modal_arr) !== -1) {
+			var def_title = z.title[type]
+			var def_btns = z.btns
 			if ($.type(title) === 'array') {
-				btns = title
-				cb = btns
-				title = ''
+				if ($.type(btns) !== 'array') btns = title
+				title = def_title
+			} else if ($.type(title) === 'function') {
+				if ($.type(cb) !== 'function') cb = title
+				title = def_title
 			}
+			if ($.type(btns) === 'function') {
+				if ($.type(cb) !== 'function') cb = btns
+				btns = def_btns
+			}
+			title = title || def_title
+			if (bool(btns, true)) btns = def_btns
+			if (bool(content, true)) content = ''
 			htmls = [
 				'<div class="z-modal ' + function() {
 					return 'open' === type ? '' : 'z-modal-sm'
@@ -1081,11 +1071,11 @@
 				'</div>',
 				'<div class="z-modal-footer z-text-center">'
 			]
+			if ('alert' === type) btns = ['', btns.slice(-1)]
+			else if ('open' !== type) btns = btns.slice(0, 2)
 			for (var i = 0; i < btns.length; i++) {
 				if (btns[i].length)
-					htmls.push('<button type="button" class="z-btn z-btn-' + function() {
-						return 0 === i ? 'default' : 'primary'
-					}() + '">' + btns[i] + '</button>')
+					htmls.push('<button type="button" class="z-btn z-btn-' + z.color[i] + '">' + btns[i] + '</button>')
 			}
 			htmls.push('</div></div></div>')
 			html = $(htmls.join(''))
@@ -1138,7 +1128,7 @@
 	function doClose(box, cb, rm, anibox) {
 		var anibox = anibox || box
 		var delay = closeTime
-		if ($.type(rm) === 'undefined') rm = true
+		if (bool(rm, true)) rm = true
 		rm = bool(rm)
 		if (rm) anibox.flyOut(delay * 0.7, doing)
 		else box.slideUp(delay, doing)
@@ -1488,13 +1478,15 @@
 		if (opts) options = $.extend({}, inits, opts)
 
 		$.each(options, function(key, val) {
-			if ($.type(ele.zdata(key)) !== 'undefined') options[key] = ele.zdata(key)
+			if (!bool(ele.zdata(key), true)) options[key] = ele.zdata(key)
 		})
 		return options
 	}
 
-	function bool(type) {
-		if ($.type(type) === 'undefined') return false
+	function bool(type, isUnde) {
+		var unde = $.type(type) === 'undefined'
+		if (isUnde) return unde
+		if (unde) return false
 		else if ($.type(type) === 'boolean') return type
 		else if (type == 'false') return false
 		return true
