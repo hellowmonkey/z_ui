@@ -12,6 +12,7 @@
 		cls: '.z-modal',
 	}, {
 		cls: '.z-album',
+		ani: true
 	}]
 
 	var winWidth = $(w).innerWidth()
