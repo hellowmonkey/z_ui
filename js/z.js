@@ -3,20 +3,15 @@
 	var root_path = getZsrc()
 	var libs_path = root_path.replace('js/', '') + 'libs/'
 	var isMobile = isMobile()
-	var zIndex = 99
-	var loadingHtml = '<span class="z-anim-rotate z-icon">&#xe623;</span>'
 	var menuCode = '&#xe76d;'
 	var dateNow = new Date()
-	var zActive = 'z-active'
 	var zShade = null
 	var zBoxs = [{
 		cls: '.z-alert'
 	}, {
 		cls: '.z-modal',
-		ani: 'content'
 	}, {
 		cls: '.z-album',
-		ani: 'content'
 	}]
 
 	var winWidth = $(w).innerWidth()
@@ -31,8 +26,9 @@
 		version: '1.0.0',
 		root_path: root_path,
 		libs_path: libs_path,
+		index: 99,
 		zIndex: function() {
-			return ++zIndex
+			return ++this.index
 		},
 		anims: ['z-anim-upbit', 'z-anim-scale', 'z-anim-scaleSpring', 'z-anim-up'],
 		libs: {
@@ -59,9 +55,19 @@
 			open: '提示窗体'
 		},
 		btns: ['取消', '确认'],
-		color: ['default', 'blue', 'yellow', 'red', 'dark'],
-		isMobile: isMobile
+		color: ['default', 'blue', 'yellow', 'red', 'dark', 'green'],
+		isMobile: isMobile,
+		transTime: transTime,
+		closeTime: closeTime,
+		active: 'z-active',
+		dt: dateNow,
+		loadingHtml: '<span class="z-anim-rotate z-icon">&#xe624;</span>',
+		sliderBtn: '<button class="z-slider-btn z-icon z-slider-prev">&#xe605;</button><button class="z-slider-btn z-icon z-slider-next">&#xe61d;</button>',
 	}
+
+	var sliderLeftCls = function(){
+		return $(z.sliderBtn)[0].className
+	}()
 
 	$.extend({
 		createShade: function(createCb, closeCb, opacity) {
@@ -70,7 +76,7 @@
 					return opacity ? 'opacity:' + opacity : ''
 				}() + '"></div>')
 				$('body').addClass('overflow').append(zShade)
-				zShade.fadeIn(transTime, createCb)
+				zShade.fadeIn(z.transTime, createCb)
 			} else {
 				createCb()
 			}
@@ -170,10 +176,10 @@
 			})
 		},
 		toast: function(content, color) {
-			showMsg('toast', content, color || 'red')
+			showMsg('toast', content, color || z.color[3])
 		},
 		success: function(content) {
-			showMsg('success', content, 'green')
+			showMsg('success', content, z.color[5])
 		},
 		msg: function(content) {
 			showMsg('msg', content)
@@ -277,13 +283,12 @@
 			if ('hide' === type && _this.is(':hidden')) return
 			if (_this.is(':hidden')) {
 				$.createShade(function() {
-					_this.css('zIndex', z.zIndex()).show().addClass('z-anim-downbit z-anim-ms3')
+					_this.css('zIndex', z.zIndex()).show().css({'left': '50%', 'marginLeft': -_this.innerWidth()/2}).addClass('z-anim-downbit z-anim-ms3')
 				}, function() {
-					doClose(_this)
+					doClose(_this, null, false)
 				})
 			} else {
-				doClose(_this)
-				return _this
+				doClose(_this, null, false)
 			}
 		},
 		tips: function(opts) {
@@ -315,8 +320,6 @@
 				complete: null,
 				keys: true,
 				dots: true,
-				prev: '.z-slider-prev',
-				next: '.z-slider-next',
 				items: 'ul',
 				item: 'li'
 			}
@@ -378,7 +381,7 @@
 			if (!$(this).length) return
 			var inits = {
 				top: 100,
-				time: transTime
+				time: z.transTime
 			}
 			var rollBtn = $(this)
 			var options = getOpts(rollBtn, inits, opts)
@@ -423,7 +426,6 @@
 				othis.addClass('z-code-view')
 				if (options.skin) othis.addClass('z-code-' + options.skin)
 
-				//按行数适配左边距
 				if ((ol.find('li').length / 100 | 0) > 0) {
 					ol.css('margin-left', (ol.find('li').length / 100 | 0) + 'px')
 				}
@@ -470,11 +472,10 @@
 			var inits = {
 				item: '.z-nav-item',
 				logo: 'z-logo',
-				style: null, // {}
+				navCls: 'z-nav-blue',
+				menuCls: '',
 				child: '.z-dropdown-menu',
-				toggle: true,
-				class: '',
-				menu: '<span class="z-icon z-pull-right" style="line-height:1em;color:#fff;padding: 13px;font-size: 24px;">' + menuCode + '</span>'
+				toggle: true
 			}
 			var options = getOpts(nav, inits, opts)
 			mobileNav(nav, options)
@@ -491,7 +492,7 @@
 			var s_alpha = alpha / speed
 			var s_left = (Math.min(wid, 200)) / speed
 			var s_skew = 10 / speed
-			t = t || transTime
+			t = t || z.transTime
 			var timer = setInterval(function() {
 				st = st + interval
 				alpha -= s_alpha
@@ -518,7 +519,7 @@
 				isAuto: true,
 				endTxt: '没有更多了',
 				eleTxt: '加载更多',
-				loadingTxt: loadingHtml + '  加载中...',
+				loadingTxt: z.loadingHtml + '  加载中...',
 				isLazyimg: false,
 				mb: 50,
 				done: done
@@ -526,10 +527,14 @@
 			var options = getOpts($(this), inits, opts)
 			flow($(this), options)
 		},
-		lazyimg: function(scrollEle) {
+		lazyimg: function(scrollEle, cb) {
 			if (!$(this).length || $(this).tagName() !== 'img') return
+			if($.type(scrollEle) === 'function'){
+				cb = scrollEle
+				scrollEle = d
+			}
 			var sEle = scrollEle || d
-			lazyimg($(this), sEle)
+			lazyimg($(this), sEle, cb)
 		},
 		album: function() {
 			if (!$(this).length || $(this).tagName() !== 'img') return
@@ -540,32 +545,35 @@
 			if (!_this.length) return false
 			var isTree = false
 			var selector = _this.selector
+			var cls = '.z-nav-tree'
 			type = type || 'click'
 			if (type == 'hover') {
 				$('body').on('mouseenter', selector, function() {
 					var _this = $(this)
-					isTree = _this.parents('.z-nav-tree').length
-					if ((isTree && bool(_this.parent().zdata('toggle'))) || !isTree) _this.siblings(selector).removeClass(zActive)
-					_this.addClass(zActive)
+					isTree = _this.parents(cls).length
+					if ((isTree && bool(_this.parent().zdata('toggle'))) || !isTree) _this.siblings(selector).removeClass(z.active)
+					_this.addClass(z.active)
 				})
 				$('body').on('mouseleave', selector, function() {
-					$(this).removeClass(zActive)
+					$(this).removeClass(z.active)
 				})
 			} else if (type == 'click') {
 				$('body').on('click', selector, function(e) {
 					var _this = $(this)
 					var ev = e || event
 					ev.stopPropagation()
-					isTree = _this.parents('.z-nav-tree').length
+					isTree = _this.parents(cls).length
 					if (isTree) ev.preventDefault()
-					if (_this.hasClass(zActive)) _this.removeClass(zActive)
+					if (_this.hasClass(z.active)) _this.removeClass(z.active)
 					else {
-						if ((isTree && bool(_this.parent().zdata('toggle'))) || !isTree) _this.siblings(selector).removeClass(zActive)
-						_this.addClass(zActive)
+						if ((isTree && bool(_this.parent().zdata('toggle'))) || !isTree) _this.siblings(selector).removeClass(z.active)
+						_this.addClass(z.active)
 					}
 				})
 				$(d).on('click', function() {
-					if (!isTree) _this.removeClass(zActive)
+					_this.each(function(){
+						if(!$(this).parents(cls).length)	$(this).removeClass(z.active)
+					})
 				})
 			}
 		}
@@ -609,23 +617,22 @@
 				})
 			}
 			var group = _this.zdata('group')
+			var sliderBtn = groups.length && !z.isMobile ? $(z.sliderBtn) : ''
 			var htmls = [
 				'<div class="z-album">',
 				'<span class="z-close z-action-close" zdata-box=".z-album">&times;</span>',
 				'<div class="z-album-content z-anim-ms3 ' + getAnim() + '">',
 				'<div class="z-imgbox"></div>',
 				'<div class="z-tipbox"></div>',
-				function() {
-					return groups.length && !z.isMobile ? '<button class="z-slider-btn z-icon z-slider-prev">&#xe605;</button><button class="z-slider-btn z-icon z-slider-next">&#xe61d;</button>' : ''
-				}(),
 				'</div>',
 				'</div>',
 			]
 			var html = $(htmls.join(''))
-			var loading = $(loadingHtml)
+			var loading = $(z.loadingHtml)
 			var box = html.find('.z-album-content')
 			var imgbox = html.find('.z-imgbox')
 			var tipbox = html.find('.z-tipbox')
+			box.append(sliderBtn)
 			$.createShade(function() {
 				$('body').append(html)
 				showImg()
@@ -674,7 +681,7 @@
 				html.swipeleft(function(e) {
 					e.stopPropagation()
 					e.preventDefault()
-						--index
+					--index
 					showImg()
 				})
 				html.swiperight(function(e) {
@@ -684,16 +691,16 @@
 					showImg()
 				})
 			} else {
-				html.find('.z-slider-btn').on('click', function() {
-					if ($(this).hasClass('z-slider-next')) ++index
-					else --index
+				sliderBtn.on('click', function() {
+					if ($(this).hasClass(sliderLeftCls)) --index
+					else ++index
 					showImg()
 				})
 			}
 		})
 	}
 
-	function lazyimg(ele, sEle) {
+	function lazyimg(ele, sEle, cb) {
 		var index = 0,
 			haveScroll;
 		var notDocment = sEle && sEle !== d
@@ -726,7 +733,7 @@
 					loadImg(src, function() {
 						var next = ele.eq(index)
 						item.attr('src', src).removeAttr('zdata-src')
-
+						cb && cb(item)
 						next[0] && render(next)
 						index++
 					})
@@ -866,9 +873,10 @@
 	function mobileNav(nav, opts) {
 		var can = true
 		var items = nav.find(opts.item)
-		var fixNav = $('<ul class="z-nav z-nav-tree z-nav-mobile ' + opts.class + '"></ul>')
+		var fixNav = $('<ul class="z-nav z-nav-tree z-nav-mobile"></ul>')
 		var logo = ''
-		var menu = $(opts.menu)
+		var menu = $('<ul class="z-menu"><li></li><li></li><li></li></ul>')
+		var child = opts.child.substr(1)
 		items.each(function() {
 			if ($(this).hasClass(opts.logo.replace(',', ''))) logo = $(this)
 			fixNav.append($(this).addClass('z-nav-item'))
@@ -876,10 +884,11 @@
 		nav.html(logo).append(menu).addClass('z-nav-fixed-top').removeClass('z-action-mobilenav')
 
 		fixNav.find(opts.child).each(function() {
-			$(this).removeClass(opts.child.substr(1)).addClass('z-nav-child').parent().removeClass('z-dropdown')
+			$(this).removeClass(child).addClass('z-nav-child').parent().removeClass('z-dropdown')
 		})
-		if (opts.style) fixNav.css(style)
-		if (opts.toggle) fixNav.addClass('z-nav-toggle')
+		opts.navCls && fixNav.addClass(opts.navCls)
+		opts.toggle && fixNav.zdata('toggle', opts.toggle)
+		opts.menuCls && menu.addClass(opts.menuCls)
 		nav.after(fixNav)
 		menu.on('click', function() {
 			if (!can) return false
@@ -889,8 +898,8 @@
 				$.createShade(function() {
 					fixNav.css('zIndex', z.zIndex()).show().animate({
 						'left': 0
-					}, transTime)
-					_this.html('&times')
+					}, z.transTime)
+					_this.addClass(z.active)
 					can = true
 				}, function() {
 					menu.click()
@@ -899,15 +908,16 @@
 			} else {
 				fixNav.animate({
 					'left': '-200px'
-				}, transTime, function() {
+				}, z.transTime, function() {
 					fixNav.hide()
-					_this.html(menuCode)
+					_this.removeClass(z.active)
 					closeShade(function() {
 						can = true
 					})
 				})
 			}
 		})
+		if(!z.isMobile)	return
 		$(d).swiperight(function() {
 			if (!fixNav.is(':hidden')) return false
 			menu.click()
@@ -932,7 +942,7 @@
 			can = true
 			timer = setTimeout(function() {
 				can = false
-			}, transTime)
+			}, z.transTime)
 		})
 		ele.on('touchend', function(e) {
 			e.stopPropagation()
@@ -957,7 +967,7 @@
 			}
 			if (bool($(this).zdata('name'), true)) {
 				var html = '<div class="z-unselect z-form-' + type + function() {
-					return isCheck ? " " + zActive : ""
+					return isCheck ? " " + z.active : ""
 				}() + '" zdata-id="' + zid + '" zdata-name="' + zname + '"><i class="z-anim z-icon">' + function() {
 					return type == 'radio' ? "&#xe998;" : "&#xe615;"
 				}() + '</i><span>' + this.title + '</span></div>'
@@ -1058,10 +1068,9 @@
 			if (bool(btns, true)) btns = def_btns
 			if (bool(content, true)) content = ''
 			htmls = [
-				'<div class="z-modal ' + function() {
+				'<div class="z-modal z-move ' + function() {
 					return 'open' === type ? '' : 'z-modal-sm'
 				}() + ' z-anim-ms3 ' + getAnim() + '">',
-				'<div class="z-modal-content z-move">',
 				'<div class="z-modal-header z-move-title z-action-move">',
 				'<button type="button" class="z-close z-action-close">&times;</button>',
 				'<h4 class="z-modal-title">' + title + '</h4>',
@@ -1077,17 +1086,16 @@
 				if (btns[i].length)
 					htmls.push('<button type="button" class="z-btn z-btn-' + z.color[i] + '">' + btns[i] + '</button>')
 			}
-			htmls.push('</div></div></div>')
+			htmls.push('</div></div>')
 			html = $(htmls.join(''))
 			$.createShade(function() {
 				$('body').append(html)
 				html.css('zIndex', z.zIndex()).show()
-				var box = html.find('.z-modal-content')
-				var win = box.innerWidth()
-				var hig = box.innerHeight()
+				var win = html.innerWidth()
+				var hig = html.innerHeight()
 				var ww = winWidth
 				var wh = winHeight
-				box.css({
+				html.css({
 					'margin': 0,
 					'top': (wh - hig) / 3 > 0 ? (wh - hig) / 3 : 0,
 					'left': (ww - win) / 2 > 0 ? (ww - win) / 2 : 0
@@ -1105,7 +1113,7 @@
 				marginLeft: -html.innerWidth() / 2
 			})
 			setTimeout(function() {
-				html.hide(closeTime, function() {
+				html.hide(z.closeTime, function() {
 					html.remove()
 				})
 			}, delay)
@@ -1127,7 +1135,7 @@
 
 	function doClose(box, cb, rm, anibox) {
 		var anibox = anibox || box
-		var delay = closeTime
+		var delay = z.closeTime
 		if (bool(rm, true)) rm = true
 		rm = bool(rm)
 		if (rm) anibox.flyOut(delay * 0.7, doing)
@@ -1144,7 +1152,7 @@
 		if (type === 'loading') {
 			if (ele.hasClass('z-disabled')) return false
 			var txt = ele.zdata('loading-text') || 'loading'
-			txt = loadingHtml + '  ' + txt
+			txt = z.loadingHtml + '  ' + txt
 			ele.attr('disabled', 'true').addClass('z-disabled').attr('zdata-old-text', ele.text()).html(txt)
 		} else if (type === 'reset') {
 			if (!ele.hasClass('z-disabled')) return false
@@ -1247,12 +1255,12 @@
 			isDown = true
 			var ev = e || event
 			var box = $(this).parents(opts.box)
-			var pos = box.position()
+			var pos = box.offset()
 			var mpos = mousePosition(ev)
 			wid = box.innerWidth()
 			hig = box.innerHeight()
-			mtop = mpos.top - pos.top
-			mleft = mpos.left - pos.left
+			mtop = mpos.top - (pos.top - $(d).scrollTop())
+			mleft = mpos.left - (pos.left - $(d).scrollLeft())
 		})
 
 		$('body').on('mouseup', ele, function() {
@@ -1272,8 +1280,6 @@
 		var width = ele.innerWidth()
 		var item = ele.find(opts.item)
 		var items = ele.find(opts.items)
-		var prev = ele.find(opts.prev)
-		var next = ele.find(opts.next)
 		var leg = item.length
 		var timer = null
 		var canMove = true
@@ -1282,12 +1288,13 @@
 		var box = null
 		var mar = -width
 		var mtype = 'marginLeft'
+		var sliderBtn = leg > 1 && !z.isMobile ? $(z.sliderBtn) : ''
 
 		if (bool(opts.dots)) {
 			ele.append('<div class="z-dots">' + function() {
 				var li = ''
 				for (var i = 0; i < leg; i++) {
-					if (0 === i) li += '<a href="javascript:;" class="' + zActive + '"></a>'
+					if (0 === i) li += '<a href="javascript:;" class="' + z.active + '"></a>'
 					else li += '<a href="javascript:;"></a>'
 				}
 				return li
@@ -1302,7 +1309,7 @@
 			}
 		}
 
-		ele.width(width)
+		ele.width(width).append(sliderBtn)
 
 		if (leg > 1) {
 			var f = item.eq(0).clone()
@@ -1316,7 +1323,7 @@
 			box.css(mtype, mar)
 		} else return
 
-			item.width(width)
+		item.width(width)
 		items.height(item.innerHeight()).width(leg * width)
 
 		timer = setInterval(movement, opts.delay)
@@ -1326,8 +1333,6 @@
 			var sx = 0
 			var direction = 'left'
 			var move = 0
-			prev.remove()
-			next.remove()
 			ele.on('touchmove', function(e) {
 				e.stopPropagation()
 				e.preventDefault()
@@ -1359,14 +1364,11 @@
 			ele.on('mouseleave', function() {
 				timer = setInterval(movement, opts.delay)
 			})
-
-			prev.on('click', function() {
+			sliderBtn.on('click', function() {
 				clearInterval(timer)
-				if (canMove) movement('left')
-			})
-			next.on('click', function() {
-				clearInterval(timer)
-				if (canMove) movement('right')
+				if (!canMove)	return
+				if ($(this).hasClass(sliderLeftCls)) movement('left')
+				else movement('right')
 			})
 		}
 
@@ -1393,7 +1395,7 @@
 				'marginLeft': mar
 			}, opts.speed, function() {
 				index = parseInt((Math.abs(mar) - width) / width)
-				if (dots) dots.removeClass(zActive).eq(index).addClass(zActive)
+				if (dots) dots.removeClass(z.active).eq(index).addClass(z.active)
 				if (opts.complete) opts.complete(item.eq(index + 1))
 				canMove = true
 			})
@@ -1462,7 +1464,7 @@
 						var item = queue[i]
 						item.addClass(item.zdata('aniName')).addClass('z-anim-ms' + parseInt(item.zdata('aniTime')) / 100).removeAttr('zdata-top').removeAttr('zdata-aniName').removeAttr('zdata-aniTime').animate({
 								'opacity': 1
-							}, transTime)
+							}, z.transTime)
 							++i
 					}, 100)
 				}
@@ -1500,9 +1502,9 @@
 		if (!zShade) return false
 		if ($.type(time) === 'function') {
 			cb = time
-			time = transTime
+			time = z.transTime
 		}
-		time = time || transTime
+		time = time || z.transTime
 		zShade.fadeOut(time, function() {
 			zShade.remove()
 			$('body').removeClass('overflow')
@@ -1557,11 +1559,11 @@
 
 		// 单选框
 		$('body').on('click', '.z-form-radio', function() {
-			if ($(this).hasClass(zActive)) return
+			if ($(this).hasClass(z.active)) return
 			var zid = $(this).zdata('id')
 			var zname = $(this).zdata('name')
-			$('.z-form-radio[zdata-name="' + zname + '"]').removeClass(zActive)
-			$(this).addClass(zActive)
+			$('.z-form-radio[zdata-name="' + zname + '"]').removeClass(z.active)
+			$(this).addClass(z.active)
 			$('input[type="radio"][name="' + zname + '"]').each(function() {
 				this.checked = $(this).zdata('id') === zid
 			})
@@ -1570,8 +1572,8 @@
 		// 复选框
 		$('body').on('click', '.z-form-checkbox', function() {
 			var zid = $(this).zdata('id')
-			$(this).toggleClass(zActive)
-			$('input[type="checkbox"][zdata-id="' + zid + '"]').attr('checked', $(this).hasClass(zActive))
+			$(this).toggleClass(z.active)
+			$('input[type="checkbox"][zdata-id="' + zid + '"]').attr('checked', $(this).hasClass(z.active))
 		})
 
 		// modal
@@ -1616,9 +1618,9 @@
 			var lis = _this.parent().find('li')
 			var items = _this.parents('.z-tab').find('.z-tab-content .z-tab-item')
 			var index = _this.index()
-			if (_this.hasClass(zActive)) return
-			lis.removeClass(zActive)
-			_this.addClass(zActive)
+			if (_this.hasClass(z.active)) return
+			lis.removeClass(z.active)
+			_this.addClass(z.active)
 			items.removeClass('z-show').eq(index).addClass('z-show')
 		})
 
