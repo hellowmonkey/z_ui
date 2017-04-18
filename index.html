@@ -15,7 +15,7 @@
 			<ul class="z-nav-ul z-pull-right">
 				<li class="z-nav-item"><a href="#jianjie">简介</a></li>
 				<li class="z-nav-item z-dropdown z-action-dropdown"><a href="javascript:;">css共有样式 <span class="z-caret"></span></a>
-					<ul class="z-dropdown-menu">
+					<ul class="z-dropdown-menu z-anim-ms3 z-anim-upbit">
 						<li><a href="#zttb">字体图标 <code>z-icon</code></a></li>
 						<li><a href="#jc">基础样式</a></li>
 						<li><a href="#an">按钮 <code>z-btn</code></a></li>
@@ -24,7 +24,7 @@
 					</ul>
 				</li>
 				<li class="z-nav-item z-dropdown z-action-dropdown"><a href="javascript:;">css组件 <span class="z-caret"></span></a>
-					<ul class="z-dropdown-menu">
+					<ul class="z-dropdown-menu z-anim-ms3 z-anim-upbit">
 						<li><a href="#anniuzu">按钮组 <code>z-btn-group</code></a></li>
 						<li><a href="#xialadaohang">下拉导航 <code>z-dropdown</code></a></li>
 						<li><a href="#shurukuang">输入框组 <code>z-input-group</code></a></li>
@@ -41,7 +41,7 @@
 					</ul>
 				</li>
 				<li class="z-nav-item z-dropdown z-action-dropdown"><a href="javascript:;">js组件 <span class="z-caret"></span></a>
-					<ul class="z-dropdown-menu z-dropdown-menu-right">
+					<ul class="z-dropdown-menu z-dropdown-menu-right z-anim-ms3 z-anim-upbit">
 						<li><a href="#include">动态加载js、css <code>$.loadJs</code><code>$.loadCss</code></a></li>
 						<li><a href="#resetform">重置radio和checkbox <code>$.resetform</code></a></li>
 						<li><a href="#alert">弹框 <code>$.alert</code><code>$.open</code><code>$.confirm</code><code>$.prompt</code><code>$.toast</code><code>$.success</code><code>$.msg</code></a></li>
@@ -72,7 +72,7 @@
 			</ul>
 		</div>
 	</div>
-	<div class="z-content">
+	<div class="z-content" id="content">
 		<fieldset class="z-elem-field z-action-anibox" id="jianjie">
 			<legend>简介</legend>
 			<div class="z-field-box">
@@ -601,7 +601,13 @@
 						<ul class="z-dropdown-menu">
 							<li><a href="#">列表</a></li>
 							<li><a href="#">列表</a></li>
-							<li><a href="#">列表</a></li>
+							<li class="z-dropdown z-action-dropdown-hover"><a href="#">列表</a>
+								<ul class="z-dropdown-menu z-dropdown-menu-right">
+									<li><a href="#">列表</a></li>
+									<li><a href="#">列表</a></li>
+									<li><a href="#">列表</a></li>
+								</ul>
+							</li>
 						</ul>
 						</button>
 						<button class="z-btn">提交</button>
@@ -1065,9 +1071,9 @@
 					}, done)
 				</pre>
 				<div class="z-quote z-quote-red" id="lazyimg">图片懒加载</div>
-				<img src="" zdata-src="images/1.jpg" height="100" alt="" class="z-action-lazyimg">
-				<img src="" zdata-src="images/2.jpg" height="100" alt="" class="z-action-lazyimg">
-				<img src="" zdata-src="images/3.jpg" height="100" alt="" class="z-action-lazyimg">
+				<img src="" zdata-src="images/1.jpg" height="100" alt=""">
+				<img src="" zdata-src="images/2.jpg" height="100" alt=""">
+				<img src="" zdata-src="images/3.jpg" height="100" alt=""">
 				<div class="z-box mb10">快速调用方法：在<code>img</code>标签上添加class<code>z-action-lazyimg</code>，<code>src</code>指定占位图片或不写。通过<code>zdata-src="string"</code>来指定需要动态加载的图片地址。当然也可以只用js配置。</div>
 				<pre class="z-action-code">
 					$(img).lazyimg(scrollElem) //默认为document

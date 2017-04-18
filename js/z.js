@@ -3,7 +3,6 @@
 	var root_path = getZsrc()
 	var libs_path = root_path.replace('js/', '') + 'libs/'
 	var isMobile = isMobile()
-	var menuCode = '&#xe76d;'
 	var dateNow = new Date()
 	var zShade = null
 	var zBoxs = [{
@@ -793,8 +792,8 @@
 			if (isOver) return;
 			lock || done()
 		})
-		if (opts.isLazyimg) {
-			ele.lazyimg()
+		if (bool(opts.isLazyimg)) {
+			lazyimg = ele.find('img').lazyimg(opts.scrollElem, $.type(opts.isLazyimg) === 'function' ? opts.isLazyimg : null)
 		}
 		if (!opts.isAuto) return ele
 		$(opts.scrollElem).on('scroll', function() {
@@ -1554,6 +1553,7 @@
 
 		// 下拉导航 & 树形导航
 		$('.z-action-dropdown').dropdown()
+		$('.z-action-dropdown-hover').dropdown('hover')
 
 		// 替换单选框和复选框
 		$.resetForm()

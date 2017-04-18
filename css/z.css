@@ -1434,11 +1434,7 @@ input[type="search"] {
 	position: relative;
 	z-index: 11!important;
 }
-.z-dropdown.z-active .z-dropdown-menu{
-	animation: z-upbit ease-in-out .2s;
-	-webkit-animation: z-upbit ease-in-out .2s;
-	-moz-animation: z-upbit ease-in-out .2s;
-}
+
 .z-dropdown-menu,.dropdown-menu {
 	position: absolute;
 	top: 100%;
@@ -1462,7 +1458,80 @@ input[type="search"] {
 	box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
 }
 
-.z-dropdown-menu li.z-divider {
+.z-dropdown-menu::before, .z-dropdown-menu::after {
+    position: absolute;
+    display: inline-block;
+    content: "";
+    right: auto;
+    bottom: auto;
+}
+.z-dropdown-menu::before {
+    border: 8px solid transparent;
+    border-bottom-color: rgba(0, 0, 0, .15);
+    top: -16px;
+    left: 25px;
+}
+.z-dropdown-menu::after {
+	border: 7px solid transparent; 
+	border-bottom-color: #fff; 
+    top: -14px;
+    left: 26px;
+}
+
+.z-dropdown-menu-right.z-dropdown-menu::before, .z-dropdown-menu-right.z-dropdown-menu::after{
+	left: auto;
+}
+.z-dropdown-menu-right.z-dropdown-menu::before{
+    right: 25px;
+}
+.z-dropdown-menu-right.z-dropdown-menu::after{
+    right: 26px;
+} 
+
+.z-dropdown-menu .z-dropdown-menu{
+	right: -100%;
+	left: auto;
+    top: -10px;
+    margin: 0 0 0 2px;
+} 
+.z-dropdown-menu .z-dropdown-menu.z-dropdown-menu::before, .z-dropdown-menu .z-dropdown-menu.z-dropdown-menu::after{
+	-webkit-transform: rotate(-90deg);
+	-ms-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	transform: rotate(-90deg);
+}
+.z-dropdown-menu .z-dropdown-menu.z-dropdown-menu::before{
+	top: 11px;
+	left: -16px;
+}
+.z-dropdown-menu .z-dropdown-menu.z-dropdown-menu::after{
+	top: 12px;
+	left: -14px;
+} 
+.z-dropdown-menu .z-dropdown-menu-right{
+	right: auto;
+	left: -100%;
+    top: -10px;
+    margin: 0 0 0 2px;
+}
+.z-dropdown-menu .z-dropdown-menu-right.z-dropdown-menu::before, .z-dropdown-menu .z-dropdown-menu-right.z-dropdown-menu::after{
+	-webkit-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	transform: rotate(90deg);
+}
+.z-dropdown-menu .z-dropdown-menu-right.z-dropdown-menu::before{
+	top: 11px;
+	right: -16px;
+	left: auto;
+}
+.z-dropdown-menu .z-dropdown-menu-right.z-dropdown-menu::after{
+	top: 12px;
+	right: -14px;
+	left: auto;
+}
+
+.z-dropdown-menu>li.z-divider {
 	border-bottom: 1px solid #e5e5e5;
 	margin-bottom: 9px;
 	padding-bottom: 9px;
@@ -1475,18 +1544,14 @@ input[type="search"] {
 	font-weight: normal;
 	line-height: 1.42857143;
 	white-space: nowrap;
+	color: #333;
 }
 
 .z-dropdown-menu>li>a:hover,
-.z-dropdown-menu>li>a:focus {
-	color: #262626;
-	text-decoration: none;
-	background-color: #f5f5f5;
-}
-
-.z-dropdown-menu>.z-active>a,
-.z-dropdown-menu>.z-active>a:hover,
-.z-dropdown-menu>.z-active>a:focus {
+.z-dropdown-menu>li>a:focus,
+.z-dropdown-menu>li.z-active>a,
+.z-dropdown-menu>li.z-active>a:hover,
+.z-dropdown-menu>li.z-active>a:focus {
 	color: #fff;
 	text-decoration: none;
 	background-color: #337ab7;
@@ -1682,7 +1747,8 @@ input[type="search"] {
 	border-bottom: 0;
 	color: #fff;
 }
-.z-nav.z-nav-primary .z-nav-item a,.z-nav.z-nav-blue .z-nav-item a,.z-nav.z-nav-warning .z-nav-item a,.z-nav.z-nav-yellow .z-nav-item a,.z-nav.z-nav-darnger .z-nav-item a,.z-nav.z-nav-red .z-nav-item a,.z-nav.z-nav-success .z-nav-item a,.z-nav.z-nav-green .z-nav-item a,.z-nav.z-nav-dark .z-nav-item a{
+.z-nav.z-nav-primary .z-nav-item > a,.z-nav.z-nav-blue .z-nav-item > a,.z-nav.z-nav-warning .z-nav-item > a,.z-nav.z-nav-yellow .z-nav-item > a,.z-nav.z-nav-darnger .z-nav-item > a,.z-nav.z-nav-red .z-nav-item > a,.z-nav.z-nav-success .z-nav-item > a,.z-nav.z-nav-green .z-nav-item > a,.z-nav.z-nav-dark .z-nav-item > a,
+.z-nav.z-nav-primary .z-nav-child a,.z-nav.z-nav-blue .z-nav-child a,.z-nav.z-nav-warning .z-nav-child a,.z-nav.z-nav-yellow .z-nav-child a,.z-nav.z-nav-darnger .z-nav-child a,.z-nav.z-nav-red .z-nav-child a,.z-nav.z-nav-success .z-nav-child a,.z-nav.z-nav-green .z-nav-child a,.z-nav.z-nav-dark .z-nav-child a{
 	color: #fff;
 }
 .z-nav.z-nav-primary,.z-nav.z-nav-blue{
@@ -1699,9 +1765,6 @@ input[type="search"] {
 }
 .z-nav.z-nav-dark{
 	background-color: #393D49;
-}
-.z-nav .z-nav-item .z-dropdown-menu>li>a{
-	color: #333;
 }
 .z-nav.z-nav-fixed-top,.z-nav.z-nav-fixed-bottom{
 	position: fixed;
