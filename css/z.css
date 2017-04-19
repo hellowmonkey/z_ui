@@ -451,6 +451,7 @@ input[type="button"]:disabled {
 	.z-row .z-col-lg-12{
 		padding-left: 10px;
 		padding-right: 10px;
+		float: left;
 	}
 
 	.z-col-lg-12 {
@@ -498,35 +499,6 @@ input[type="button"]:disabled {
 	clear: both;
 }
 
-.z-col-lg-1,
-.z-col-sm-1,
-.z-col-lg-2,
-.z-col-sm-2,
-.z-col-lg-3,
-.z-col-sm-3,
-.z-col-lg-4,
-.z-col-sm-4,
-.z-col-lg-5,
-.z-col-sm-5,
-.z-col-lg-6,
-.z-col-sm-6,
-.z-col-lg-7,
-.z-col-sm-7,
-.z-col-lg-8,
-.z-col-sm-8,
-.z-col-lg-9,
-.z-col-sm-9,
-.z-col-lg-10,
-.z-col-sm-10,
-.z-col-lg-11,
-.z-col-sm-11,
-.z-col-lg-12,
-.z-col-sm-12 {
-	position: relative;
-	min-height: 1px;
-	float: left;
-}
-
 @media (max-width: 768px) {
 	.z-row {
 		margin-right: -5px;
@@ -547,6 +519,7 @@ input[type="button"]:disabled {
 	.z-row .z-col-sm-12{
 		padding-left: 5px;
 		padding-right: 5px;
+		float: left;
 	}
 
 	.z-col-sm-12 {
@@ -1490,8 +1463,8 @@ input[type="search"] {
 } 
 
 .z-dropdown-menu .z-dropdown-menu{
-	right: -100%;
-	left: auto;
+	left: 100%;
+	right: auto;
     top: -10px;
     margin: 0 0 0 2px;
 } 
@@ -1510,8 +1483,8 @@ input[type="search"] {
 	left: -14px;
 } 
 .z-dropdown-menu .z-dropdown-menu-right{
-	right: auto;
-	left: -100%;
+	left: auto;
+    right: 100%;
     top: -10px;
     margin: 0 0 0 2px;
 }
