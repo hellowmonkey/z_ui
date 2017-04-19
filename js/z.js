@@ -265,22 +265,24 @@
 			}
 		},
 		button: function(type) {
-			if (!$(this).length) return
+			var _this = $(this)
+			if (!_this.length) return _this
 			var t = null
-			if ($(this).hasClass('z-disabled')) {
+			if (_this.hasClass('z-disabled')) {
 				t = 'reset'
 			} else {
 				t = 'loading'
 			}
 			type = type || t
-			button($(this), type)
+			button(_this, type)
+			return _this
 		},
 		modal: function(type) {
-			if (!$(this).length) return
 			var _this = $(this)
-			if (!_this.hasClass('z-modal')) return
-			if ('show' === type && _this.is(':visited')) return
-			if ('hide' === type && _this.is(':hidden')) return
+			if (!_this.length) return _this
+			if (!_this.hasClass('z-modal')) return _this
+			if ('show' === type && _this.is(':visited')) return _this
+			if ('hide' === type && _this.is(':hidden')) return _this
 			if (_this.is(':hidden')) {
 				$.createShade(function() {
 					_this.css('zIndex', z.zIndex()).show().css({'left': '50%', 'marginLeft': -_this.innerWidth()/2}).addClass('z-anim-downbit z-anim-ms3')
@@ -290,18 +292,22 @@
 			} else {
 				doClose(_this, null, false)
 			}
+			return _this
 		},
 		tips: function(opts) {
-			if (!$(this).length) return
+			var _this = $(this)
+			if (!_this.length) return _this
 			var inits = {
 				bgColor: 'black',
 				txtColor: 'white',
 				autoDie: true
 			}
 			var options = $.extend({}, inits, opts)
-			tips($(this).selector, options)
+			tips(_this.selector, options)
+			return _this
 		},
 		move: function(opts) {
+			var _this = $(this)
 			var inits = {
 				box: '.z-move',
 				top: 0,
@@ -309,11 +315,13 @@
 				bottom: 0,
 				left: 0
 			}
-			var options = getOpts($(this), inits, opts)
-			move($(this).selector, options)
+			var options = getOpts(_this, inits, opts)
+			move(_this.selector, options)
+			return _this
 		},
 		slider: function(opts) {
-			if (!$(this).length) return
+			var _this = $(this)
+			if (!_this.length) return _this
 			var inits = {
 				speed: 500,
 				delay: 5000,
@@ -323,14 +331,16 @@
 				items: 'ul',
 				item: 'li'
 			}
-			$(this).each(function() {
+			_this.each(function() {
 				var options = getOpts($(this), inits, opts)
 				slider($(this), options)
 			})
+			return _this
 		},
 		waterfall: function(opts) {
-			if (!$(this).length) return
-			var container = $(this)
+			var _this = $(this)
+			if (!_this.length) return _this
+			var container = _this
 			if ($.fn.masonry && z.libs.waterfall.isloaded) {
 				doing()
 			} else {
@@ -339,6 +349,7 @@
 					doing()
 				})
 			}
+			return _this
 
 			function doing() {
 				var inits = {
@@ -354,8 +365,9 @@
 			}
 		},
 		datepicker: function(opts) {
-			if (!$(this).length) return
-			var container = $(this)
+			var _this = $(this)
+			if (!_this.length) return _this
+			var container = _this
 			if ($.fn.datetimepicker && z.libs.datepicker.isloaded) {
 				doing()
 			} else {
@@ -366,6 +378,7 @@
 					})
 				})
 			}
+			return _this
 
 			function doing() {
 				var inits = {
@@ -378,16 +391,17 @@
 			}
 		},
 		goTop: function(opts) {
-			if (!$(this).length) return
+			var _this = $(this)
+			if (!_this.length) return _this
 			var inits = {
 				top: 100,
 				time: z.transTime
 			}
-			var rollBtn = $(this)
+			var rollBtn = _this
 			var options = getOpts(rollBtn, inits, opts)
 			$(w).on('scroll', function() {
-				if (!rollBtn.length) return
-				if ($(this).scrollTop() > options.top) {
+				if (!rollBtn.length) return _this
+				if (_this.scrollTop() > options.top) {
 					rollBtn.addClass('on')
 				} else {
 					rollBtn.removeClass('on')
@@ -400,10 +414,12 @@
 					scrollTop: 0,
 				}, options.time)
 			})
+			return _this
 		},
 		code: function(opts) {
-			if (!$(this).length) return
-			$(this).each(function() {
+			var _this = $(this)
+			if (!_this.length) return _this
+			_this.each(function() {
 				var options = opts || {}
 				var othis = $(this),
 					html = othis.html()
@@ -434,19 +450,22 @@
 					$(this).html('<span>' + $(this).html() + '</span>')
 				})
 			})
-			return $(this)
+			return _this
 		},
 		aniBox: function(opts) {
-			if (!$(this).length) return
+			var _this = $(this)
+			if (!_this.length) return _this
 			var inits = {
 				aniName: 'z-anim-upbit',
 				aniTime: 500
 			}
 			var options = $.extend({}, inits, opts)
-			aniBox($(this), options)
+			aniBox(_this, options)
+			return _this
 		},
 		numberBox: function(opts) {
-			if (!$(this).length) return
+			var _this = $(this)
+			if (!_this.length) return _this
 			var inits = {
 				prev: '.z-btn.z-sub',
 				next: '.z-btn.z-add',
@@ -455,20 +474,24 @@
 				max: null,
 				step: 1
 			}
-			$(this).each(function() {
+			_this.each(function() {
 				var options = getOpts($(this), inits, opts)
 				numberBox($(this), options)
 			})
+			return _this
 		},
 		swipeleft: function(cb) {
 			swipe('left', $(this), cb)
+			return $(this)
 		},
 		swiperight: function(cb) {
 			swipe('right', $(this), cb)
+			return $(this)
 		},
 		mobileNav: function(opts) {
-			if (!$(this).length) return
-			var nav = $(this).first()
+			var _this = $(this)
+			if (!_this.length) return
+			var nav = _this.first()
 			var inits = {
 				item: '.z-nav-item',
 				logo: 'z-logo',
@@ -479,6 +502,7 @@
 			}
 			var options = getOpts(nav, inits, opts)
 			mobileNav(nav, options)
+			return _this
 		},
 		flyOut: function(t, cb) {
 			var _this = $(this)
@@ -507,9 +531,11 @@
 					cb && cb()
 				}
 			}, interval)
+			return _this
 		},
 		flow: function(opts, done) {
-			if (!$(this).length) return
+			var _this = $(this)
+			if (!_this.length) return _this
 			if ($.type(opts) === 'function') {
 				done = opts
 				opts = {}
@@ -524,25 +550,30 @@
 				mb: 50,
 				done: done
 			}
-			var options = getOpts($(this), inits, opts)
-			flow($(this), options)
+			var options = getOpts(_this, inits, opts)
+			flow(_this, options)
+			return _this
 		},
 		lazyimg: function(scrollEle, cb) {
-			if (!$(this).length || $(this).tagName() !== 'img') return
+			var _this = $(this)
+			if (!_this.length || _this.tagName() !== 'img') return _this
 			if($.type(scrollEle) === 'function'){
 				cb = scrollEle
 				scrollEle = d
 			}
 			var sEle = scrollEle || d
-			lazyimg($(this), sEle, cb)
+			lazyimg(_this, sEle, cb)
+			return _this
 		},
 		album: function() {
-			if (!$(this).length || $(this).tagName() !== 'img') return
-			album($(this))
+			var _this = $(this)
+			if (!_this.length || _this.tagName() !== 'img') return _this
+			album(_this)
+			return _this
 		},
 		dropdown: function(type) {
 			var _this = $(this)
-			if (!_this.length) return false
+			if (!_this.length) return _this
 			var isTree = false
 			var selector = _this.selector
 			var cls = '.z-nav-tree'
@@ -576,6 +607,7 @@
 					})
 				})
 			}
+			return _this
 		}
 	})
 
@@ -783,7 +815,7 @@
 	function flow(ele, opts) {
 		var more = $('<button type="button" class="z-btn z-block z-btn-flow">' + opts.eleTxt + '</button>')
 		var page = 1
-		var lock, isOver, lazyimg, timer;
+		var lock, isOver, lazyImgFn, timer;
 		var notDocment = opts.scrollElem && opts.scrollElem !== d
 		if (!ele.find('.z-btn-flow').length) {
 			ele.append(more)
@@ -793,7 +825,7 @@
 			lock || done()
 		})
 		if (bool(opts.isLazyimg)) {
-			lazyimg = ele.find('img').lazyimg(opts.scrollElem, $.type(opts.isLazyimg) === 'function' ? opts.isLazyimg : null)
+			lazyImgFn = lazyimg
 		}
 		if (!opts.isAuto) return ele
 		$(opts.scrollElem).on('scroll', function() {
@@ -820,7 +852,7 @@
 			if (over) more.addClass('z-disabled').text(opts.endTxt)
 			isOver = over
 			lock = null
-			lazyimg && lazyimg()
+			lazyImgFn && lazyImgFn(ele.find('img'), opts.scrollElem, $.type(opts.isLazyimg) === 'function' ? opts.isLazyimg : null)
 		}
 
 		function done() {
@@ -1159,7 +1191,6 @@
 			var txt = ele.zdata('old-text') || 'resetBtn'
 			ele.removeAttr('disabled').removeAttr('zdata-old-text').removeClass('z-disabled').html(txt)
 		}
-		return ele
 	}
 
 	function tips(ele, opts) {
