@@ -87,9 +87,9 @@
 		resetForm: function(box) {
 			var boxs = []
 			if (bool(box, true)) {
-				var radios = $('input[type="radio"]')
+				var radios = $('.z-form input[type="radio"]')
 				if (radios.length) boxs.push(radios)
-				var checkboxs = $('input[type="checkbox"]')
+				var checkboxs = $('.z-form input[type="checkbox"]')
 				if (checkboxs.length) boxs.push(checkboxs)
 			} else {
 				if (!box instanceof $) box = $(box)
@@ -993,7 +993,7 @@
 			var zname = this.name
 			var zid = zname + i.toString()
 			var type = this.type
-			if ($(this).zdata('action') === 'noreform') {
+			if (bool($(this).zdata('noreform'))) {
 				$(this).show()
 				return true
 			}
