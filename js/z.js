@@ -594,7 +594,7 @@
 					var ev = e || event
 					ev.stopPropagation()
 					isTree = _this.parents(cls).length
-					if (isTree) ev.preventDefault()
+					// if (isTree) ev.preventDefault()
 					if (_this.hasClass(z.active)) _this.removeClass(z.active)
 					else {
 						if ((isTree && bool(_this.parent().zdata('toggle'))) || !isTree) _this.siblings(selector).removeClass(z.active)
