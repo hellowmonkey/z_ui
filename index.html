@@ -120,11 +120,6 @@
 	                    <div class="code">&amp;#xe613;</div>
 	                </li>
 	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
-	                <i class="z-icon">&#xe754;</i>
-	                    <div class="name">刷新</div>
-	                    <div class="code">&amp;#xe754;</div>
-	                </li>
-	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
 	                <i class="z-icon">&#xe634;</i>
 	                    <div class="name">位置</div>
 	                    <div class="code">&amp;#xe634;</div>
@@ -183,11 +178,6 @@
 	                <i class="z-icon">&#xe658;</i>
 	                    <div class="name">喇叭</div>
 	                    <div class="code">&amp;#xe658;</div>
-	                </li>
-	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
-	                <i class="z-icon">&#xe62d;</i>
-	                    <div class="name">刷新</div>
-	                    <div class="code">&amp;#xe62d;</div>
 	                </li>
 	                <li class="z-col-lg-2 z-col-sm-2 z-btn">
 	                <i class="z-icon">&#xe653;</i>
@@ -601,7 +591,7 @@
 						<ul class="z-dropdown-menu">
 							<li><a href="#">列表</a></li>
 							<li><a href="#">列表</a></li>
-							<li class="z-dropdown z-action-dropdown-hover"><a href="#">列表</a>
+							<li class="z-dropdown"><a href="#">列表</a>
 								<ul class="z-dropdown-menu z-dropdown-menu-right">
 									<li><a href="#">列表</a></li>
 									<li><a href="#">列表</a></li>
@@ -621,7 +611,13 @@
 						<ul class="z-dropdown-menu">
 							<li><a href="#">列表</a></li>
 							<li><a href="#">列表</a></li>
-							<li><a href="#">列表</a></li>
+							<li class="z-dropdown"><a href="#">列表</a>
+								<ul class="z-dropdown-menu z-dropdown-menu-right">
+									<li><a href="#">列表</a></li>
+									<li><a href="#">列表</a></li>
+									<li><a href="#">列表</a></li>
+								</ul>
+							</li>
 						</ul>
 						</button>
 						<button class="z-btn">提交</button>
@@ -887,11 +883,11 @@
 					$.open(content, title)
 				</pre>
 				<button class="z-btn z-btn-blue" onclick="$.toast('提示')">toast</button>
-				<button class="z-btn z-btn-red" onclick="$.success('成功信息的提示')">success</button>
+				<button class="z-btn z-btn-red" onclick="$.success('成功信息的提示', function(){$.msg('我是成功信息提示的回调，通常会是链接跳转')})">success</button>
 				<button class="z-btn z-btn-dark" onclick="$.msg('我是提示')">msg</button>
 				<pre class="z-action-code">
 					$.toast(content, color)
-					$.success(content)
+					$.success(content, cb)
 					$.msg(content)
 				</pre>
 				<div class="z-quote z-quote-red" id="tagname">标签名称</div>

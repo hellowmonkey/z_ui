@@ -70,7 +70,7 @@ h3 {
 h4,
 h5,
 h6 {
-	font-size: 100%;
+	font-size: 14px;
 	font-weight: 400;
 }
 
@@ -1018,6 +1018,7 @@ input[type="search"] {
 	width: 100%;
 	margin: 10px 0;
 	border-collapse: collapse;
+	font-size: 14px;
 }
 
 .z-table th {
@@ -1519,6 +1520,10 @@ input[type="search"] {
 	line-height: 1.42857143;
 	white-space: nowrap;
 	color: #333;
+}
+
+.z-dropdown-menu .z-dropdown:hover .z-dropdown-menu{
+	display: block;
 }
 
 .z-dropdown-menu>li>a:hover,

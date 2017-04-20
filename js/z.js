@@ -13,12 +13,13 @@
 		cls: '.z-album',
 		ani: true
 	}]
+	var log = console.log
+	var _ck = 'click'
 
 	var winWidth = $(w).innerWidth()
 	var winHeight = $(w).innerHeight()
 
 	var transTime = 200
-	var closeTime = transTime * 0.6
 
 	var aniBoxTops = []
 
@@ -30,7 +31,8 @@
 		zIndex: function() {
 			return ++this.index
 		},
-		anims: ['z-anim-upbit', 'z-anim-scale', 'z-anim-scaleSpring', 'z-anim-up'],
+		anims: ['z-anim-upbit', 'z-anim-scale', 'z-anim-scaleSpring', 'z-anim-up', 'z-anim-downbit'],
+		animCls: 'z-anim-ms3',
 		libs: {
 			form: {
 				src: libs_path + 'jquery.form.min'
@@ -58,7 +60,8 @@
 		color: ['default', 'blue', 'yellow', 'red', 'dark', 'green'],
 		isMobile: isMobile,
 		transTime: transTime,
-		closeTime: closeTime,
+		closeTime: transTime * 0.6,
+		successTime: transTime * 8,
 		active: 'z-active',
 		dt: dateNow,
 		loadingHtml: '<span class="z-anim-rotate z-icon">&#xe624;</span>',
@@ -73,14 +76,14 @@
 		createShade: function(createCb, closeCb, opacity) {
 			if (!zShade) {
 				zShade = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';' + function() {
-					return opacity ? 'opacity:' + opacity : ''
+					return bool(opacity) ? 'opacity:' + opacity : ''
 				}() + '"></div>')
 				$('body').addClass('overflow').append(zShade)
-				zShade.fadeIn(z.transTime, createCb)
+				zShade.fadeIn(z.transTime, createCb && createCb)
 			} else {
-				createCb()
+				createCb && createCb()
 			}
-			zShade.on('click', function() {
+			zShade.on(_ck, function() {
 				closeCb && closeCb()
 			})
 		},
@@ -178,8 +181,14 @@
 		toast: function(content, color) {
 			showMsg('toast', content, color || z.color[3])
 		},
-		success: function(content) {
-			showMsg('success', content, z.color[5])
+		success: function(content, cb) {
+			showMsg('success', content, z.color[5], cb && function(){
+				$.createShade(null, null, 0)
+				setTimeout(function(){
+					closeShade()
+					cb()
+				}, z.successTime)
+			})
 		},
 		msg: function(content) {
 			showMsg('msg', content)
@@ -285,7 +294,7 @@
 			if ('hide' === type && _this.is(':hidden')) return _this
 			if (_this.is(':hidden')) {
 				$.createShade(function() {
-					_this.css('zIndex', z.zIndex()).show().css({'left': '50%', 'marginLeft': -_this.innerWidth()/2}).addClass('z-anim-downbit z-anim-ms3')
+					_this.css('zIndex', z.zIndex()).show().css({'left': '50%', 'marginLeft': -_this.innerWidth()/2}).addClass(z.anims[4] + ' ' + z.animCls)
 				}, function() {
 					doClose(_this, null, false)
 				})
@@ -407,7 +416,7 @@
 					rollBtn.removeClass('on')
 				}
 			})
-			rollBtn.on('click', function(e) {
+			rollBtn.on(_ck, function(e) {
 				var ev = e || event
 				ev.preventDefault()
 				$('body,html').animate({
@@ -456,7 +465,7 @@
 			var _this = $(this)
 			if (!_this.length) return _this
 			var inits = {
-				aniName: 'z-anim-upbit',
+				aniName: z.anims[0],
 				aniTime: 500
 			}
 			var options = $.extend({}, inits, opts)
@@ -577,7 +586,7 @@
 			var isTree = false
 			var selector = _this.selector
 			var cls = '.z-nav-tree'
-			type = type || 'click'
+			type = type || _ck
 			if (type == 'hover') {
 				$('body').on('mouseenter', selector, function() {
 					var _this = $(this)
@@ -588,20 +597,20 @@
 				$('body').on('mouseleave', selector, function() {
 					$(this).removeClass(z.active)
 				})
-			} else if (type == 'click') {
-				$('body').on('click', selector, function(e) {
+			} else if (type == _ck) {
+				$('body').on(_ck, selector, function(e) {
 					var _this = $(this)
 					var ev = e || event
 					ev.stopPropagation()
 					isTree = _this.parents(cls).length
-					// if (isTree) ev.preventDefault()
+					if (isTree && _this.context === ev.target.parentNode) ev.preventDefault()
 					if (_this.hasClass(z.active)) _this.removeClass(z.active)
 					else {
 						if ((isTree && bool(_this.parent().zdata('toggle'))) || !isTree) _this.siblings(selector).removeClass(z.active)
 						_this.addClass(z.active)
 					}
 				})
-				$(d).on('click', function() {
+				$(d).on(_ck, function() {
 					_this.each(function(){
 						if(!$(this).parents(cls).length)	$(this).removeClass(z.active)
 					})
@@ -624,7 +633,7 @@
 
 	function album(ele, opts) {
 		ele.css('cursor', 'pointer')
-		$('body').on('click', ele.selector, function() {
+		$('body').on(_ck, ele.selector, function() {
 			var self = this
 			var _this = $(this)
 			if (!this.src || _this.zdata('src')) return
@@ -653,7 +662,7 @@
 			var htmls = [
 				'<div class="z-album">',
 				'<span class="z-close z-action-close" zdata-box=".z-album">&times;</span>',
-				'<div class="z-album-content z-anim-ms3 ' + getAnim() + '">',
+				'<div class="z-album-content '+ z.animCls +' ' + getAnim() + '">',
 				'<div class="z-imgbox"></div>',
 				'<div class="z-tipbox"></div>',
 				'</div>',
@@ -723,7 +732,7 @@
 					showImg()
 				})
 			} else {
-				sliderBtn.on('click', function() {
+				sliderBtn.on(_ck, function() {
 					if ($(this).hasClass(sliderLeftCls)) --index
 					else ++index
 					showImg()
@@ -820,7 +829,7 @@
 		if (!ele.find('.z-btn-flow').length) {
 			ele.append(more)
 		}
-		more.on('click', function() {
+		more.on(_ck, function() {
 			if (isOver) return;
 			lock || done()
 		})
@@ -887,13 +896,13 @@
 				next.removeClass('z-disabled')
 			}
 		})
-		next.off('click').on('click', function() {
+		next.off(_ck).on(_ck, function() {
 			var val = parseFloat(ipt.val())
 			if ($(this).hasClass('z-disabled')) return
 			val = val + step
 			ipt.val(val).change()
 		})
-		prev.off('click').on('click', function() {
+		prev.off(_ck).on(_ck, function() {
 			var val = parseFloat(ipt.val())
 			if ($(this).hasClass('z-disabled')) return
 			val = val - step
@@ -922,7 +931,7 @@
 		opts.toggle && fixNav.zdata('toggle', opts.toggle)
 		opts.menuCls && menu.addClass(opts.menuCls)
 		nav.after(fixNav)
-		menu.on('click', function() {
+		menu.on(_ck, function() {
 			if (!can) return false
 			can = false
 			var _this = $(this)
@@ -1082,6 +1091,7 @@
 		var htmls = []
 		var modal_arr = ['alert', 'confirm', 'prompt', 'open']
 		var delay = 4000
+		var closeBtn = '<button type="button" class="z-close z-action-close">&times;</button>'
 		if ($.inArray(type, modal_arr) !== -1) {
 			var def_title = z.title[type]
 			var def_btns = z.btns
@@ -1102,9 +1112,9 @@
 			htmls = [
 				'<div class="z-modal z-move ' + function() {
 					return 'open' === type ? '' : 'z-modal-sm'
-				}() + ' z-anim-ms3 ' + getAnim() + '">',
+				}() + ' '+z.animCls+' ' + getAnim() + '">',
 				'<div class="z-modal-header z-move-title z-action-move">',
-				'<button type="button" class="z-close z-action-close">&times;</button>',
+				closeBtn,
 				'<h4 class="z-modal-title">' + title + '</h4>',
 				'</div>',
 				'<div class="z-modal-body">',
@@ -1132,13 +1142,13 @@
 					'top': (wh - hig) / 3 > 0 ? (wh - hig) / 3 : 0,
 					'left': (ww - win) / 2 > 0 ? (ww - win) / 2 : 0
 				})
-				html.find('.z-modal-footer .z-btn').on('click', function() {
+				html.find('.z-modal-footer .z-btn').on(_ck, function() {
 					cb && cb(html, $(this).index())
 				})
 			})
 		} else if (type === 'msg') {
 			$('.z-msg').remove()
-			html = $('<div class="z-msg z-anim-scaleSpring z-anim-ms3" style="z-index:' + z.zIndex() + '">' + content + '</div>')
+			html = $('<div class="z-msg '+z.anims[2]+' '+z.animCls+'" style="z-index:' + z.zIndex() + '">' + content + '</div>')
 			$('body').append(html)
 			html.css({
 				marginTop: -html.innerHeight() / 2,
@@ -1151,14 +1161,16 @@
 			}, delay)
 		} else {
 			var color = title
+			cb = btns
 			htmls = [
-				'<div class="z-alert z-alert-' + color + ' z-alert-box z-alert-dismissible z-anim-downbit z-anim-ms3" style="z-index:' + z.zIndex() + '">',
-				'<button type="button" class="z-close z-action-close">&times;</button>',
+				'<div class="z-alert z-alert-' + color + ' z-alert-box z-alert-dismissible ' + z.anims[4] + ' ' + z.animCls + '" style="z-index:' + z.zIndex() + '">',
+				closeBtn,
 				content,
 				'</div>'
 			]
 			html = $(htmls.join(''))
 			$('body').append(html)
+			cb && cb()
 			setTimeout(function() {
 				doClose(html)
 			}, delay)
@@ -1170,11 +1182,11 @@
 		var delay = z.closeTime
 		if (bool(rm, true)) rm = true
 		rm = bool(rm)
-		if (rm) anibox.flyOut(delay * 0.7, doing)
+		if (rm) anibox.flyOut(delay, doing)
 		else box.slideUp(delay, doing)
-		closeShade(delay * 1.5)
 
 		function doing() {
+			closeShade(delay)
 			if (rm) box.remove()
 			if (cb) cb()
 		}
@@ -1209,7 +1221,7 @@
 			var content = $(this).zdata('title')
 			var html = ''
 			var htmls = [
-				'<div class="z-tipsbox z-anim-scale z-anim-ms2" style="z-index:' + z.zIndex() + ';top:' + (pos.top - 40) + 'px;left:' + function() {
+				'<div class="z-tipsbox ' + z.anims[1] + ' ' + z.animCls + '" style="z-index:' + z.zIndex() + ';top:' + (pos.top - 40) + 'px;left:' + function() {
 					var left = pos.left
 					if (wid < 17) left = left - 17
 					if (left < 0) left = 0
@@ -1334,7 +1346,7 @@
 			dots = ele.find('.z-dots>a')
 
 			if (bool(opts.keys)) {
-				dots.on('click', function() {
+				dots.on(_ck, function() {
 					movement(-($(this).index() + 1) * width)
 				})
 			}
@@ -1395,7 +1407,7 @@
 			ele.on('mouseleave', function() {
 				timer = setInterval(movement, opts.delay)
 			})
-			sliderBtn.on('click', function() {
+			sliderBtn.on(_ck, function() {
 				clearInterval(timer)
 				if (!canMove)	return
 				if ($(this).hasClass(sliderLeftCls)) movement('left')
@@ -1443,6 +1455,7 @@
 					return $1.toUpperCase()
 				})
 			}
+		style = style || 'animation'
 
 		for (i in prefix)
 			humpString.push(_toHumb(prefix[i] + '-' + style))
@@ -1553,15 +1566,15 @@
 		// 日期选择器
 		$('.z-action-datepicker').datepicker()
 
-		if (!z.isMobile) {
+		if (z.isMobile) {
+			// 移动端替换导航
+			$('.z-action-mobilenav').mobileNav()
+		} else {
 			// tips
 			$('.z-action-tips').tips()
 
 			// 拖动组件
 			$('.z-action-move').move()
-		} else {
-			// 移动端替换导航
-			$('.z-action-mobilenav').mobileNav()
 		}
 
 		// 返回顶部
@@ -1590,7 +1603,7 @@
 		$.resetForm()
 
 		// 单选框
-		$('body').on('click', '.z-form-radio', function() {
+		$('body').on(_ck, '.z-form-radio', function() {
 			if ($(this).hasClass(z.active)) return
 			var zid = $(this).zdata('id')
 			var zname = $(this).zdata('name')
@@ -1602,21 +1615,21 @@
 		})
 
 		// 复选框
-		$('body').on('click', '.z-form-checkbox', function() {
+		$('body').on(_ck, '.z-form-checkbox', function() {
 			var zid = $(this).zdata('id')
 			$(this).toggleClass(z.active)
 			$('input[type="checkbox"][zdata-id="' + zid + '"]').attr('checked', $(this).hasClass(z.active))
 		})
 
 		// modal
-		$('body').on('click', '.z-action-modal', function() {
+		$('body').on(_ck, '.z-action-modal', function() {
 			var tar = $(this).zdata('target')
 			if (!tar || !tar.length || !$(tar).length) return
 			$(tar).modal()
 		})
 
 		// 关闭按钮
-		$('body').on('click', '.z-action-close', function() {
+		$('body').on(_ck, '.z-action-close', function() {
 			var _this = $(this)
 			var box = null
 			var ibox = null
@@ -1635,17 +1648,17 @@
 		})
 
 		// 上一页
-		$('body').on('click', '.z-action-back', function() {
+		$('body').on(_ck, '.z-action-back', function() {
 			$.back()
 		})
 
 		// 刷新
-		$('body').on('click', '.z-action-reload', function() {
+		$('body').on(_ck, '.z-action-reload', function() {
 			$.reload()
 		})
 
 		// tabs
-		$('body').on('click', '.z-tab-title li', function() {
+		$('body').on(_ck, '.z-tab-title li', function() {
 			var _this = $(this)
 			var lis = _this.parent().find('li')
 			var items = _this.parents('.z-tab').find('.z-tab-content .z-tab-item')
@@ -1661,7 +1674,7 @@
 		if ($('.z-nav.z-nav-fixed-bottom').length) $('body').css('paddingBottom', $('.z-nav.z-nav-fixed-bottom').innerHeight() + 20)
 
 		// 阻止默认
-		$(d).on('click', '.z-disabled,:disabled', function(e) {
+		$(d).on(_ck, '.z-disabled,:disabled', function(e) {
 			var ev = e || event
 			ev.stopPropagation()
 			ev.preventDefault()
