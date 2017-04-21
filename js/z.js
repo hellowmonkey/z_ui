@@ -950,7 +950,7 @@
 				nav.css('zIndex', z.zIndex())
 			} else {
 				fixNav.animate({
-					'left': '-200px'
+					'left': '-100%'
 				}, z.transTime, function() {
 					fixNav.hide()
 					_this.removeClass(z.active)
