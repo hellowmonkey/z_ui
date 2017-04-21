@@ -1613,14 +1613,19 @@
 			$(this).addClass(z.active)
 			$('input[type="radio"][name="' + zname + '"]').each(function() {
 				this.checked = $(this).zdata('id') === zid
+				$(this).change()
 			})
 		})
 
 		// 复选框
 		$(_b).on(_ck, '.z-form-checkbox', function() {
 			var zid = $(this).zdata('id')
-			$(this).toggleClass(z.active)
-			$('input[type="checkbox"][zdata-id="' + zid + '"]').attr('checked', $(this).hasClass(z.active))
+			var _this = $(this)
+			_this.toggleClass(z.active)
+			$('input[type="checkbox"][zdata-id="' + zid + '"]').each(function(){
+				this.checked = _this.hasClass(z.active)
+				$(this).change()
+			})
 		})
 
 		// modal
