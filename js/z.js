@@ -15,6 +15,7 @@
 	}]
 	var log = console.log
 	var _ck = 'click'
+	var _b = 'body'
 
 	var winWidth = $(w).innerWidth()
 	var winHeight = $(w).innerHeight()
@@ -78,7 +79,7 @@
 				zShade = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';' + function() {
 					return bool(opacity) ? 'opacity:' + opacity : ''
 				}() + '"></div>')
-				$('body').addClass('overflow').append(zShade)
+				$(_b).addClass('overflow').append(zShade)
 				zShade.fadeIn(z.transTime, createCb && createCb)
 			} else {
 				createCb && createCb()
@@ -125,7 +126,7 @@
 				fieldset.attr('disabled', true)
 				if (bool(tip)) {
 					var html = $('<div class="z-msg" style="z-index:' + z.zIndex() + '">' + tip + '</div>')
-					$('body').append(html)
+					$(_b).append(html)
 					html.css({
 						marginTop: -html.innerHeight() / 2,
 						marginLeft: -html.innerWidth() / 2
@@ -183,10 +184,11 @@
 		},
 		success: function(content, cb) {
 			showMsg('success', content, z.color[5], cb && function(){
-				$.createShade(null, null, 0)
+				var html = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';opacity:0;display:block;"></div>')
+				$(_b).append(html)
 				setTimeout(function(){
-					closeShade()
 					cb()
+					html.remove()
 				}, z.successTime)
 			})
 		},
@@ -409,8 +411,8 @@
 			var rollBtn = _this
 			var options = getOpts(rollBtn, inits, opts)
 			$(w).on('scroll', function() {
-				if (!rollBtn.length) return _this
-				if (_this.scrollTop() > options.top) {
+				if (!rollBtn.length) return rollBtn
+				if ($(this).scrollTop() > options.top) {
 					rollBtn.addClass('on')
 				} else {
 					rollBtn.removeClass('on')
@@ -423,7 +425,7 @@
 					scrollTop: 0,
 				}, options.time)
 			})
-			return _this
+			return rollBtn
 		},
 		code: function(opts) {
 			var _this = $(this)
@@ -588,26 +590,26 @@
 			var cls = '.z-nav-tree'
 			type = type || _ck
 			if (type == 'hover') {
-				$('body').on('mouseenter', selector, function() {
-					var _this = $(this)
-					isTree = _this.parents(cls).length
-					if ((isTree && bool(_this.parent().zdata('toggle'))) || !isTree) _this.siblings(selector).removeClass(z.active)
-					_this.addClass(z.active)
+				$(_b).on('mouseenter', selector, function() {
+					var othis = $(this)
+					isTree = othis.parents(cls).length
+					if ((isTree && bool(othis.parent().zdata('toggle'))) || !isTree) othis.siblings(selector).removeClass(z.active)
+					othis.addClass(z.active)
 				})
-				$('body').on('mouseleave', selector, function() {
+				$(_b).on('mouseleave', selector, function() {
 					$(this).removeClass(z.active)
 				})
 			} else if (type == _ck) {
-				$('body').on(_ck, selector, function(e) {
-					var _this = $(this)
+				$(_b).on(_ck, selector, function(e) {
+					var othis = $(this)
 					var ev = e || event
 					ev.stopPropagation()
-					isTree = _this.parents(cls).length
-					if (isTree && _this.context === ev.target.parentNode) ev.preventDefault()
-					if (_this.hasClass(z.active)) _this.removeClass(z.active)
+					isTree = othis.parents(cls).length
+					if (isTree && othis.context === ev.target.parentNode) ev.preventDefault()
+					if (othis.hasClass(z.active)) othis.removeClass(z.active)
 					else {
-						if ((isTree && bool(_this.parent().zdata('toggle'))) || !isTree) _this.siblings(selector).removeClass(z.active)
-						_this.addClass(z.active)
+						if ((isTree && bool(othis.parent().zdata('toggle'))) || !isTree) othis.siblings(selector).removeClass(z.active)
+						othis.addClass(z.active)
 					}
 				})
 				$(d).on(_ck, function() {
@@ -633,7 +635,7 @@
 
 	function album(ele, opts) {
 		ele.css('cursor', 'pointer')
-		$('body').on(_ck, ele.selector, function() {
+		$(_b).on(_ck, ele.selector, function() {
 			var self = this
 			var _this = $(this)
 			if (!this.src || _this.zdata('src')) return
@@ -675,7 +677,7 @@
 			var tipbox = html.find('.z-tipbox')
 			box.append(sliderBtn)
 			$.createShade(function() {
-				$('body').append(html)
+				$(_b).append(html)
 				showImg()
 			}, function() {
 				doClose(html, null, true, box)
@@ -741,9 +743,9 @@
 		})
 	}
 
-	function lazyimg(ele, sEle, cb) {
+	function lazyimg(ele, sEle, cb, fromFlow) {
 		var index = 0,
-			haveScroll;
+			haveScroll = fromFlow
 		var notDocment = sEle && sEle !== d
 		sEle = $(sEle)
 
@@ -758,7 +760,7 @@
 					render(null, othis)
 				}, 100)
 			})
-			haveScroll = true;
+			haveScroll = true
 		}
 
 		function show(item, height) {
@@ -847,6 +849,7 @@
 			timer = setTimeout(function() {
 				var height = notDocment ? _this.innerHeight() : winHeight
 				var scrollHeight = notDocment ? _this.prop('scrollHeight') : d.documentElement.scrollHeight
+				lazyImgFn && lazyImgFn(ele.find('img'), opts.scrollElem, $.type(opts.isLazyimg) === 'function' ? opts.isLazyimg : null, true)
 				if (scrollHeight - top - height <= opts.mb) {
 					lock || done()
 				}
@@ -861,7 +864,6 @@
 			if (over) more.addClass('z-disabled').text(opts.endTxt)
 			isOver = over
 			lock = null
-			lazyImgFn && lazyImgFn(ele.find('img'), opts.scrollElem, $.type(opts.isLazyimg) === 'function' ? opts.isLazyimg : null)
 		}
 
 		function done() {
@@ -1038,7 +1040,7 @@
 				if (file.substr(-(suffix.length)) !== suffix) {
 					file += suffix
 				}
-				if (file.indexOf('http://') === -1 && file.indexOf('https://') === -1 && file.indexOf('file://') === -1) {
+				if (file.indexOf('://') === -1) {
 					file = z.root_path + file
 				}
 				if ('js' === type) {
@@ -1083,7 +1085,7 @@
 	}
 
 	function getAnim() {
-		return z.anims[Math.floor(Math.random() * (z.anims.length - 1))]
+		return z.anims[Math.floor(Math.random() * z.anims.length)]
 	}
 
 	function showMsg(type, content, title, btns, cb) {
@@ -1131,7 +1133,7 @@
 			htmls.push('</div></div>')
 			html = $(htmls.join(''))
 			$.createShade(function() {
-				$('body').append(html)
+				$(_b).append(html)
 				html.css('zIndex', z.zIndex()).show()
 				var win = html.innerWidth()
 				var hig = html.innerHeight()
@@ -1149,7 +1151,7 @@
 		} else if (type === 'msg') {
 			$('.z-msg').remove()
 			html = $('<div class="z-msg '+z.anims[2]+' '+z.animCls+'" style="z-index:' + z.zIndex() + '">' + content + '</div>')
-			$('body').append(html)
+			$(_b).append(html)
 			html.css({
 				marginTop: -html.innerHeight() / 2,
 				marginLeft: -html.innerWidth() / 2
@@ -1169,7 +1171,7 @@
 				'</div>'
 			]
 			html = $(htmls.join(''))
-			$('body').append(html)
+			$(_b).append(html)
 			cb && cb()
 			setTimeout(function() {
 				doClose(html)
@@ -1207,7 +1209,7 @@
 
 	function tips(ele, opts) {
 		var timer = null
-		$('body').off('mouseenter').on('mouseenter', ele, function() {
+		$(_b).off('mouseenter').on('mouseenter', ele, function() {
 			var title = this.title
 			var ztitle = $(this).zdata('title')
 			if (!title && !ztitle) return
@@ -1244,7 +1246,7 @@
 			]
 			html = $(htmls.join(''))
 			$('.z-tipsbox').remove()
-			$('body').append(html)
+			$(_b).append(html)
 			var hig = pos.top - html.innerHeight() - 10
 			if ((hig - $(d).scrollTop()) < 0) {
 				html.css('top', pos.top + $(this).innerHeight() + 10).find('i').css({
@@ -1261,7 +1263,7 @@
 				}, 5000)
 			}
 		})
-		$('body').off('mouseleave').on('mouseleave', ele, function() {
+		$(_b).off('mouseleave').on('mouseleave', ele, function() {
 			if (timer) clearTimeout(timer)
 			$('.z-tipsbox').remove()
 		})
@@ -1294,7 +1296,7 @@
 			})
 		})
 
-		$('body').on('mousedown', ele, function(e) {
+		$(_b).on('mousedown', ele, function(e) {
 			isDown = true
 			var ev = e || event
 			var box = $(this).parents(opts.box)
@@ -1306,7 +1308,7 @@
 			mleft = mpos.left - (pos.left - $(d).scrollLeft())
 		})
 
-		$('body').on('mouseup', ele, function() {
+		$(_b).on('mouseup', ele, function() {
 			isDown = false
 		})
 	}
@@ -1551,7 +1553,7 @@
 		time = time || z.transTime
 		zShade.fadeOut(time, function() {
 			zShade.remove()
-			$('body').removeClass('overflow')
+			$(_b).removeClass('overflow')
 			zShade = null
 			cb && cb()
 		})
@@ -1603,7 +1605,7 @@
 		$.resetForm()
 
 		// 单选框
-		$('body').on(_ck, '.z-form-radio', function() {
+		$(_b).on(_ck, '.z-form-radio', function() {
 			if ($(this).hasClass(z.active)) return
 			var zid = $(this).zdata('id')
 			var zname = $(this).zdata('name')
@@ -1615,21 +1617,21 @@
 		})
 
 		// 复选框
-		$('body').on(_ck, '.z-form-checkbox', function() {
+		$(_b).on(_ck, '.z-form-checkbox', function() {
 			var zid = $(this).zdata('id')
 			$(this).toggleClass(z.active)
 			$('input[type="checkbox"][zdata-id="' + zid + '"]').attr('checked', $(this).hasClass(z.active))
 		})
 
 		// modal
-		$('body').on(_ck, '.z-action-modal', function() {
+		$(_b).on(_ck, '.z-action-modal', function() {
 			var tar = $(this).zdata('target')
 			if (!tar || !tar.length || !$(tar).length) return
 			$(tar).modal()
 		})
 
 		// 关闭按钮
-		$('body').on(_ck, '.z-action-close', function() {
+		$(_b).on(_ck, '.z-action-close', function() {
 			var _this = $(this)
 			var box = null
 			var ibox = null
@@ -1648,17 +1650,17 @@
 		})
 
 		// 上一页
-		$('body').on(_ck, '.z-action-back', function() {
+		$(_b).on(_ck, '.z-action-back', function() {
 			$.back()
 		})
 
 		// 刷新
-		$('body').on(_ck, '.z-action-reload', function() {
+		$(_b).on(_ck, '.z-action-reload', function() {
 			$.reload()
 		})
 
 		// tabs
-		$('body').on(_ck, '.z-tab-title li', function() {
+		$(_b).on(_ck, '.z-tab-title li', function() {
 			var _this = $(this)
 			var lis = _this.parent().find('li')
 			var items = _this.parents('.z-tab').find('.z-tab-content .z-tab-item')
@@ -1670,8 +1672,8 @@
 		})
 
 		// 固定导航
-		if ($('.z-nav.z-nav-fixed-top').length) $('body').css('paddingTop', $('.z-nav.z-nav-fixed-top').innerHeight() + 20)
-		if ($('.z-nav.z-nav-fixed-bottom').length) $('body').css('paddingBottom', $('.z-nav.z-nav-fixed-bottom').innerHeight() + 20)
+		if ($('.z-nav.z-nav-fixed-top').length) $(_b).css('paddingTop', $('.z-nav.z-nav-fixed-top').innerHeight() + 20)
+		if ($('.z-nav.z-nav-fixed-bottom').length) $(_b).css('paddingBottom', $('.z-nav.z-nav-fixed-bottom').innerHeight() + 20)
 
 		// 阻止默认
 		$(d).on(_ck, '.z-disabled,:disabled', function(e) {
