@@ -1,10 +1,11 @@
 ;
 (function(w, d, $, undefined) {
-	var root_path = getZsrc()
+	var root_path = _getZsrc()
 	var libs_path = root_path.replace('js/', '') + 'libs/'
 	var isMobile = isMobile()
 	var dateNow = new Date()
 	var zShade = null
+	var shades = 0
 	var zBoxs = [{
 		cls: '.z-alert'
 	}, {
@@ -46,9 +47,6 @@
 			},
 			datepicker: {
 				src: libs_path + 'bootstrap-datetimepicker.min'
-			},
-			lazyload: {
-				src: libs_path + 'jquery-lazyload.min'
 			}
 		},
 		title: {
@@ -67,6 +65,8 @@
 		dt: dateNow,
 		loadingHtml: '<span class="z-anim-rotate z-icon">&#xe624;</span>',
 		sliderBtn: '<button class="z-slider-btn z-icon z-slider-prev">&#xe605;</button><button class="z-slider-btn z-icon z-slider-next">&#xe61d;</button>',
+		winWidth: winWidth,
+		winHeight: winHeight,
 	}
 
 	var sliderLeftCls = function(){
@@ -77,20 +77,22 @@
 		createShade: function(createCb, closeCb, opacity) {
 			if (!zShade) {
 				zShade = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';' + function() {
-					return bool(opacity) ? 'opacity:' + opacity : ''
+					return _bool(opacity) ? 'opacity:' + opacity : ''
 				}() + '"></div>')
 				$(_b).addClass('overflow').append(zShade)
 				zShade.fadeIn(z.transTime, createCb && createCb)
 			} else {
 				createCb && createCb()
 			}
+			++shades
 			zShade.on(_ck, function() {
-				closeCb && closeCb()
+				closeCb && closeCb() && closeShade()
 			})
 		},
+		closeShade: closeShade,
 		resetForm: function(box) {
 			var boxs = []
-			if (bool(box, true)) {
+			if (_bool(box, true)) {
 				var radios = $('.z-form input[type="radio"]')
 				if (radios.length) boxs.push(radios)
 				var checkboxs = $('.z-form input[type="checkbox"]')
@@ -107,8 +109,8 @@
 		},
 		submit: function(ele, cb, tip) {
 			var form = ele instanceof $ ? ele : $(ele)
-			var datatip = bool(form.zdata('tip'), true)
-			tip = (bool(tip, true) && datatip) ? '数据提交中...' : (datatip ? tip : form.zdata('tip'))
+			var datatip = _bool(form.zdata('tip'), true)
+			tip = (_bool(tip, true) && datatip) ? '数据提交中...' : (datatip ? tip : form.zdata('tip'))
 			if (!form || !form.length || !form.attr('action')) return false
 			if ($.fn.ajaxSubmit && z.libs.form.isloaded) {
 				doing()
@@ -124,7 +126,7 @@
 				var fieldset = form.find('fieldset')
 				if (fieldset.attr('disabled')) return false
 				fieldset.attr('disabled', true)
-				if (bool(tip)) {
+				if (_bool(tip)) {
 					var html = $('<div class="z-msg" style="z-index:' + z.zIndex() + '">' + tip + '</div>')
 					$(_b).append(html)
 					html.css({
@@ -154,29 +156,29 @@
 		},
 		alert: function(content, title) {
 			showMsg('alert', content, title, function(obj, i) {
-				doClose(obj)
+				_doClose(obj)
 			})
 		},
 		open: function(content, title, btns, cb) {
-			cb = getCb(arguments)
+			cb = _getCb(arguments)
 			showMsg('open', content, title, btns, function(obj, i) {
-				if ((cb && !cb(i, obj)) || !cb) doClose(obj)
+				if ((cb && !cb(i, obj)) || !cb) _doClose(obj)
 			})
 		},
 		confirm: function(content, title, btns, cb) {
-			cb = getCb(arguments)
+			cb = _getCb(arguments)
 			showMsg('confirm', content, title, btns, function(obj, i) {
 				cb && i > 0 && cb(i, obj)
-				doClose(obj)
+				_doClose(obj)
 			})
 		},
 		prompt: function(title, btns, cb) {
-			cb = getCb(arguments)
+			cb = _getCb(arguments)
 			showMsg('prompt', '<input type="text" autofocus class="z-input" placeholder="' + function() {
 				return title || z.title['prompt']
 			}() + '" />', title, btns, function(obj, i) {
 				cb && i > 0 && cb(obj.find('.z-input').val())
-				doClose(obj)
+				_doClose(obj)
 			})
 		},
 		toast: function(content, color) {
@@ -209,11 +211,11 @@
 			if ($.type(format) === 'date' || $.type(format) === 'number') {
 				time = format
 				format = defaultFormat
-			} else if (bool(format, true)) {
+			} else if (_bool(format, true)) {
 				format = defaultFormat
 				time = defaultTime
 			}
-			if (bool(time, true)) {
+			if (_bool(time, true)) {
 				time = defaultTime
 			} else if ($.type(time) === 'string') {
 				time = parseInt(time)
@@ -259,6 +261,17 @@
 		back: function() {
 			w.history.go(-1)
 		},
+		getFileUrl: function(file) {
+			var _url
+			if (navigator.userAgent.indexOf("MSIE")>=1) { // IE 
+				_url = file.value
+			} else if(navigator.userAgent.indexOf("Firefox")>0) { // Firefox 
+				_url = w.URL.createObjectURL(file.files.item(0))
+			} else if(navigator.userAgent.indexOf("Chrome")>0) { // Chrome 
+				_url = w.URL.createObjectURL(file.files.item(0))
+			} 
+			return _url
+		},
 		reload: location.reload,
 		supportCss3: supportCss3,
 		loadImg: loadImg
@@ -268,11 +281,18 @@
 		tagName: function() {
 			return this[0].tagName.toLowerCase()
 		},
+		className: function(cls){
+			$(this).each(function(){
+				this.className = cls
+			})
+			return $(this)
+		},
 		zdata: function(name, val) {
-			if (bool(val, true)) {
+			if (_bool(val, true)) {
 				return $(this).attr('zdata-' + name)
 			} else {
 				$(this).attr('zdata-' + name, val)
+				return $(this)
 			}
 		},
 		button: function(type) {
@@ -297,11 +317,12 @@
 			if (_this.is(':hidden')) {
 				$.createShade(function() {
 					_this.css('zIndex', z.zIndex()).show().css({'left': '50%', 'marginLeft': -_this.innerWidth()/2}).addClass(z.anims[4] + ' ' + z.animCls)
+					_modalHeight(_this)
 				}, function() {
-					doClose(_this, null, false)
+					_doClose(_this, null, false)
 				})
 			} else {
-				doClose(_this, null, false)
+				_doClose(_this, null, false)
 			}
 			return _this
 		},
@@ -326,7 +347,7 @@
 				bottom: 0,
 				left: 0
 			}
-			var options = getOpts(_this, inits, opts)
+			var options = _getOpts(_this, inits, opts)
 			move(_this.selector, options)
 			return _this
 		},
@@ -343,7 +364,7 @@
 				item: 'li'
 			}
 			_this.each(function() {
-				var options = getOpts($(this), inits, opts)
+				var options = _getOpts($(this), inits, opts)
 				slider($(this), options)
 			})
 			return _this
@@ -351,7 +372,6 @@
 		waterfall: function(opts) {
 			var _this = $(this)
 			if (!_this.length) return _this
-			var container = _this
 			if ($.fn.masonry && z.libs.waterfall.isloaded) {
 				doing()
 			} else {
@@ -368,17 +388,16 @@
 					gutter: 0,
 					isAnimated: true
 				}
-				var options = getOpts(container, inits, opts)
-				container.css('opacity', 0).imagesLoaded(function() {
-					container.masonry(opts)
-					container.css('opacity', 1)
+				var options = _getOpts(_this, inits, opts)
+				_this.css('opacity', 0).imagesLoaded(function() {
+					_this.masonry(opts)
+					_this.css('opacity', 1)
 				})
 			}
 		},
 		datepicker: function(opts) {
 			var _this = $(this)
 			if (!_this.length) return _this
-			var container = _this
 			if ($.fn.datetimepicker && z.libs.datepicker.isloaded) {
 				doing()
 			} else {
@@ -397,8 +416,80 @@
 					format: "yyyy-mm-dd",
 					autoclose: true
 				}
-				var options = getOpts(container, inits, opts)
-				container.datetimepicker(options)
+				var options = _getOpts(_this, inits, opts)
+				_this.datetimepicker(options)
+			}
+		},
+		hovercard: function() {
+			var html, othis, cls, timer, selector = $(this).selector
+			$(_b).on('mouseenter', selector, function(e){
+				var ev = e || event
+				var _this = $(this)
+				var loading = '<div class="z-loadingbox">'+z.loadingHtml+'</div>'
+				ev.stopPropagation()
+				timer && clearTimeout(timer)
+				timer = setTimeout(function(){
+					html = $('.z-hovercard')
+					othis = _this
+					if(!_this.zdata('html') && !_this.zdata('url'))	return
+					if(!html.length){
+						cls = 'z-dropdown-menu z-hovercard '
+						var htmls = [
+							'<div class="'+ cls +'">',
+								loading,
+							'</div>'
+						]
+						html = $(htmls.join(''))
+						$(_b).append(html)
+					}
+					if(_this.zdata('html')){
+						html.html(_this.zdata('html'))
+						show()
+					}else if(_this.zdata('url')){
+						html.html(loading)
+						show()
+						$.get(_this.zdata('url'), function(data) {
+							html.html(data)
+							show()
+						})
+					}
+				}, 800)
+
+				_this.on('mouseleave', function(){
+					timer && clearTimeout(timer)
+					html && html.fadeOut(z.transTime)
+				})
+			})
+
+			function show(){
+				var offset = othis.offset()
+				var width = othis.innerWidth()
+				var height = othis.innerHeight()
+				var targetWidth = html.innerWidth()
+				var targetHeight = html.innerHeight()
+				var scrollTop = $(d).scrollTop()
+				var scrollLeft = $(d).scrollLeft()
+				var targetTop, targetLeft, wayCls
+				var arrowSize = 10
+				if(winHeight - (offset.top - scrollTop + height + targetHeight + arrowSize) >= 0){
+					targetTop = offset.top + height + arrowSize;
+					targetLeft = offset.left;
+					wayCls = "";
+				}else if((offset.top - scrollTop) - (targetHeight + arrowSize) >= 0){
+					targetTop = offset.top - targetHeight - arrowSize;
+					targetLeft = offset.left;
+					wayCls = "z-dropdown-menu-bottom";
+				}else if((offset.left - scrollLeft) - (targetWidth + arrowSize) >= 0){
+					targetTop = offset.top
+					targetLeft = offset.left - targetWidth - arrowSize;
+					wayCls = "z-dropdown-menu-right z-dropdown-menu-child";
+				}else{
+					targetTop = offset.top
+					targetLeft = offset.left + width + arrowSize;
+					wayCls = "z-dropdown-menu-child";
+				}
+
+				html.show().className(cls + wayCls).css({'top': targetTop, 'left': targetLeft})
 			}
 		},
 		goTop: function(opts) {
@@ -409,7 +500,7 @@
 				time: z.transTime
 			}
 			var rollBtn = _this
-			var options = getOpts(rollBtn, inits, opts)
+			var options = _getOpts(rollBtn, inits, opts)
 			$(w).on('scroll', function() {
 				if (!rollBtn.length) return rollBtn
 				if ($(this).scrollTop() > options.top) {
@@ -486,7 +577,7 @@
 				step: 1
 			}
 			_this.each(function() {
-				var options = getOpts($(this), inits, opts)
+				var options = _getOpts($(this), inits, opts)
 				numberBox($(this), options)
 			})
 			return _this
@@ -511,7 +602,7 @@
 				child: '.z-dropdown-menu',
 				toggle: true
 			}
-			var options = getOpts(nav, inits, opts)
+			var options = _getOpts(nav, inits, opts)
 			mobileNav(nav, options)
 			return _this
 		},
@@ -561,7 +652,7 @@
 				mb: 50,
 				done: done
 			}
-			var options = getOpts(_this, inits, opts)
+			var options = _getOpts(_this, inits, opts)
 			flow(_this, options)
 			return _this
 		},
@@ -593,7 +684,7 @@
 				$(_b).on('mouseenter', selector, function() {
 					var othis = $(this)
 					isTree = othis.parents(cls).length
-					if ((isTree && bool(othis.parent().zdata('toggle'))) || !isTree) othis.siblings(selector).removeClass(z.active)
+					if ((isTree && _bool(othis.parent().zdata('toggle'))) || !isTree) $(selector).removeClass(z.active)
 					othis.addClass(z.active)
 				})
 				$(_b).on('mouseleave', selector, function() {
@@ -608,7 +699,7 @@
 					if (isTree && othis.context === ev.target.parentNode) ev.preventDefault()
 					if (othis.hasClass(z.active)) othis.removeClass(z.active)
 					else {
-						if ((isTree && bool(othis.parent().zdata('toggle'))) || !isTree) othis.siblings(selector).removeClass(z.active)
+						if ((isTree && _bool(othis.parent().zdata('toggle'))) || !isTree) $(selector).removeClass(z.active)
 						othis.addClass(z.active)
 					}
 				})
@@ -622,17 +713,6 @@
 		}
 	})
 
-	function getCb(args) {
-		var cb
-		$.each(args, function(i, v) {
-			if ($.type(v) === 'function') {
-				cb = v
-				return false
-			}
-		})
-		return cb
-	}
-
 	function album(ele, opts) {
 		ele.css('cursor', 'pointer')
 		$(_b).on(_ck, ele.selector, function() {
@@ -644,15 +724,15 @@
 			var groups = []
 			var group = _this.zdata('group')
 			var index = 0
-			if (!bool(group, true)) {
+			if (!_bool(group, true)) {
 				$(ele.selector + '[zdata-group="' + group + '"]').each(function() {
 					groups.push(this)
 				})
 			}
 			if (groups.length) {
 				groups.sort(function(a, b) {
-					var aint = bool($(a).zdata('index'), true) ? parseInt($(a).index()) : parseInt($(a).zdata('index'))
-					var bint = bool($(b).zdata('index'), true) ? parseInt($(b).index()) : parseInt($(b).zdata('index'))
+					var aint = _bool($(a).zdata('index'), true) ? parseInt($(a).index()) : parseInt($(a).zdata('index'))
+					var bint = _bool($(b).zdata('index'), true) ? parseInt($(b).index()) : parseInt($(b).zdata('index'))
 					return aint - bint
 				})
 				$.each(groups, function(k, v) {
@@ -664,7 +744,7 @@
 			var htmls = [
 				'<div class="z-album">',
 				'<span class="z-close z-action-close" zdata-box=".z-album">&times;</span>',
-				'<div class="z-album-content '+ z.animCls +' ' + getAnim() + '">',
+				'<div class="z-album-content '+ z.animCls +' ' + _getAnim() + '">',
 				'<div class="z-imgbox"></div>',
 				'<div class="z-tipbox"></div>',
 				'</div>',
@@ -680,7 +760,7 @@
 				$(_b).append(html)
 				showImg()
 			}, function() {
-				doClose(html, null, true, box)
+				_doClose(html, null, true, box)
 			})
 
 			function showImg() {
@@ -771,7 +851,7 @@
 			}() : item.offset().top
 
 			if (elemTop >= start && elemTop <= end) {
-				if (!item.attr('src')) {
+				if (item.zdata('src')) {
 					var src = item.zdata('src')
 					loadImg(src, function() {
 						var next = ele.eq(index)
@@ -826,7 +906,7 @@
 	function flow(ele, opts) {
 		var more = $('<button type="button" class="z-btn z-block z-btn-flow">' + opts.eleTxt + '</button>')
 		var page = 1
-		var lock, isOver, lazyImgFn, timer;
+		var lock, isOver, lazyImgFn = _bool(opts.isLazyimg), timer
 		var notDocment = opts.scrollElem && opts.scrollElem !== d
 		if (!ele.find('.z-btn-flow').length) {
 			ele.append(more)
@@ -835,13 +915,11 @@
 			if (isOver) return;
 			lock || done()
 		})
-		if (bool(opts.isLazyimg)) {
-			lazyImgFn = lazyimg
-		}
+		lazyImgFn && lazyimg(ele.find('img'), opts.scrollElem, $.type(opts.isLazyimg) === 'function' ? opts.isLazyimg : null, true)
 		if (!opts.isAuto) return ele
 		$(opts.scrollElem).on('scroll', function() {
 			var _this = $(this),
-				top = _this.scrollTop();
+				top = _this.scrollTop()
 
 			if (timer) clearTimeout(timer)
 			if (isOver) return ele
@@ -849,7 +927,7 @@
 			timer = setTimeout(function() {
 				var height = notDocment ? _this.innerHeight() : winHeight
 				var scrollHeight = notDocment ? _this.prop('scrollHeight') : d.documentElement.scrollHeight
-				lazyImgFn && lazyImgFn(ele.find('img'), opts.scrollElem, $.type(opts.isLazyimg) === 'function' ? opts.isLazyimg : null, true)
+				lazyImgFn && lazyimg(ele.find('img'), opts.scrollElem, $.type(opts.isLazyimg) === 'function' ? opts.isLazyimg : null, true)
 				if (scrollHeight - top - height <= opts.mb) {
 					lock || done()
 				}
@@ -921,7 +999,7 @@
 		var menu = $('<ul class="z-menu"><li></li><li></li><li></li></ul>')
 		var child = opts.child.substr(1)
 		items.each(function() {
-			if ($(this).hasClass(opts.logo.replace(',', ''))) logo = $(this)
+			if ($(this).hasClass(opts.logo.replace('.', ''))) logo = $(this)
 			fixNav.append($(this).addClass('z-nav-item'))
 		})
 		nav.html(logo).append(menu).addClass('z-nav-fixed-top').removeClass('z-action-mobilenav')
@@ -1004,11 +1082,11 @@
 			var zname = this.name
 			var zid = zname + i.toString()
 			var type = this.type
-			if (bool($(this).zdata('noreform'))) {
+			if (_bool($(this).zdata('noreform'))) {
 				$(this).show()
 				return true
 			}
-			if (bool($(this).zdata('name'), true)) {
+			if (_bool($(this).zdata('name'), true)) {
 				var html = '<div class="z-unselect z-form-' + type + function() {
 					return isCheck ? " " + z.active : ""
 				}() + '" zdata-id="' + zid + '" zdata-name="' + zname + '"><i class="z-anim z-icon">' + function() {
@@ -1033,7 +1111,7 @@
 		function require() {
 			if (i < files.length) {
 				var file = files[i]
-				if (getZsrc(file)) {
+				if (_getZsrc(file)) {
 					onload()
 					return
 				}
@@ -1068,26 +1146,6 @@
 		}
 	}
 
-	function getZsrc(src) {
-		var pt = d.getElementsByTagName('script')
-		for (var i = 0; i < pt.length; i++) {
-			var s = pt[i]
-			if (src && s.src.indexOf(src) !== -1) {
-				return true
-			}
-			if (!src && s.src.indexOf('js/z.js') !== -1) {
-				return s.src.replace('z.js', '')
-			} else if (!src && s.src.indexOf('js/z.min.js') !== -1) {
-				return s.src.replace('z.min.js', '')
-			}
-		}
-		return false
-	}
-
-	function getAnim() {
-		return z.anims[Math.floor(Math.random() * z.anims.length)]
-	}
-
 	function showMsg(type, content, title, btns, cb) {
 		var html = ''
 		var htmls = []
@@ -1109,12 +1167,12 @@
 				btns = def_btns
 			}
 			title = title || def_title
-			if (bool(btns, true)) btns = def_btns
-			if (bool(content, true)) content = ''
+			if (_bool(btns, true)) btns = def_btns
+			if (_bool(content, true)) content = ''
 			htmls = [
 				'<div class="z-modal z-move ' + function() {
 					return 'open' === type ? '' : 'z-modal-sm'
-				}() + ' '+z.animCls+' ' + getAnim() + '">',
+				}() + ' '+z.animCls+' ' + _getAnim() + '">',
 				'<div class="z-modal-header z-move-title z-action-move">',
 				closeBtn,
 				'<h4 class="z-modal-title">' + title + '</h4>',
@@ -1144,6 +1202,7 @@
 					'top': (wh - hig) / 3 > 0 ? (wh - hig) / 3 : 0,
 					'left': (ww - win) / 2 > 0 ? (ww - win) / 2 : 0
 				})
+				_modalHeight(html)
 				html.find('.z-modal-footer .z-btn').on(_ck, function() {
 					cb && cb(html, $(this).index())
 				})
@@ -1174,23 +1233,8 @@
 			$(_b).append(html)
 			cb && cb()
 			setTimeout(function() {
-				doClose(html)
+				_doClose(html)
 			}, delay)
-		}
-	}
-
-	function doClose(box, cb, rm, anibox) {
-		var anibox = anibox || box
-		var delay = z.closeTime
-		if (bool(rm, true)) rm = true
-		rm = bool(rm)
-		if (rm) anibox.flyOut(delay, doing)
-		else box.slideUp(delay, doing)
-
-		function doing() {
-			closeShade(delay)
-			if (rm) box.remove()
-			if (cb) cb()
 		}
 	}
 
@@ -1199,7 +1243,7 @@
 			if (ele.hasClass('z-disabled')) return false
 			var txt = ele.zdata('loading-text') || 'loading'
 			txt = z.loadingHtml + '  ' + txt
-			ele.attr('disabled', 'true').addClass('z-disabled').attr('zdata-old-text', ele.text()).html(txt)
+			ele.attr('disabled', 'true').addClass('z-disabled').attr('zdata-old-text', ele.html()).html(txt)
 		} else if (type === 'reset') {
 			if (!ele.hasClass('z-disabled')) return false
 			var txt = ele.zdata('old-text') || 'resetBtn'
@@ -1209,18 +1253,21 @@
 
 	function tips(ele, opts) {
 		var timer = null
-		$(_b).off('mouseenter').on('mouseenter', ele, function() {
+		$(_b).on('mouseenter', ele, function(e) {
+			var ev = e || event
 			var title = this.title
 			var ztitle = $(this).zdata('title')
+			var _this = $(this)
+			ev.stopPropagation()
 			if (!title && !ztitle) return
 			if (title) {
 				$(this).zdata('title', title)
 				$(this).removeAttr('title')
 			}
-			opts = getOpts($(this), opts)
+			opts = _getOpts(_this, opts)
 			var wid = this.offsetWidth
-			var pos = $(this).offset()
-			var content = $(this).zdata('title')
+			var pos = _this.offset()
+			var content = _this.zdata('title')
 			var html = ''
 			var htmls = [
 				'<div class="z-tipsbox ' + z.anims[1] + ' ' + z.animCls + '" style="z-index:' + z.zIndex() + ';top:' + (pos.top - 40) + 'px;left:' + function() {
@@ -1249,23 +1296,24 @@
 			$(_b).append(html)
 			var hig = pos.top - html.innerHeight() - 10
 			if ((hig - $(d).scrollTop()) < 0) {
-				html.css('top', pos.top + $(this).innerHeight() + 10).find('i').css({
+				html.css('top', pos.top + _this.innerHeight() + 10).find('i').css({
 					top: '-8px',
 					bottom: 'auto'
 				})
 			} else {
 				html.css('top', hig)
 			}
-			if (bool(opts.autoDie)) {
+			if (_bool(opts.autoDie)) {
 				if (timer) clearTimeout(timer)
 				timer = setTimeout(function() {
 					html.remove()
 				}, 5000)
 			}
-		})
-		$(_b).off('mouseleave').on('mouseleave', ele, function() {
-			if (timer) clearTimeout(timer)
-			$('.z-tipsbox').remove()
+
+			_this.on('mouseleave', function(){
+				if (timer) clearTimeout(timer)
+				$('.z-tipsbox').remove()
+			})
 		})
 	}
 
@@ -1277,13 +1325,13 @@
 		var hig = 0
 		var ww = winWidth
 		var wh = winHeight
+		var box = null
 		$(w).on('mousemove', function(e) {
-			if (!isDown) return
+			if (!isDown || !box) return
 			var ev = e || event
 			ev.stopPropagation()
 			ev.preventDefault()
-			var box = $(ele).parents(opts.box)
-			var mpos = mousePosition(ev)
+			var mpos = _mousePosition(ev)
 			var left = mpos.left - mleft
 			var top = mpos.top - mtop
 			if (top < opts.top) top = opts.top
@@ -1299,29 +1347,24 @@
 		$(_b).on('mousedown', ele, function(e) {
 			isDown = true
 			var ev = e || event
-			var box = $(this).parents(opts.box)
+			box = $(this).parents(opts.box)
 			var pos = box.offset()
-			var mpos = mousePosition(ev)
+			var mpos = _mousePosition(ev)
 			wid = box.innerWidth()
 			hig = box.innerHeight()
 			mtop = mpos.top - (pos.top - $(d).scrollTop())
 			mleft = mpos.left - (pos.left - $(d).scrollLeft())
+			box.css('zIndex', z.zIndex())
 		})
 
 		$(_b).on('mouseup', ele, function() {
 			isDown = false
+			box = null
 		})
 	}
 
-	function mousePosition(ev) {
-		return {
-			top: ev.clientY,
-			left: ev.clientX
-		}
-	}
-
 	function slider(ele, opts) {
-		opts = getOpts(ele, opts)
+		opts = _getOpts(ele, opts)
 		var width = ele.innerWidth()
 		var item = ele.find(opts.item)
 		var items = ele.find(opts.items)
@@ -1335,7 +1378,7 @@
 		var mtype = 'marginLeft'
 		var sliderBtn = leg > 1 && !z.isMobile ? $(z.sliderBtn) : ''
 
-		if (bool(opts.dots)) {
+		if (_bool(opts.dots)) {
 			ele.append('<div class="z-dots">' + function() {
 				var li = ''
 				for (var i = 0; i < leg; i++) {
@@ -1347,7 +1390,7 @@
 
 			dots = ele.find('.z-dots>a')
 
-			if (bool(opts.keys)) {
+			if (_bool(opts.keys)) {
 				dots.on(_ck, function() {
 					movement(-($(this).index() + 1) * width)
 				})
@@ -1477,7 +1520,7 @@
 			aniBoxTops.push(top)
 			$(this).css('opacity', 0).zdata('top', top)
 			if (!$(this).zdata('aniName')) {
-				$(this).zdata('aniName', opts.aniName ? opts.aniName : getAnim())
+				$(this).zdata('aniName', opts.aniName ? opts.aniName : _getAnim())
 			}
 			if (!$(this).zdata('aniTime')) {
 				$(this).zdata('aniTime', opts.aniTime)
@@ -1521,17 +1564,94 @@
 		}
 	}
 
-	function getOpts(ele, inits, opts) {
+	function isMobile() {
+		return navigator.userAgent.match(/mobile/i)
+	}
+
+	function closeShade(time, cb, rm) {
+		if (!zShade) return false
+		if(rm)	shades = 0
+		--shades
+		if(shades <= 0){
+			shades = 0
+			if ($.type(time) === 'function') {
+				cb = time
+				time = z.transTime
+			}
+			time = time || z.transTime
+			zShade.fadeOut(time, function() {
+				zShade.remove()
+				$(_b).removeClass('overflow')
+				zShade = null
+				cb && cb()
+			})
+		}
+	}
+
+	function _getCb(args) {
+		var cb
+		$.each(args, function(i, v) {
+			if ($.type(v) === 'function') {
+				cb = v
+				return false
+			}
+		})
+		return cb
+	}
+
+	function _getZsrc(src) {
+		var pt = d.getElementsByTagName('script')
+		for (var i = 0; i < pt.length; i++) {
+			var s = pt[i]
+			if (src && s.src.indexOf(src) !== -1) {
+				return true
+			}
+			if (!src && s.src.indexOf('js/z.js') !== -1) {
+				return s.src.replace('z.js', '')
+			} else if (!src && s.src.indexOf('js/z.min.js') !== -1) {
+				return s.src.replace('z.min.js', '')
+			}
+		}
+		return false
+	}
+
+	function _getAnim() {
+		return z.anims[Math.floor(Math.random() * z.anims.length)]
+	}
+
+	function _doClose(box, cb, rm, anibox) {
+		var anibox = anibox || box
+		var delay = z.closeTime
+		if (_bool(rm, true)) rm = true
+		rm = _bool(rm)
+		if (rm) anibox.flyOut(delay, doing)
+		else box.slideUp(delay, doing)
+
+		function doing() {
+			!box.hasClass(zBoxs[0].cls.replace('.', '')) && closeShade(delay)
+			if (rm) box.remove()
+			if (cb) cb()
+		}
+	}
+
+	function _mousePosition(ev) {
+		return {
+			top: ev.clientY,
+			left: ev.clientX
+		}
+	}
+
+	function _getOpts(ele, inits, opts) {
 		var options = inits
 		if (opts) options = $.extend({}, inits, opts)
 
 		$.each(options, function(key, val) {
-			if (!bool(ele.zdata(key), true)) options[key] = ele.zdata(key)
+			if (!_bool(ele.zdata(key), true)) options[key] = ele.zdata(key)
 		})
 		return options
 	}
 
-	function bool(type, isUnde) {
+	function _bool(type, isUnde) {
 		var unde = $.type(type) === 'undefined'
 		if (isUnde) return unde
 		if (unde) return false
@@ -1539,24 +1659,12 @@
 		else if (type == 'false') return false
 		return true
 	}
-
-	function isMobile() {
-		return navigator.userAgent.match(/mobile/i)
-	}
-
-	function closeShade(time, cb) {
-		if (!zShade) return false
-		if ($.type(time) === 'function') {
-			cb = time
-			time = z.transTime
-		}
-		time = time || z.transTime
-		zShade.fadeOut(time, function() {
-			zShade.remove()
-			$(_b).removeClass('overflow')
-			zShade = null
-			cb && cb()
-		})
+	
+	function _modalHeight(ele){
+		var header = ele.children('.z-modal-header')
+		var body = ele.children('.z-modal-body')
+		var footer = ele.children('.z-modal-footer')
+		body.css('maxHeight', ele.innerHeight() - header.innerHeight() - footer.innerHeight())
 	}
 
 
@@ -1572,6 +1680,9 @@
 			// 移动端替换导航
 			$('.z-action-mobilenav').mobileNav()
 		} else {
+			// 悬浮卡片
+			$('.z-action-hovercard').hovercard()
+			
 			// tips
 			$('.z-action-tips').tips()
 
@@ -1651,7 +1762,7 @@
 			})
 			if (!box) box = _this.parents(_this.zdata('box'))
 			ibox = ibox || box
-			if (box && box.length) doClose(box, null, _this.zdata('remove'), ibox)
+			if (box && box.length) _doClose(box, null, _this.zdata('remove'), ibox)
 		})
 
 		// 上一页

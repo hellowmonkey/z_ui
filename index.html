@@ -66,6 +66,7 @@
 						<li><a href="#lazyimg">图片懒加载 <code>$(ele).lazyimg</code></a></li>
 						<li><a href="#dropdown">导航伸缩 <code>$(ele).dropdown</code></a></li>
 						<li><a href="#album">相册 <code>$(ele).album</code></a></li>
+						<li><a href="#hovercard">悬浮卡片 <code>$(ele).hovercard</code></a></li>
 					</ul>
 				</li>
 				<li class="z-nav-item"><a href="https://github.com/hellowmonkey/z_ui" target="_blank">下载</a></li>
@@ -383,8 +384,8 @@
 				<pre class="z-action-code" zdata-encode="true"><div class="z-text-blue">测试文字</div>
 					<div class="z-bg-blue">测试文字</div></pre>
 				<div class="z-mb10">
-					关闭按钮：<code>z-close</code><button class="z-close z-action-close" style="float: none">&times;</button>
-					<pre class="z-action-code" zdata-encode="true"><button class="z-close z-action-close">&amp;times;</button></pre>
+					关闭按钮：<code>z-close</code><button class="z-close" style="float: none">&times;</button>
+					<pre class="z-action-code" zdata-encode="true"><button class="z-close">&amp;times;</button></pre>
 				</div>
 				<div class="z-mb10">
 					三角形：<code>z-caret</code><span class="z-caret"></span>
@@ -1011,11 +1012,10 @@
 					$(ele).mobileNav({
 						item: '.z-nav-item',
 						logo: 'z-logo',
-						style: null,// {}
+						navCls: 'z-nav-blue',
+						menuCls: '',
 						child: '.z-dropdown-menu',
-						toggle: true,
-						class: '',
-						menu: '&lt;span class="z-icon z-pull-right" style="line-height:1em;color:#fff;padding: 13px;font-size: 24px;"&gt;&amp;#xe60d;&lt;/span&gt;'
+						toggle: true
 					})
 				</pre>
 				<div class="z-quote z-quote-red" id="numberbox">数字输入框</div>
@@ -1106,7 +1106,7 @@
 					type: 'click' || 'hover'
 				</pre>
 				<div class="z-quote z-quote-red" id="album">相册</div>
-				<div class="z-box mb10">通过<code>z-action-album</code>快速调用，通过指定<code>zdata-bigsrc="string"</code>来指定显示的大图地址，不设定会使用图片的src。通过指定<code>zdata-group="number"</code>来指定分组。通过<code>zdata-index="number"</code>来指定显示顺序。通过设置<code>title</code>或<code>zdata-title</code>属性指定图片说明。</div>
+				<div class="z-box z-mb10">通过<code>z-action-album</code>快速调用，通过指定<code>zdata-bigsrc="string"</code>来指定显示的大图地址，不设定会使用图片的src。通过指定<code>zdata-group="number"</code>来指定分组。通过<code>zdata-index="number"</code>来指定显示顺序。通过设置<code>title</code>或<code>zdata-title</code>属性指定图片说明。</div>
 				<img src="images/1.jpg" zdata-index="2" width="100" zdata-group="1" class="z-action-album" title="图片说明">
 				<img src="images/2.jpg" zdata-index="1" width="100" zdata-group="1" class="z-action-album" title="图片说明">
 				<img src="images/3.jpg" zdata-index="3" width="100" zdata-group="1" class="z-action-album" title="图片说明">
@@ -1114,6 +1114,8 @@
 					<img src="images/1.jpg" width="100" class="z-action-album">
 					$(ele).album()
 				</pre>
+				<div class="z-quote z-quote-red" id="hovercard">悬浮卡片</div>
+				<div class="z-box z-mb10">通过<code>z-action-hovercard</code>快速调用。通过<code>zdata-html="string"</code>或<code>zdata-url="string"</code>来指定获取内容的方式。<code>zdata-html</code> 直接填充指定的html，<code>zdata-url</code> 指定获取的地址，通过ajax获取填充内容</div>
 			</div>
 		</fieldset>
 	</div>
