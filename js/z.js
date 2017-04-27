@@ -79,7 +79,7 @@
 				zShade = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';' + function() {
 					return _bool(opacity) ? 'opacity:' + opacity : ''
 				}() + '"></div>')
-				$(_b).addClass('overflow').append(zShade)
+				$(_b).addClass('z-overflow').append(zShade)
 				zShade.fadeIn(z.transTime, createCb && createCb)
 			} else {
 				createCb && createCb()
@@ -262,15 +262,15 @@
 			w.history.go(-1)
 		},
 		getFileUrl: function(file) {
-			var _url
-			if (navigator.userAgent.indexOf("MSIE")>=1) { // IE 
-				_url = file.value
-			} else if(navigator.userAgent.indexOf("Firefox")>0) { // Firefox 
-				_url = w.URL.createObjectURL(file.files.item(0))
-			} else if(navigator.userAgent.indexOf("Chrome")>0) { // Chrome 
-				_url = w.URL.createObjectURL(file.files.item(0))
-			} 
-			return _url
+			var url = null
+            if (window.createObjectURL != undefined) {
+                url = window.createObjectURL(file)
+            } else if (window.URL != undefined) {
+                url = window.URL.createObjectURL(file)
+            } else if (window.webkitURL != undefined) {
+                url = window.webkitURL.createObjectURL(file)
+            }
+            return url
 		},
 		reload: location.reload,
 		supportCss3: supportCss3,

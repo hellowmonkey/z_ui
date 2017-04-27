@@ -81,7 +81,7 @@ body {
 	color: #333;
 	background-color: #fff;
 }
-body.overflow{
+body.z-overflow{
 	height: 100%;
 	overflow-y: hidden;
 }
@@ -394,14 +394,13 @@ input[type="button"]:disabled {
 	}
 }
 
-.z-caret {
+ .z-caret {
 	display: inline-block;
 	width: 0;
 	height: 0;
 	margin-left: 2px;
 	vertical-align: middle;
-	border-top: 4px dashed;
-	border-top: 4px solid \9;
+	border-top: 4px solid;
 	border-right: 4px solid transparent;
 	border-left: 4px solid transparent;
 }
@@ -1461,28 +1460,29 @@ input[type="search"] {
     content: "";
     right: auto;
     bottom: auto;
+    border-width: 0 8px 8px 8px;
+    border-style: solid;
+    border-color: transparent transparent #fff transparent;
 }
 .z-dropdown-menu:before {
-    border: 8px solid transparent;
-    border-bottom-color: rgba(0, 0, 0, .15);
-    top: -16px;
-    left: 25px;
+	border-bottom-color: rgba(0, 0, 0, .15);
+    top: -9px;
+    left: 20px;
 }
 .z-dropdown-menu:after {
-	border: 7px solid transparent; 
-	border-bottom-color: #fff; 
-    top: -14px;
-    left: 26px;
+	border-width: 0 7px 7px 7px;
+    top: -8px;
+    left: 21px;
 }
 
 .z-dropdown-menu-right:before, .z-dropdown-menu-right:after{
 	left: auto;
 }
 .z-dropdown-menu-right:before{
-    right: 25px;
+    right: 20px;
 }
 .z-dropdown-menu-right:after{
-    right: 26px;
+    right: 21px;
 } 
 
 .z-dropdown-menu .z-dropdown-menu,.z-dropdown-menu-child{
@@ -1491,20 +1491,17 @@ input[type="search"] {
     top: -10px;
     margin: 0 0 0 2px;
 } 
-.z-dropdown-menu .z-dropdown-menu:before, .z-dropdown-menu .z-dropdown-menu:after,
-.z-dropdown-menu-child:before, .z-dropdown-menu-child:after{
-	-webkit-transform: rotate(-90deg);
-	-ms-transform: rotate(-90deg);
-	-o-transform: rotate(-90deg);
-	transform: rotate(-90deg);
-}
 .z-dropdown-menu .z-dropdown-menu:before,.z-dropdown-menu-child:before{
+	border-width: 8px 8px 8px 0;
+	border-color: transparent rgba(0, 0, 0, .15) transparent transparent;
 	top: 11px;
-	left: -16px;
+	left: -9px;
 }
 .z-dropdown-menu .z-dropdown-menu:after,.z-dropdown-menu-child:after{
+	border-width: 7px 7px 7px 0;
+	border-color: transparent #fff transparent transparent;
 	top: 12px;
-	left: -14px;
+	left: -8px;
 } 
 .z-dropdown-menu .z-dropdown-menu-right,.z-dropdown-menu-child.z-dropdown-menu-right{
 	left: auto;
@@ -1512,36 +1509,31 @@ input[type="search"] {
     top: -10px;
     margin: 0 0 0 2px;
 }
-.z-dropdown-menu .z-dropdown-menu-right:before, .z-dropdown-menu .z-dropdown-menu-right:after,
-.z-dropdown-menu-child.z-dropdown-menu-right:before,.z-dropdown-menu-child.z-dropdown-menu-right:after{
-	-webkit-transform: rotate(90deg);
-	-ms-transform: rotate(90deg);
-	-o-transform: rotate(90deg);
-	transform: rotate(90deg);
-}
 .z-dropdown-menu .z-dropdown-menu-right:before,.z-dropdown-menu-child.z-dropdown-menu-right:before{
+	border-width: 8px 0 8px 8px;
+	border-color: transparent transparent transparent rgba(0, 0, 0, .15);
 	top: 11px;
-	right: -16px;
+	right: -9px;
 	left: auto;
 }
 .z-dropdown-menu .z-dropdown-menu-right:after,.z-dropdown-menu-child.z-dropdown-menu-right:after{
+	border-width: 7px 0 7px 7px;
+	border-color: transparent transparent transparent #fff;
 	top: 12px;
-	right: -14px;
+	right: -8px;
 	left: auto;
 }
-.z-dropdown-menu.z-dropdown-menu-bottom:before, .z-dropdown-menu.z-dropdown-menu-bottom:after{
-	-webkit-transform: rotate(180deg);
-	-ms-transform: rotate(180deg);
-	-o-transform: rotate(180deg);
-	transform: rotate(180deg);
-}
 .z-dropdown-menu.z-dropdown-menu-bottom:before{
+	border-width: 8px 8px 0 8px;
+	border-color: rgba(0, 0, 0, .15) transparent transparent transparent;
 	top: auto;
-	bottom: -16px;
+	bottom: -9px;
 }
 .z-dropdown-menu.z-dropdown-menu-bottom:after{
+	border-width: 7px 7px 0 7px;
+	border-color: #fff transparent transparent transparent;
 	top: auto;
-	bottom: -14px;
+	bottom: -8px;
 }
 .z-dropdown-menu .z-dropdown:hover .z-dropdown-menu{
 	display: block;
@@ -1549,8 +1541,8 @@ input[type="search"] {
 
 .z-dropdown-menu>li.z-divider {
 	border-bottom: 1px solid #e5e5e5;
-	margin-bottom: 9px;
-	padding-bottom: 9px;
+	margin-bottom: 7px;
+	padding-bottom: 7px;
 }
 
 .z-dropdown-menu>li>a {
