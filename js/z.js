@@ -263,6 +263,7 @@
 		},
 		getFileUrl: function(file) {
 			var url = null
+			file = file.files[0]
             if (window.createObjectURL != undefined) {
                 url = window.createObjectURL(file)
             } else if (window.URL != undefined) {
@@ -1581,7 +1582,7 @@
 			time = time || z.transTime
 			zShade.fadeOut(time, function() {
 				zShade.remove()
-				$(_b).removeClass('overflow')
+				$(_b).removeClass('z-overflow')
 				zShade = null
 				cb && cb()
 			})
