@@ -1,31 +1,31 @@
 ;
 (function(w, d, $, undefined) {
-	var root_path = _getZsrc()
-	var libs_path = root_path.replace('js/', '') + 'libs/'
-	var isMobile = isMobile()
-	var dateNow = new Date()
-	var zShade = null
-	var shades = 0
-	var zBoxs = [{
+	var root_path = _getZsrc(),
+	libs_path = root_path.replace('js/', '') + 'libs/',
+	isMobile = isMobile(),
+	dateNow = new Date(),
+	zShade = null,
+	shades = 0,
+	zBoxs = [{
 		cls: '.z-alert'
 	}, {
 		cls: '.z-modal',
 	}, {
 		cls: '.z-album',
 		ani: true
-	}]
-	var log = console.log
-	var _ck = 'click'
-	var _b = 'body'
+	}],
+	log = console.log,
+	_ck = 'click',
+	_b = 'body',
 
-	var winWidth = $(w).innerWidth()
-	var winHeight = $(w).innerHeight()
+	winWidth = $(w).innerWidth(),
+	winHeight = $(w).innerHeight(),
 
-	var transTime = 200
+	transTime = 200,
 
-	var aniBoxTops = []
+	aniBoxTops = [],
 
-	var z = {
+	z = {
 		version: '1.0.0',
 		root_path: root_path,
 		libs_path: libs_path,
@@ -36,18 +36,10 @@
 		anims: ['z-anim-upbit', 'z-anim-scale', 'z-anim-scaleSpring', 'z-anim-up', 'z-anim-downbit'],
 		animCls: 'z-anim-ms3',
 		libs: {
-			form: {
-				src: libs_path + 'jquery.form.min'
-			},
-			waterfall: {
-				src: libs_path + 'masonry-docs.min'
-			},
-			jscrollpane: {
-				src: libs_path + 'jquery.jscrollpane.min'
-			},
-			datepicker: {
-				src: libs_path + 'bootstrap-datetimepicker.min'
-			}
+			form: libs_path + 'jquery.form.min',
+			waterfall: libs_path + 'masonry-docs.min',
+			jscrollpane: libs_path + 'jquery.jscrollpane.min',
+			datepicker: libs_path + 'bootstrap-datetimepicker.min'
 		},
 		title: {
 			alert: '警告框',
@@ -67,9 +59,9 @@
 		sliderBtn: '<button class="z-slider-btn z-icon z-slider-prev">&#xe605;</button><button class="z-slider-btn z-icon z-slider-next">&#xe61d;</button>',
 		winWidth: winWidth,
 		winHeight: winHeight,
-	}
+	},
 
-	var sliderLeftCls = function(){
+	sliderLeftCls = function(){
 		return $(z.sliderBtn)[0].className
 	}()
 
@@ -91,20 +83,11 @@
 		},
 		closeShade: closeShade,
 		resetForm: function(box) {
-			var boxs = []
 			if (_bool(box, true)) {
-				var radios = $('.z-form input[type="radio"]')
-				if (radios.length) boxs.push(radios)
-				var checkboxs = $('.z-form input[type="checkbox"]')
-				if (checkboxs.length) boxs.push(checkboxs)
+				resetForm($('.z-form input[type="radio"],.z-form input[type="checkbox"]'))
 			} else {
 				if (!box instanceof $) box = $(box)
-				boxs.push(box)
-			}
-			if (boxs.length) {
-				for (var i = 0; i < boxs.length; i++) {
-					if (boxs[i].length) resetForm(boxs[i])
-				}
+				resetForm(box)
 			}
 		},
 		submit: function(ele, cb, tip) {
@@ -112,11 +95,10 @@
 			var datatip = _bool(form.zdata('tip'), true)
 			tip = (_bool(tip, true) && datatip) ? '数据提交中...' : (datatip ? tip : form.zdata('tip'))
 			if (!form || !form.length || !form.attr('action')) return false
-			if ($.fn.ajaxSubmit && z.libs.form.isloaded) {
+			if ($.fn.ajaxSubmit) {
 				doing()
 			} else {
-				$.loadJs(z.libs.form.src, function() {
-					z.libs.form.isloaded = true
+				$.loadJs(z.libs.form, function() {
 					doing()
 				})
 			}
@@ -263,15 +245,26 @@
 		},
 		getFileUrl: function(file) {
 			var url = null
-			file = file.files[0]
-            if (window.createObjectURL != undefined) {
-                url = window.createObjectURL(file)
-            } else if (window.URL != undefined) {
-                url = window.URL.createObjectURL(file)
-            } else if (window.webkitURL != undefined) {
-                url = window.webkitURL.createObjectURL(file)
-            }
-            return url
+			var urls = []
+			var files = file.files
+			if(!files || !files.length)	return
+			$.each(files, function(k, v){
+				urls.push(getUrl(v))
+			})
+			if(urls.length > 1)	return urls
+			else 	return urls[0]
+				
+			function getUrl(f){
+				var _url = null
+	            if (w.createObjectURL != undefined) {
+	                _url = w.createObjectURL(f)
+	            } else if (w.URL != undefined) {
+	                _url = w.URL.createObjectURL(f)
+	            } else if (w.webkitURL != undefined) {
+	                _url = w.webkitURL.createObjectURL(f)
+	            }
+	            return _url
+			}
 		},
 		reload: location.reload,
 		supportCss3: supportCss3,
@@ -373,11 +366,10 @@
 		waterfall: function(opts) {
 			var _this = $(this)
 			if (!_this.length) return _this
-			if ($.fn.masonry && z.libs.waterfall.isloaded) {
+			if ($.fn.masonry) {
 				doing()
 			} else {
-				$.loadJs(z.libs.waterfall.src, function() {
-					z.libs.waterfall.isloaded = true
+				$.loadJs(z.libs.waterfall, function() {
 					doing()
 				})
 			}
@@ -399,12 +391,11 @@
 		datepicker: function(opts) {
 			var _this = $(this)
 			if (!_this.length) return _this
-			if ($.fn.datetimepicker && z.libs.datepicker.isloaded) {
+			if ($.fn.datetimepicker) {
 				doing()
 			} else {
-				$.loadCss(z.libs.datepicker.src, function() {
-					$.loadJs(z.libs.datepicker.src, function() {
-						z.libs.datepicker.isloaded = true
+				$.loadCss(z.libs.datepicker, function() {
+					$.loadJs(z.libs.datepicker, function() {
 						doing()
 					})
 				})
@@ -427,6 +418,7 @@
 				var ev = e || event
 				var _this = $(this)
 				var loading = '<div class="z-loadingbox">'+z.loadingHtml+'</div>'
+				var isHover = false
 				ev.stopPropagation()
 				timer && clearTimeout(timer)
 				timer = setTimeout(function(){
@@ -454,12 +446,23 @@
 							show()
 						})
 					}
+					if(!html)	return
+					html.on('mouseenter', function(){
+						isHover = true
+					})
+					html.on('mouseleave', function(){
+						timer && clearTimeout(timer)
+						html.fadeOut(z.transTime)
+					})
 				}, 800)
 
 				_this.on('mouseleave', function(){
 					timer && clearTimeout(timer)
-					html && html.fadeOut(z.transTime)
+					setTimeout(function(){
+						!isHover && html && html.fadeOut(z.transTime)
+					}, 400)
 				})
+				
 			})
 
 			function show(){
@@ -1077,8 +1080,8 @@
 		})
 	}
 
-	function resetForm(boxs) {
-		boxs.each(function(i) {
+	function resetForm(ele) {
+		ele.length && ele.each(function(i) {
 			var isCheck = this.checked
 			var zname = this.name
 			var zid = zname + i.toString()
