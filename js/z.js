@@ -1,69 +1,68 @@
 ;
 (function(w, d, $, undefined) {
 	var root_path = _getZsrc(),
-	libs_path = root_path.replace('js/', '') + 'libs/',
-	isMobile = isMobile(),
-	dateNow = new Date(),
-	zShade = null,
-	shades = 0,
-	zBoxs = [{
-		cls: '.z-alert'
-	}, {
-		cls: '.z-modal',
-	}, {
-		cls: '.z-album',
-		ani: true
-	}],
-	log = console.log,
-	_ck = 'click',
-	_b = 'body',
+		libs_path = root_path.replace('js/', '') + 'libs/',
+		isMobile = isMobile(),
+		dateNow = new Date(),
+		zShade = null,
+		shades = 0,
+		zBoxs = [{
+			cls: '.z-alert'
+		}, {
+			cls: '.z-modal',
+		}, {
+			cls: '.z-album',
+			ani: true
+		}],
+		_ck = 'click',
+		_b = 'body',
 
-	winWidth = $(w).innerWidth(),
-	winHeight = $(w).innerHeight(),
+		winWidth = $(w).innerWidth(),
+		winHeight = $(w).innerHeight(),
 
-	transTime = 200,
+		transTime = 200,
 
-	aniBoxTops = [],
+		aniBoxTops = [],
 
-	z = {
-		version: '1.0.0',
-		root_path: root_path,
-		libs_path: libs_path,
-		index: 99,
-		zIndex: function() {
-			return ++this.index
+		z = {
+			version: '1.0.0',
+			root_path: root_path,
+			libs_path: libs_path,
+			index: 99,
+			zIndex: function() {
+				return ++this.index
+			},
+			anims: ['z-anim-upbit', 'z-anim-scale', 'z-anim-scaleSpring', 'z-anim-up', 'z-anim-downbit'],
+			animCls: 'z-anim-ms3',
+			libs: {
+				form: libs_path + 'jquery.form.min',
+				waterfall: libs_path + 'masonry-docs.min',
+				jscrollpane: libs_path + 'jquery.jscrollpane.min',
+				datepicker: libs_path + 'bootstrap-datetimepicker.min'
+			},
+			title: {
+				alert: '警告框',
+				confirm: '询问框',
+				prompt: '输入框',
+				open: '提示窗体'
+			},
+			btns: ['取消', '确认'],
+			color: ['default', 'blue', 'yellow', 'red', 'dark', 'green'],
+			isMobile: isMobile,
+			transTime: transTime,
+			closeTime: transTime * 0.6,
+			successTime: transTime * 8,
+			active: 'z-active',
+			dt: dateNow,
+			loadingHtml: '<span class="z-anim-rotate z-icon">&#xe624;</span>',
+			sliderBtn: '<button class="z-slider-btn z-icon z-slider-prev">&#xe605;</button><button class="z-slider-btn z-icon z-slider-next">&#xe61d;</button>',
+			winWidth: winWidth,
+			winHeight: winHeight,
 		},
-		anims: ['z-anim-upbit', 'z-anim-scale', 'z-anim-scaleSpring', 'z-anim-up', 'z-anim-downbit'],
-		animCls: 'z-anim-ms3',
-		libs: {
-			form: libs_path + 'jquery.form.min',
-			waterfall: libs_path + 'masonry-docs.min',
-			jscrollpane: libs_path + 'jquery.jscrollpane.min',
-			datepicker: libs_path + 'bootstrap-datetimepicker.min'
-		},
-		title: {
-			alert: '警告框',
-			confirm: '询问框',
-			prompt: '输入框',
-			open: '提示窗体'
-		},
-		btns: ['取消', '确认'],
-		color: ['default', 'blue', 'yellow', 'red', 'dark', 'green'],
-		isMobile: isMobile,
-		transTime: transTime,
-		closeTime: transTime * 0.6,
-		successTime: transTime * 8,
-		active: 'z-active',
-		dt: dateNow,
-		loadingHtml: '<span class="z-anim-rotate z-icon">&#xe624;</span>',
-		sliderBtn: '<button class="z-slider-btn z-icon z-slider-prev">&#xe605;</button><button class="z-slider-btn z-icon z-slider-next">&#xe61d;</button>',
-		winWidth: winWidth,
-		winHeight: winHeight,
-	},
 
-	sliderLeftCls = function(){
-		return $(z.sliderBtn)[0].className
-	}()
+		sliderLeftCls = function() {
+			return $(z.sliderBtn)[0].className
+		}()
 
 	$.extend({
 		createShade: function(createCb, closeCb, opacity) {
@@ -167,10 +166,10 @@
 			showMsg('toast', content, color || z.color[3])
 		},
 		success: function(content, cb) {
-			showMsg('success', content, z.color[5], cb && function(){
+			showMsg('success', content, z.color[5], cb && function() {
 				var html = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';opacity:0;display:block;"></div>')
 				$(_b).append(html)
-				setTimeout(function(){
+				setTimeout(function() {
 					cb()
 					html.remove()
 				}, z.successTime)
@@ -247,23 +246,23 @@
 			var url = null
 			var urls = []
 			var files = file.files
-			if(!files || !files.length)	return
-			$.each(files, function(k, v){
+			if (!files || !files.length) return
+			$.each(files, function(k, v) {
 				urls.push(getUrl(v))
 			})
-			if(urls.length > 1)	return urls
-			else 	return urls[0]
-				
-			function getUrl(f){
+			if (urls.length > 1) return urls
+			else return urls[0]
+
+			function getUrl(f) {
 				var _url = null
-	            if (w.createObjectURL != undefined) {
-	                _url = w.createObjectURL(f)
-	            } else if (w.URL != undefined) {
-	                _url = w.URL.createObjectURL(f)
-	            } else if (w.webkitURL != undefined) {
-	                _url = w.webkitURL.createObjectURL(f)
-	            }
-	            return _url
+				if (w.createObjectURL != undefined) {
+					_url = w.createObjectURL(f)
+				} else if (w.URL != undefined) {
+					_url = w.URL.createObjectURL(f)
+				} else if (w.webkitURL != undefined) {
+					_url = w.webkitURL.createObjectURL(f)
+				}
+				return _url
 			}
 		},
 		reload: location.reload,
@@ -275,8 +274,8 @@
 		tagName: function() {
 			return this[0].tagName.toLowerCase()
 		},
-		className: function(cls){
-			$(this).each(function(){
+		className: function(cls) {
+			$(this).each(function() {
 				this.className = cls
 			})
 			return $(this)
@@ -310,7 +309,10 @@
 			if ('hide' === type && _this.is(':hidden')) return _this
 			if (_this.is(':hidden')) {
 				$.createShade(function() {
-					_this.css('zIndex', z.zIndex()).show().css({'left': '50%', 'marginLeft': -_this.innerWidth()/2}).addClass(z.anims[4] + ' ' + z.animCls)
+					_this.css('zIndex', z.zIndex()).show().css({
+						'left': '50%',
+						'marginLeft': -_this.innerWidth() / 2
+					}).addClass(z.anims[4] + ' ' + z.animCls)
 					_modalHeight(_this)
 				}, function() {
 					_doClose(_this, null, false)
@@ -414,31 +416,31 @@
 		},
 		hovercard: function() {
 			var html, othis, cls, timer, selector = $(this).selector
-			$(_b).on('mouseenter', selector, function(e){
+			$(_b).on('mouseenter', selector, function(e) {
 				var ev = e || event
 				var _this = $(this)
-				var loading = '<div class="z-loadingbox">'+z.loadingHtml+'</div>'
+				var loading = '<div class="z-loadingbox">' + z.loadingHtml + '</div>'
 				var isHover = false
 				ev.stopPropagation()
 				timer && clearTimeout(timer)
-				timer = setTimeout(function(){
+				timer = setTimeout(function() {
 					html = $('.z-hovercard')
 					othis = _this
-					if(!_this.zdata('html') && !_this.zdata('url'))	return
-					if(!html.length){
+					if (!_this.zdata('html') && !_this.zdata('url')) return
+					if (!html.length) {
 						cls = 'z-dropdown-menu z-hovercard '
 						var htmls = [
-							'<div class="'+ cls +'">',
-								loading,
+							'<div class="' + cls + '">',
+							loading,
 							'</div>'
 						]
 						html = $(htmls.join(''))
 						$(_b).append(html)
 					}
-					if(_this.zdata('html')){
+					if (_this.zdata('html')) {
 						html.html(_this.zdata('html'))
 						show()
-					}else if(_this.zdata('url')){
+					} else if (_this.zdata('url')) {
 						html.html(loading)
 						show()
 						$.get(_this.zdata('url'), function(data) {
@@ -446,26 +448,26 @@
 							show()
 						})
 					}
-					if(!html)	return
-					html.on('mouseenter', function(){
+					if (!html) return
+					html.on('mouseenter', function() {
 						isHover = true
 					})
-					html.on('mouseleave', function(){
+					html.on('mouseleave', function() {
 						timer && clearTimeout(timer)
 						html.fadeOut(z.transTime)
 					})
 				}, 800)
 
-				_this.on('mouseleave', function(){
+				_this.on('mouseleave', function() {
 					timer && clearTimeout(timer)
-					setTimeout(function(){
+					setTimeout(function() {
 						!isHover && html && html.fadeOut(z.transTime)
 					}, 400)
 				})
-				
+
 			})
 
-			function show(){
+			function show() {
 				var offset = othis.offset()
 				var width = othis.innerWidth()
 				var height = othis.innerHeight()
@@ -475,25 +477,28 @@
 				var scrollLeft = $(d).scrollLeft()
 				var targetTop, targetLeft, wayCls
 				var arrowSize = 10
-				if(winHeight - (offset.top - scrollTop + height + targetHeight + arrowSize) >= 0){
+				if (winHeight - (offset.top - scrollTop + height + targetHeight + arrowSize) >= 0) {
 					targetTop = offset.top + height + arrowSize;
 					targetLeft = offset.left;
 					wayCls = "";
-				}else if((offset.top - scrollTop) - (targetHeight + arrowSize) >= 0){
+				} else if ((offset.top - scrollTop) - (targetHeight + arrowSize) >= 0) {
 					targetTop = offset.top - targetHeight - arrowSize;
 					targetLeft = offset.left;
 					wayCls = "z-dropdown-menu-bottom";
-				}else if((offset.left - scrollLeft) - (targetWidth + arrowSize) >= 0){
+				} else if ((offset.left - scrollLeft) - (targetWidth + arrowSize) >= 0) {
 					targetTop = offset.top
 					targetLeft = offset.left - targetWidth - arrowSize;
 					wayCls = "z-dropdown-menu-right z-dropdown-menu-child";
-				}else{
+				} else {
 					targetTop = offset.top
 					targetLeft = offset.left + width + arrowSize;
 					wayCls = "z-dropdown-menu-child";
 				}
 
-				html.show().className(cls + wayCls).css({'top': targetTop, 'left': targetLeft})
+				html.show().className(cls + wayCls).css({
+					'top': targetTop,
+					'left': targetLeft
+				})
 			}
 		},
 		goTop: function(opts) {
@@ -663,7 +668,7 @@
 		lazyimg: function(scrollEle, cb) {
 			var _this = $(this)
 			if (!_this.length || _this.tagName() !== 'img') return _this
-			if($.type(scrollEle) === 'function'){
+			if ($.type(scrollEle) === 'function') {
 				cb = scrollEle
 				scrollEle = d
 			}
@@ -708,8 +713,8 @@
 					}
 				})
 				$(d).on(_ck, function() {
-					_this.each(function(){
-						if(!$(this).parents(cls).length)	$(this).removeClass(z.active)
+					_this.each(function() {
+						if (!$(this).parents(cls).length) $(this).removeClass(z.active)
 					})
 				})
 			}
@@ -748,7 +753,7 @@
 			var htmls = [
 				'<div class="z-album">',
 				'<span class="z-close z-action-close" zdata-box=".z-album">&times;</span>',
-				'<div class="z-album-content '+ z.animCls +' ' + _getAnim() + '">',
+				'<div class="z-album-content ' + z.animCls + ' ' + _getAnim() + '">',
 				'<div class="z-imgbox"></div>',
 				'<div class="z-tipbox"></div>',
 				'</div>',
@@ -808,7 +813,7 @@
 				html.swipeleft(function(e) {
 					e.stopPropagation()
 					e.preventDefault()
-					--index
+						--index
 					showImg()
 				})
 				html.swiperight(function(e) {
@@ -842,7 +847,7 @@
 				if (timer) clearTimeout(timer)
 				timer = setTimeout(function() {
 					render(null, othis)
-				}, 100)
+				}, 30)
 			})
 			haveScroll = true
 		}
@@ -910,7 +915,8 @@
 	function flow(ele, opts) {
 		var more = $('<button type="button" class="z-btn z-block z-btn-flow">' + opts.eleTxt + '</button>')
 		var page = 1
-		var lock, isOver, lazyImgFn = _bool(opts.isLazyimg), timer
+		var lock, isOver, lazyImgFn = _bool(opts.isLazyimg),
+			timer
 		var notDocment = opts.scrollElem && opts.scrollElem !== d
 		if (!ele.find('.z-btn-flow').length) {
 			ele.append(more)
@@ -935,7 +941,7 @@
 				if (scrollHeight - top - height <= opts.mb) {
 					lock || done()
 				}
-			}, 100)
+			}, 30)
 		});
 
 		return ele
@@ -1042,7 +1048,7 @@
 				})
 			}
 		})
-		if(!z.isMobile)	return
+		if (!z.isMobile) return
 		$(d).swiperight(function() {
 			if (!fixNav.is(':hidden')) return false
 			menu.click()
@@ -1176,7 +1182,7 @@
 			htmls = [
 				'<div class="z-modal z-move ' + function() {
 					return 'open' === type ? '' : 'z-modal-sm'
-				}() + ' '+z.animCls+' ' + _getAnim() + '">',
+				}() + ' ' + z.animCls + ' ' + _getAnim() + '">',
 				'<div class="z-modal-header z-move-title z-action-move">',
 				closeBtn,
 				'<h4 class="z-modal-title">' + title + '</h4>',
@@ -1213,7 +1219,7 @@
 			})
 		} else if (type === 'msg') {
 			$('.z-msg').remove()
-			html = $('<div class="z-msg '+z.anims[2]+' '+z.animCls+'" style="z-index:' + z.zIndex() + '">' + content + '</div>')
+			html = $('<div class="z-msg ' + z.anims[2] + ' ' + z.animCls + '" style="z-index:' + z.zIndex() + '">' + content + '</div>')
 			$(_b).append(html)
 			html.css({
 				marginTop: -html.innerHeight() / 2,
@@ -1226,15 +1232,21 @@
 			}, delay)
 		} else {
 			var color = title
+			var box = $('.z-alert-box')
 			cb = btns
+			if (!box || !box.length) {
+				box = $('<div class="z-alert-box"></div>')
+				$(_b).append(box)
+			}
+			box.css('zIndex', z.zIndex())
 			htmls = [
-				'<div class="z-alert z-alert-' + color + ' z-alert-box z-alert-dismissible ' + z.anims[4] + ' ' + z.animCls + '" style="z-index:' + z.zIndex() + '">',
+				'<div class="z-alert z-alert-' + color + ' z-alert-dismissible ' + z.anims[4] + ' ' + z.animCls + '">',
 				closeBtn,
 				content,
 				'</div>'
 			]
 			html = $(htmls.join(''))
-			$(_b).append(html)
+			box.prepend(html)
 			cb && cb()
 			setTimeout(function() {
 				_doClose(html)
@@ -1314,7 +1326,7 @@
 				}, 5000)
 			}
 
-			_this.on('mouseleave', function(){
+			_this.on('mouseleave', function() {
 				if (timer) clearTimeout(timer)
 				$('.z-tipsbox').remove()
 			})
@@ -1359,6 +1371,8 @@
 			mtop = mpos.top - (pos.top - $(d).scrollTop())
 			mleft = mpos.left - (pos.left - $(d).scrollLeft())
 			box.css('zIndex', z.zIndex())
+			ww = winWidth
+			wh = winHeight
 		})
 
 		$(_b).on('mouseup', ele, function() {
@@ -1415,7 +1429,7 @@
 			box.css(mtype, mar)
 		} else return
 
-		item.width(width)
+			item.width(width)
 		items.height(item.innerHeight()).width(leg * width)
 
 		timer = setInterval(movement, opts.delay)
@@ -1458,7 +1472,7 @@
 			})
 			sliderBtn.on(_ck, function() {
 				clearInterval(timer)
-				if (!canMove)	return
+				if (!canMove) return
 				if ($(this).hasClass(sliderLeftCls)) movement('left')
 				else movement('right')
 			})
@@ -1574,9 +1588,9 @@
 
 	function closeShade(time, cb, rm) {
 		if (!zShade) return false
-		if(rm)	shades = 0
-		--shades
-		if(shades <= 0){
+		if (rm) shades = 0
+			--shades
+		if (shades <= 0) {
 			shades = 0
 			if ($.type(time) === 'function') {
 				cb = time
@@ -1663,8 +1677,8 @@
 		else if (type == 'false') return false
 		return true
 	}
-	
-	function _modalHeight(ele){
+
+	function _modalHeight(ele) {
 		var header = ele.children('.z-modal-header')
 		var body = ele.children('.z-modal-body')
 		var footer = ele.children('.z-modal-footer')
@@ -1686,7 +1700,7 @@
 		} else {
 			// 悬浮卡片
 			$('.z-action-hovercard').hovercard()
-			
+
 			// tips
 			$('.z-action-tips').tips()
 
@@ -1737,7 +1751,7 @@
 			var zid = $(this).zdata('id')
 			var _this = $(this)
 			_this.toggleClass(z.active)
-			$('input[type="checkbox"][zdata-id="' + zid + '"]').each(function(){
+			$('input[type="checkbox"][zdata-id="' + zid + '"]').each(function() {
 				this.checked = _this.hasClass(z.active)
 				$(this).change()
 			})
@@ -1800,6 +1814,14 @@
 			var ev = e || event
 			ev.stopPropagation()
 			ev.preventDefault()
+		})
+
+		// 变换窗体
+		$(w).on('resize', function() {
+			winWidth = $(w).innerWidth()
+			winHeight = $(w).innerHeight()
+			z.winWidth = winWidth
+			z.winHeight = winHeight
 		})
 
 	})
