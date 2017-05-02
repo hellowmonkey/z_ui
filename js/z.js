@@ -694,7 +694,7 @@
 				$(_b).on('mouseenter', selector, function() {
 					var othis = $(this)
 					isTree = othis.parents(cls).length
-					if ((isTree && _bool(othis.parent().zdata('toggle'))) || !isTree) $(selector).removeClass(z.active)
+					if(!isTree || _bool(othis.parent().zdata('toggle')))	othis.siblings(selector).removeClass(z.active)
 					othis.addClass(z.active)
 				})
 				$(_b).on('mouseleave', selector, function() {
@@ -709,7 +709,7 @@
 					if (isTree && othis.context === ev.target.parentNode) ev.preventDefault()
 					if (othis.hasClass(z.active)) othis.removeClass(z.active)
 					else {
-						if ((isTree && _bool(othis.parent().zdata('toggle'))) || !isTree) $(selector).removeClass(z.active)
+						if(!isTree || _bool(othis.parent().zdata('toggle')))	othis.siblings(selector).removeClass(z.active)
 						othis.addClass(z.active)
 					}
 				})
