@@ -1781,7 +1781,7 @@ input[type="search"] {
 	position: fixed;
 	width: 100%;
 	left: 0;
-	z-index: 12;
+	z-index: 15;
 }
 .z-nav.z-nav-fixed-top{
 	top: 0;
@@ -2281,7 +2281,7 @@ input[type="search"] {
 }
 
 .z-alert-box{
-	position: fixed;
+	position: fixed; 
 	top: 15px;
 	right: 15px;
 }
@@ -2550,12 +2550,12 @@ input[type="search"] {
 	-webkit-transition: all ease-in-out .3s;
 	z-index: -1;
 }
-.z-gotop.on {
+.z-gotop.z-on {
 	bottom: 10px;
 	opacity: .6;
 	z-index: 10;
 }
-.z-gotop.on:hover {
+.z-gotop.z-on:hover {
 	opacity: 1;
 }
 

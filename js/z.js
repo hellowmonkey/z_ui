@@ -25,7 +25,7 @@
 		aniBoxTops = [],
 
 		z = {
-			version: '1.0.0',
+			version: '2.0.0',
 			root_path: root_path,
 			libs_path: libs_path,
 			index: 99,
@@ -59,6 +59,7 @@
 			winWidth: winWidth,
 			winHeight: winHeight,
 		},
+		log = console.log,
 
 		sliderLeftCls = function() {
 			return $(z.sliderBtn)[0].className
@@ -265,7 +266,6 @@
 				return _url
 			}
 		},
-		reload: location.reload,
 		supportCss3: supportCss3,
 		loadImg: loadImg
 	})
@@ -510,12 +510,13 @@
 			}
 			var rollBtn = _this
 			var options = _getOpts(rollBtn, inits, opts)
+			var onCls = 'z-on'
 			$(w).on('scroll', function() {
 				if (!rollBtn.length) return rollBtn
 				if ($(this).scrollTop() > options.top) {
-					rollBtn.addClass('on')
+					rollBtn.addClass(onCls)
 				} else {
-					rollBtn.removeClass('on')
+					rollBtn.removeClass(onCls)
 				}
 			})
 			rollBtn.on(_ck, function(e) {
@@ -847,7 +848,7 @@
 				if (timer) clearTimeout(timer)
 				timer = setTimeout(function() {
 					render(null, othis)
-				}, 30)
+				}, 60)
 			})
 			haveScroll = true
 		}
@@ -941,7 +942,7 @@
 				if (scrollHeight - top - height <= opts.mb) {
 					lock || done()
 				}
-			}, 30)
+			}, 60)
 		});
 
 		return ele
@@ -1788,11 +1789,6 @@
 			$.back()
 		})
 
-		// 刷新
-		$(_b).on(_ck, '.z-action-reload', function() {
-			$.reload()
-		})
-
 		// tabs
 		$(_b).on(_ck, '.z-tab-title li', function() {
 			var _this = $(this)
@@ -1818,12 +1814,9 @@
 
 		// 变换窗体
 		$(w).on('resize', function() {
-			winWidth = $(w).innerWidth()
-			winHeight = $(w).innerHeight()
-			z.winWidth = winWidth
-			z.winHeight = winHeight
+			z.winWidth = winWidth = $(w).innerWidth()
+			z.winHeight = winHeight = $(w).innerHeight()
 		})
-
 	})
 
 	w.z = z
