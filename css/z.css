@@ -81,10 +81,6 @@ body {
 	color: #333;
 	background-color: #fff;
 }
-body.z-overflow{
-	height: 100%;
-	overflow-y: hidden;
-}
 
 fieldset {
 	border: 0;
@@ -149,6 +145,10 @@ fieldset {
 
 .z-rel {
 	position: relative!important;
+}
+
+.z-overflow{
+	overflow: hidden;
 }
 
 .z-clear {

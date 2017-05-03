@@ -53,6 +53,7 @@
 			closeTime: transTime * 0.6,
 			successTime: transTime * 8,
 			active: 'z-active',
+			overflow: 'z-overflow',
 			dt: dateNow,
 			loadingHtml: '<span class="z-anim-rotate z-icon">&#xe624;</span>',
 			sliderBtn: '<button class="z-slider-btn z-icon z-slider-prev">&#xe605;</button><button class="z-slider-btn z-icon z-slider-next">&#xe61d;</button>',
@@ -71,7 +72,7 @@
 				zShade = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';' + function() {
 					return _bool(opacity) ? 'opacity:' + opacity : ''
 				}() + '"></div>')
-				$(_b).addClass('z-overflow').append(zShade)
+				$(_b).addClass(z.overflow).css('paddingRight', '8px').append(zShade)
 				zShade.fadeIn(z.transTime, createCb && createCb)
 			} else {
 				createCb && createCb()
@@ -90,10 +91,12 @@
 				resetForm(box)
 			}
 		},
-		submit: function(ele, cb, tip) {
+		submit: function(ele, cb, tip, parseJson) {
 			var form = ele instanceof $ ? ele : $(ele)
-			var datatip = _bool(form.zdata('tip'), true)
-			tip = (_bool(tip, true) && datatip) ? '数据提交中...' : (datatip ? tip : form.zdata('tip'))
+			var datatip = form.zdata('tip')
+			var notdatatip = _bool(datatip, true)
+			parseJson = _bool(parseJson, true) ? true : _bool(parseJson)
+			tip = (_bool(tip, true) && notdatatip) ? '数据提交中...' : (notdatatip ? tip : datatip)
 			if (!form || !form.length || !form.attr('action')) return false
 			if ($.fn.ajaxSubmit) {
 				doing()
@@ -123,7 +126,7 @@
 							var ret = responseText
 							fieldset.removeAttr('disabled')
 							if (tip) html.remove()
-							if ($.type(ret) === 'string') {
+							if ($.type(ret) === 'string' && parseJson) {
 								if (w.JSON) {
 									ret = JSON.parse(responseText)
 								} else {
@@ -305,9 +308,10 @@
 			var _this = $(this)
 			if (!_this.length) return _this
 			if (!_this.hasClass('z-modal')) return _this
-			if ('show' === type && _this.is(':visited')) return _this
-			if ('hide' === type && _this.is(':hidden')) return _this
-			if (_this.is(':hidden')) {
+			var isHidden = _this.is(':hidden')
+			if ('show' === type && !isHidden) return _this
+			if ('hide' === type && isHidden) return _this
+			if (isHidden) {
 				$.createShade(function() {
 					_this.css('zIndex', z.zIndex()).show().css({
 						'left': '50%',
@@ -417,11 +421,10 @@
 		hovercard: function() {
 			var html, othis, cls, timer, selector = $(this).selector
 			$(_b).on('mouseenter', selector, function(e) {
-				var ev = e || event
 				var _this = $(this)
 				var loading = '<div class="z-loadingbox">' + z.loadingHtml + '</div>'
 				var isHover = false
-				ev.stopPropagation()
+				_prevent(e)
 				timer && clearTimeout(timer)
 				timer = setTimeout(function() {
 					html = $('.z-hovercard')
@@ -520,8 +523,7 @@
 				}
 			})
 			rollBtn.on(_ck, function(e) {
-				var ev = e || event
-				ev.preventDefault()
+				_prevent(e, true)
 				$('body,html').animate({
 					scrollTop: 0,
 				}, options.time)
@@ -703,8 +705,7 @@
 			} else if (type == _ck) {
 				$(_b).on(_ck, selector, function(e) {
 					var othis = $(this)
-					var ev = e || event
-					ev.stopPropagation()
+					var ev = _prevent(e)
 					isTree = othis.parents(cls).length
 					if (isTree && othis.context === ev.target.parentNode) ev.preventDefault()
 					if (othis.hasClass(z.active)) othis.removeClass(z.active)
@@ -781,6 +782,7 @@
 				var image = groups[index]
 				src = image.src
 				tip = $(image).zdata('tip') || image.title
+				tip = tip ? '&nbsp;&nbsp;' + tip : ''
 				loadImg(src, function(img) {
 					var blank = winWidth > 768 ? 100 : 20
 					var imgWidth = img.width
@@ -805,22 +807,19 @@
 					})
 					loading.remove()
 					imgbox.html(img)
-					if (tip && tip.length) tipbox.show().html(index + 1 + '/<b>' + groups.length + '</b>&nbsp;&nbsp;' + tip)
-					else tipbox.hide()
+					tipbox.html(index + 1 + '/<b>' + groups.length + '</b>' + tip)
 				})
 			}
 
 			if (z.isMobile) {
 				html.swipeleft(function(e) {
-					e.stopPropagation()
-					e.preventDefault()
-						--index
+					_prevent(e, true)
+					--index
 					showImg()
 				})
 				html.swiperight(function(e) {
-					e.stopPropagation()
-					e.preventDefault()
-						++index
+					_prevent(e, true)
+					++index
 					showImg()
 				})
 			} else {
@@ -1067,7 +1066,7 @@
 		var can = false
 		var timer = null
 		ele.on('touchstart', function(e) {
-			e.stopPropagation()
+			_prevent(e)
 			ev = e.originalEvent.touches[0]
 			sx = ev.clientX
 			sy = ev.clientY
@@ -1077,7 +1076,7 @@
 			}, z.transTime)
 		})
 		ele.on('touchend', function(e) {
-			e.stopPropagation()
+			_prevent(e)
 			ev = e.originalEvent.changedTouches[0]
 			var offset = 'left' === type ? (sx - ev.clientX) : (ev.clientX - sx)
 			if (offset > 50 && Math.abs(sy - ev.clientY) < 50) {
@@ -1271,11 +1270,10 @@
 	function tips(ele, opts) {
 		var timer = null
 		$(_b).on('mouseenter', ele, function(e) {
-			var ev = e || event
 			var title = this.title
 			var ztitle = $(this).zdata('title')
 			var _this = $(this)
-			ev.stopPropagation()
+			_prevent(e)
 			if (!title && !ztitle) return
 			if (title) {
 				$(this).zdata('title', title)
@@ -1345,9 +1343,7 @@
 		var box = null
 		$(w).on('mousemove', function(e) {
 			if (!isDown || !box) return
-			var ev = e || event
-			ev.stopPropagation()
-			ev.preventDefault()
+			var ev = _prevent(e, true)
 			var mpos = _mousePosition(ev)
 			var left = mpos.left - mleft
 			var top = mpos.top - mtop
@@ -1363,7 +1359,7 @@
 
 		$(_b).on('mousedown', ele, function(e) {
 			isDown = true
-			var ev = e || event
+			var ev = _prevent(e, true)
 			box = $(this).parents(opts.box)
 			var pos = box.offset()
 			var mpos = _mousePosition(ev)
@@ -1441,23 +1437,20 @@
 			var direction = 'left'
 			var move = 0
 			ele.on('touchmove', function(e) {
-				e.stopPropagation()
-				e.preventDefault()
+				_prevent(e, true)
 				move = touch.clientX - sx
 				touch = e.originalEvent.changedTouches[0]
 				box.css(mtype, mar + move)
 			})
 
 			ele.on('touchstart', function(e) {　　　　
-				e.preventDefault()
-				e.stopPropagation()
+				_prevent(e, true)
 				touch = e.originalEvent.touches[0]
 				sx = touch.clientX
 				clearInterval(timer)
 			})
 			ele.on('touchend', function(e) {　　　　
-				e.preventDefault()
-				e.stopPropagation()
+				_prevent(e, true)
 				touch = e.originalEvent.changedTouches[0]
 				if (touch.clientX - sx > 0) direction = 'right'
 				else direction = 'left'
@@ -1600,7 +1593,7 @@
 			time = time || z.transTime
 			zShade.fadeOut(time, function() {
 				zShade.remove()
-				$(_b).removeClass('z-overflow')
+				$(_b).removeClass(z.overflow).css('paddingRight', '')
 				zShade = null
 				cb && cb()
 			})
@@ -1684,6 +1677,13 @@
 		var body = ele.children('.z-modal-body')
 		var footer = ele.children('.z-modal-footer')
 		body.css('maxHeight', ele.innerHeight() - header.innerHeight() - footer.innerHeight())
+	}
+
+	function _prevent(e, pre){
+		var ev = e || event
+		ev.stopPropagation()
+		pre && ev.preventDefault()
+		return ev
 	}
 
 
@@ -1807,9 +1807,7 @@
 
 		// 阻止默认
 		$(d).on(_ck, '.z-disabled,:disabled', function(e) {
-			var ev = e || event
-			ev.stopPropagation()
-			ev.preventDefault()
+			_prevent(e, true)
 		})
 
 		// 变换窗体
