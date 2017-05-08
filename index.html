@@ -1067,9 +1067,9 @@
 					}, done)
 				</pre>
 				<div class="z-quote z-quote-red" id="lazyimg">图片懒加载</div>
-				<img src="" zdata-src="images/1.jpg" height="100" alt=""">
-				<img src="" zdata-src="images/2.jpg" height="100" alt=""">
-				<img src="" zdata-src="images/3.jpg" height="100" alt=""">
+				<img src="" class="z-action-lazyimg" zdata-group="10" zdata-src="images/1.jpg" height="100" alt=""">
+				<img src="" class="z-action-lazyimg" zdata-group="10" zdata-src="images/2.jpg" height="100" alt=""">
+				<img src="" class="z-action-lazyimg" zdata-group="10" zdata-src="images/3.jpg" height="100" alt=""">
 				<div class="z-box mb10">快速调用方法：在<code>img</code>标签上添加class<code>z-action-lazyimg</code>，<code>src</code>指定占位图片或不写。通过<code>zdata-src="string"</code>来指定需要动态加载的图片地址。当然也可以只用js配置。</div>
 				<pre class="z-action-code">
 					$(img).lazyimg(scrollElem) //默认为document
@@ -1122,17 +1122,22 @@
 	<button class="z-btn z-action-gotop z-gotop z-icon">&#xe6be;</button>
 	<script>
 		$(function(){
-			$('#content').flow({
-				isLazyimg: lazy
-			}, function(page, next){
+			var flow = $.flow('#content', function(page, btn){
 				setTimeout(function(){
-					next('<p>flow加载的第'+page+'页</p>', page < 7)				
-				},2000)
+					var over = page >= 3
+					btn.before('<p>加载第'+page+'页</p>')
+					flow.done(over)
+					if(over){
+						$.msg('模拟加载完成，2秒后模拟刷新（重置加载）')
+						setTimeout(function(){
+							flow.refresh()
+						}, 2000)
+					}
+				}, 1000)
 			})
+
+			$('.z-action-lazyimg').album()
 		})
-		function lazy(item){
-			$.msg('图片懒加载' + item.attr('src') + '已加载')
-		}
 	</script>
 </body>
 </html>

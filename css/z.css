@@ -2668,6 +2668,9 @@ html #zcss-skincodecss{
 }
 
 /* 相册 */
+.z-action-album{
+	cursor: pointer;
+}
 .z-album{
 	position: fixed;
 }
