@@ -178,7 +178,6 @@
      * @param  {str} cls class
      */
     $.fn.className = function(cls) {
-        log(this)
         if (_bool(cls, true)) {
             return this.className
         } else {
@@ -668,7 +667,6 @@
         var options = _getOpts(rollBtn, inits, opts)
         var onCls = 'z-on'
         $(w).on('scroll', function() {
-            if (!rollBtn.length) return rollBtn
             if ($(this).scrollTop() > options.top) {
                 rollBtn.addClass(onCls)
             } else {
@@ -1032,9 +1030,9 @@
     $.fn.album = function() {
         var _this = $(this)
         $(_b).on(_ck, _this.selector, function() {
-        	if (_this.tagName() !== 'img') return _this
             var self = this
             var othis = $(self)
+            if (othis.tagName() !== 'img') return _this
             if (!this.src || othis.zdata('src')) return _this
             var src = othis.zdata('bigsrc') || this.src
             var tip = othis.zdata('tip') || this.title
@@ -1066,6 +1064,7 @@
             var tipbox = html.find('.z-tipbox')
             box.append(sliderBtn)
             $.createShade(function() {
+                $('.z-album').remove()
                 $(_b).append(html)
                 showImg()
             }, function() {
@@ -1177,7 +1176,7 @@
      * @return {json}        操作对象
      */
     function flow(ele, cb, opts) {
-        if ($.type(ele) === 'string' || !ele instanceof $)	ele = $(ele)
+        if ($.type(ele) === 'string' || !ele instanceof $) ele = $(ele)
         var inits = {
             scrollElem: d,
             isAuto: true,
@@ -1185,33 +1184,41 @@
             eleTxt: '加载更多',
             loadingTxt: '加载中...'
         }
-        opts = _getOpts(ele, inits, opts)
+        opts = $.extend({}, inits, opts)
         var moreBtn = $('<button type="button" class="z-btn z-block" zdata-loading-text="' + opts.loadingTxt + '">' + opts.eleTxt + '</button>'),
+            content = $('<div></div>'),
             page = 1,
             lock, isOver, timer
         var notDocment = opts.scrollElem && opts.scrollElem !== d
         var backs = {
-        	refresh: function(){
-        		page = 1
-        		lock = null
-        		isOver = false
-        		moreBtn.html(opts.eleTxt).button('reset')
-        	},
-        	disabled: function(){
-        		lock = true
-        		moreBtn.addClass(z.disabled)
-        	},
-        	done: function(over){
-        		lock = null
-        		if(over){
-        			isOver = over
-        			moreBtn.html(opts.endTxt).addClass(z.disabled)
-        		}else{
-	        		moreBtn.button('reset')
-        		}
-        	}
+            reset: function() {
+                page = 1
+                lock = null
+                isOver = false
+                moreBtn.html(opts.eleTxt).button('reset')
+            },
+            refresh: function(){
+                content.html('')
+                this.reset()
+                moreBtn.addClass('z-btn-link').button()
+                lock = true
+                cb(page, content)
+            },
+            disabled: function() {
+                lock = true
+                moreBtn.addClass(z.disabled)
+            },
+            done: function(over) {
+                lock = null
+                if (over) {
+                    isOver = over
+                    moreBtn.html(opts.endTxt).addClass(z.disabled)
+                } else {
+                    moreBtn.button('reset')
+                }
+            }
         }
-        ele.append(moreBtn)
+        ele.wrapInner(content).append(moreBtn)
         moreBtn.on(_ck, function() {
             if (isOver) return
             lock || done()
@@ -1230,12 +1237,12 @@
                 }
             }, 60)
         })
-    	return backs
+        return backs
 
-    	function done() {
+        function done() {
             lock = true
-            moreBtn.button()
-            cb(++page, moreBtn)
+            moreBtn.removeClass('z-btn-link').button()
+            cb(++page, content)
         }
     }
     /**
