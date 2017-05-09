@@ -13,9 +13,9 @@
         module.exports = thisModule
     } else {
         // 浏览器全局
-        window.z = thisModule($)
+        window.z = thisModule(jQuery)
     }
-})(function(jQuery, undefined) {
+})(function($, undefined) {
     // 注册全局变量
     var w = window,
         d = document,
@@ -83,6 +83,7 @@
         sliderLeftCls = function() {
             return $(z.sliderBtn)[0].className
         }()
+
     // $ 拓展
     $.extend({
         // 创建遮罩层
@@ -103,6 +104,8 @@
         loadImg: loadImg,
         // 滚动到底部加载
         flow: flow,
+        // 加载进度条
+        progressBar: progressBar,
         // 自定义弹框
         open: function(content, title, btns, cb) {
             cb = _getCb(arguments)
@@ -666,8 +669,8 @@
         var rollBtn = _this
         var options = _getOpts(rollBtn, inits, opts)
         var onCls = 'z-on'
-        $(w).on('scroll', function() {
-            if ($(this).scrollTop() > options.top) {
+        _scroll(function() {
+            if ($(d).scrollTop() > options.top) {
                 rollBtn.addClass(onCls)
             } else {
                 rollBtn.removeClass(onCls)
@@ -972,17 +975,9 @@
         var notDocment = sEle && sEle !== d
         sEle = $(sEle)
         render()
-        if (!haveScroll) {
-            var timer
-            sEle.on('scroll', function() {
-                var othis = $(this)
-                if (timer) clearTimeout(timer)
-                timer = setTimeout(function() {
-                    render(null, othis)
-                }, 60)
-            })
-            haveScroll = true
-        }
+        _scroll(function() {
+            render(null, sEle)
+        }, sEle)
         return _this
 
         function show(item, height) {
@@ -1015,7 +1010,7 @@
                 for (var i = 0; i < _this.length; i++) {
                     var item = _this.eq(i),
                         elemTop = notDocment ? function() {
-                            return item.offset().top - sEle.offset().top + start;
+                            return item.offset().top - sEle.offset().top + start
                         }() : item.offset().top
                     show(item, height)
                     index = i
@@ -1029,7 +1024,8 @@
      */
     $.fn.album = function() {
         var _this = $(this)
-        $(_b).on(_ck, _this.selector, function() {
+        var selector = _this.selector
+        $(_b).on(_ck, selector, function() {
             var self = this
             var othis = $(self)
             if (othis.tagName() !== 'img') return _this
@@ -1039,22 +1035,20 @@
             var groups = []
             var group = othis.zdata('group')
             var index = 0
-            if (!_bool(group, true)) {
-                $(othis.selector + '[zdata-group="' + group + '"]').each(function() {
-                    groups.push(this)
-                })
-            }
-            if (groups.length) {
-                groups.sort(function(a, b) {
-                    var aint = _bool($(a).zdata('index'), true) ? parseInt($(a).index()) : parseInt($(a).zdata('index'))
-                    var bint = _bool($(b).zdata('index'), true) ? parseInt($(b).index()) : parseInt($(b).zdata('index'))
-                    return aint - bint
-                })
-                $.each(groups, function(k, v) {
-                    if (v === self) index = k
-                })
-            }
-            var group = othis.zdata('group')
+            $(selector + function() {
+                return _bool(group, true) ? '' : '[zdata-group="' + group + '"]'
+            }()).each(function() {
+                groups.push(this)
+            })
+            if (!groups.length) return _this
+            groups.sort(function(a, b) {
+                var aint = _bool($(a).zdata('index'), true) ? parseInt($(a).index()) : parseInt($(a).zdata('index'))
+                var bint = _bool($(b).zdata('index'), true) ? parseInt($(b).index()) : parseInt($(b).zdata('index'))
+                return aint - bint
+            })
+            $.each(groups, function(k, v) {
+                if (v === self) index = k
+            })
             var sliderBtn = groups.length && !z.isMobile ? $(z.sliderBtn) : ''
             var htmls = ['<div class="z-album">', '<span class="z-close z-action-close" zdata-box=".z-album">&times;</span>', '<div class="z-album-content ' + z.animCls + ' ' + _getAnim() + '">', '<div class="z-imgbox"></div>', '<div class="z-tipbox"></div>', '</div>', '</div>', ]
             var html = $(htmls.join(''))
@@ -1119,7 +1113,7 @@
                     showImg()
                 })
             } else {
-                sliderBtn.on(_ck, function() {
+                sliderBtn && sliderBtn.on(_ck, function() {
                     if ($(this).hasClass(sliderLeftCls)) --index
                     else ++index
                     showImg()
@@ -1134,7 +1128,6 @@
      */
     $.fn.dropdown = function(type) {
         var _this = $(this)
-        if (!_this.length) return _this
         var isTree = false
         var selector = _this.selector
         var cls = '.z-nav-tree'
@@ -1162,7 +1155,7 @@
                 }
             })
             $(d).on(_ck, function() {
-                _this.each(function() {
+                $(selector).each(function() {
                     if (!$(this).parents(cls).length) $(this).removeClass(z.active)
                 })
             })
@@ -1186,10 +1179,12 @@
         }
         opts = $.extend({}, inits, opts)
         var moreBtn = $('<button type="button" class="z-btn z-block" zdata-loading-text="' + opts.loadingTxt + '">' + opts.eleTxt + '</button>'),
-            content = $('<div></div>'),
+            beforeBtn = moreBtn.clone().addClass('z-btn-link'),
+            content = $('<div class="z-wrap"></div>'),
             page = 1,
             lock, isOver, timer
         var notDocment = opts.scrollElem && opts.scrollElem !== d
+        var sElem = $(opts.scrollElem)
         var backs = {
             reset: function() {
                 page = 1
@@ -1197,10 +1192,11 @@
                 isOver = false
                 moreBtn.html(opts.eleTxt).button('reset')
             },
-            refresh: function(){
-                content.html('')
+            refresh: function() {
                 this.reset()
-                moreBtn.addClass('z-btn-link').button()
+                ele.prepend(beforeBtn)
+                beforeBtn.button('loading')
+                moreBtn.hide()
                 lock = true
                 cb(page, content)
             },
@@ -1210,38 +1206,38 @@
             },
             done: function(over) {
                 lock = null
+                moreBtn.show()
                 if (over) {
                     isOver = over
                     moreBtn.html(opts.endTxt).addClass(z.disabled)
                 } else {
                     moreBtn.button('reset')
                 }
+                beforeBtn.remove()
             }
         }
         ele.wrapInner(content).append(moreBtn)
+        content = ele.children('div.z-wrap')
         moreBtn.on(_ck, function() {
             if (isOver) return
             lock || done()
         })
         if (!opts.isAuto) return backs
-        $(opts.scrollElem).on('scroll', function() {
-            if (timer) clearTimeout(timer)
+        _scroll(function() {
             if (isOver) return backs
-            var _this = $(this),
+            var _this = sElem,
                 top = _this.scrollTop()
-            timer = setTimeout(function() {
-                var height = notDocment ? _this.innerHeight() : winHeight
-                var scrollHeight = notDocment ? _this.prop('scrollHeight') : d.documentElement.scrollHeight
-                if (scrollHeight - top - height <= 0) {
-                    lock || done()
-                }
-            }, 60)
-        })
+            var height = notDocment ? _this.innerHeight() : winHeight
+            var scrollHeight = notDocment ? _this.prop('scrollHeight') : d.documentElement.scrollHeight
+            if (scrollHeight - top - height <= 0) {
+                lock || done()
+            }
+        }, sElem)
         return backs
 
         function done() {
             lock = true
-            moreBtn.removeClass('z-btn-link').button()
+            moreBtn.button('loading')
             cb(++page, content)
         }
     }
@@ -1296,6 +1292,7 @@
         zShade.on(_ck, function() {
             closeCb && closeCb() && closeShade()
         })
+        return zShade
     }
     /**
      * @param  {num}   time 过渡时间
@@ -1679,6 +1676,55 @@
                 _doClose(html)
             }, delay)
         }
+        return html
+    }
+    /**
+     * @param  {str} type start|done
+     */
+    function progressBar(type) {
+        var bar = $('.z-progress-fix'),
+            timer, w = 50
+        if ('start' == type && bar.length) return
+        if ('done' == type && !bar.length) return
+        if (bar.length) {
+            css(.3, 100, function() {
+                bar.remove()
+                clearTimeout(timer)
+            })
+        } else {
+            bar = $('<div class="z-progress-fix"></div>')
+            $(_b).append(bar)
+            duration()
+        }
+        return bar
+
+        function duration(t) {
+            if (!$('.z-progress-fix').length) return
+            t = t || 2000
+            var s = t / 1000 * 1.2
+            if (w < 90) {
+                w += 9
+            } else {
+                w = parseFloat('99.' + s)
+            }
+            css(s, w)
+            timer && clearTimeout(timer)
+            timer = setTimeout(function() {
+                duration(t * 1.4)
+            }, t)
+        }
+
+        function css(s, w, cb) {
+            cb && setTimeout(cb, s * 1000)
+            s += 's'
+            w += '%'
+            var opts = {
+                'transition-duration': s,
+                '-webkit-transition-duration': s
+            }
+            if (cb) opts.opacity = 0
+            bar.css(opts).width(w)
+        }
     }
     /**
      * 获取z的路径，判断文件是否已加载
@@ -1789,6 +1835,19 @@
         var body = ele.children('.z-modal-body')
         var footer = ele.children('.z-modal-footer')
         body.css('maxHeight', ele.innerHeight() - header.innerHeight() - footer.innerHeight())
+    }
+    /**
+     * 统一滚动处理
+     * @param  {fn} cb  回调
+     * @param  {str}   ele 滚动元素
+     */
+    function _scroll(cb, ele) {
+        var timer
+        ele = ele || $(d)
+        ele.on('scroll', function() {
+            timer && clearTimeout(timer)
+            timer = setTimeout(cb, 60)
+        })
     }
     /**
      * 阻止冒泡和默认事件

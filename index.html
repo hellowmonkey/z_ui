@@ -48,6 +48,7 @@
 						<li><a href="#sendForm">ajax提交表单 <code>$.submit</code></a></li>
 						<li><a href="#date">日期格式化 <code>$.date</code></a></li>
 						<li><a href="#loadimg">动态载入图片 <code>$.loadImg</code></a></li>
+						<li><a href="#progressBar">加载进度条 <code>$.progressBar</code></a></li>
 						<li><a href="#tagname">标签名称 <code>$(ele).tagName</code></a></li>
 						<li><a href="#zdata">获取属性 <code>$(ele).zdata</code></a></li>
 						<li><a href="#button">按钮loading <code>$(ele).button</code></a></li>
@@ -891,6 +892,11 @@
 					$.success(content, cb)
 					$.msg(content)
 				</pre>
+				<div class="z-quote z-quote-red" id="progressBar">加载进度条</div>
+				<button class="z-btn z-btn-primary" onclick="$.progressBar();$.msg('模拟加载进度条，4s后模拟加载完成');setTimeout(function(){$.progressBar()},4000)">模拟加载进度条</button>
+				<pre class="z-action-code">
+					$.progressBar()
+				</pre>
 				<div class="z-quote z-quote-red" id="tagname">标签名称</div>
 				<button class="z-btn z-btn-primary" onclick="$.msg($(this).tagName(),'标签名称')">获取标签名称</button>
 				<pre class="z-action-code">
@@ -1048,23 +1054,19 @@
 				<div class="z-quote z-quote-red" id="flow">滚动加载</div>
 				<div class="z-box mb10">此组件的功能是在滚动到底部时自动触发加载内容。</div>
 				<pre class="z-action-code">
-					$('body').flow(function(page, next){
+					var flow = $.flow('#content', function(page, box){
 						setTimeout(function(){
-							next('列表HTML片段', page < 7)				
-						},5000)
+							var over = page >= 3
+							box.append('<p>加载第'+page+'页</p>')
+							flow.done(over)
+							if(over){
+								$.msg('模拟加载完成，2秒后模拟刷新（重置加载）')
+								setTimeout(function(){
+									flow.refresh()
+								}, 2000)
+							}
+						}, 1000)
 					})
-				</pre>
-				<pre class="z-action-code">
-					$(ele).flow({
-						scrollElem: document,
-						isAuto: true,
-						endTxt: '没有更多了',
-						eleTxt: '加载更多',
-						loadingTxt: '加载中...',
-						isLazyimg: false,
-						mb: 50,
-						done: done
-					}, done)
 				</pre>
 				<div class="z-quote z-quote-red" id="lazyimg">图片懒加载</div>
 				<img src="" class="z-action-lazyimg" zdata-group="10" zdata-src="images/1.jpg" height="100" alt=""">
@@ -1079,7 +1081,7 @@
 					$.loadImg(imgurl, complete, error)
 				</pre>
 				<div class="z-quote z-quote-red" id="date">日期格式化</div>
-				<div class="z-box mb10">快速获取指定格式的指定时间的日期。如：<code>$.date()</code>什么参数都不传时会获取到以<code>'yyyy/MM/dd H:mm'</code>为格式的当前时间的日期。即为：<script>document.write($.date())</script></div>
+				<div class="z-box mb10">快速获取指定格式的指定时间的日期。如：<code>$.date()</code>什么参数都不传时会获取到以<code>'yyyy/MM/dd H:mm'</code>为格式的当前时间的日期。即为：<span id="date1"><script>$('#date1').html($.date())</script></span</div>
 				<pre class="z-action-code">
 					$.date(format, time)
 					/** format的格式：
@@ -1122,10 +1124,10 @@
 	<button class="z-btn z-action-gotop z-gotop z-icon">&#xe6be;</button>
 	<script>
 		$(function(){
-			var flow = $.flow('#content', function(page, btn){
+			var flow = $.flow('#content', function(page, box){
 				setTimeout(function(){
 					var over = page >= 3
-					btn.before('<p>加载第'+page+'页</p>')
+					box.append('<p>加载第'+page+'页</p>')
 					flow.done(over)
 					if(over){
 						$.msg('模拟加载完成，2秒后模拟刷新（重置加载）')
@@ -1135,8 +1137,6 @@
 					}
 				}, 1000)
 			})
-
-			$('.z-action-lazyimg').album()
 		})
 	</script>
 </body>

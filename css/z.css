@@ -170,11 +170,11 @@ fieldset {
 }
 
 .z-show, .z-block {
-    display: block!important;
+    display: block;
 }
 
 .z-hide {
-    display: none!important;
+    display: none;
 }
 
 .z-elip {
@@ -1550,6 +1550,7 @@ input[type="search"] {
     position: relative;
     display: table;
     border-collapse: separate;
+    width: 100%;
 }
 
 .z-input-group .z-input {
@@ -2732,4 +2733,26 @@ html #zcss-skincodecss {
     background: #333;
     background: rgba(0, 0, 0, .5);
     padding: 10px;
+}
+
+/* 加载进度条 */
+.z-progress-fix{
+    width: 0;
+    height: 3px;
+    background: #1be8e8;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    -webkit-box-shadow: 0 0 4px rgba(0,255,255,.4);
+    box-shadow: 0 0 4px rgba(0,255,255,.4);
+    -webkit-transition-property: width opacity;
+    -o-transition-property: width opacity;
+    transition-property: width opacity;
+    -webkit-transition-timing-function: linear;
+    -o-transition-timing-function: linear;
+    transition-timing-function: linear;
+}
+.z-progress-fix.z-on{
+    width: 100%;
 }
