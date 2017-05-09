@@ -2752,7 +2752,5 @@ html #zcss-skincodecss {
     -webkit-transition-timing-function: linear;
     -o-transition-timing-function: linear;
     transition-timing-function: linear;
-}
-.z-progress-fix.z-on{
-    width: 100%;
+    border-radius: 6px 6px 0 0;
 }
