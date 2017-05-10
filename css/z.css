@@ -2752,5 +2752,8 @@ html #zcss-skincodecss {
     -webkit-transition-timing-function: linear;
     -o-transition-timing-function: linear;
     transition-timing-function: linear;
+    -webkit-transition-duration: .4s;
+    -o-transition-duration: .4s;
+    transition-duration: .4s;
     border-radius: 6px 6px 0 0;
 }
