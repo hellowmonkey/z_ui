@@ -673,6 +673,7 @@
         var rollBtn = _this
         var options = _getOpts(rollBtn, inits, opts)
         var onCls = 'z-on'
+        var timer
         _scroll(function() {
             if ($(d).scrollTop() > options.top) {
                 rollBtn.addClass(onCls)
@@ -682,9 +683,15 @@
         })
         rollBtn.on(_ck, function(e) {
             _prevent(e, true)
+            var t = options.time
+            var top = $(d).scrollTop()
+            var v = 20
+            var st = top / v
+            st = Math.min(t * 2.5, st)
+            st = Math.max(t / 1.5, st)
             $('body,html').animate({
                 scrollTop: 0,
-            }, options.time)
+            }, st)
         })
         return rollBtn
     }
