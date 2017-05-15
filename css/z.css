@@ -1,11 +1,11 @@
 /* 
 author: Parker;
 color: {
-	primary,blue: #337ab7 #286090,
-	success,green: #3c763d #2b542c,
-	warning,yellow: #8a6d3b #66512c,
-	danger,red: #a94442 #843534,
-	dark: #393D49 #292C35
+    primary,blue: #337ab7 #286090,
+    success,green: #3c763d #2b542c,
+    warning,yellow: #8a6d3b #66512c,
+    danger,red: #a94442 #843534,
+    dark: #393D49 #292C35
 };
 size: lg, sm, xs;
 */
@@ -540,7 +540,6 @@ fieldset {
 .z-btn {
     font-size: 14px;
     font-weight: 400;
-    line-height: 1.42;
     position: relative;
     display: inline-block;
     padding: 6px 12px;
@@ -709,7 +708,6 @@ fieldset {
 .z-input {
     display: block;
     width: 100%;
-    height: 33px;
     padding: 6px 12px;
     font-size: 14px;
     line-height: 1.42857143;
@@ -1633,6 +1631,10 @@ input[type="search"] {
 .z-input-group-btn:last-child>.z-btn, .z-input-group-btn:last-child>.z-btn-group {
     z-index: 2;
     margin-left: -1px;
+}
+
+.z-input-group .z-input, .z-input-group .z-btn {
+    height: 34px;
 }
 
 
@@ -2735,8 +2737,10 @@ html #zcss-skincodecss {
     padding: 10px;
 }
 
+
 /* 加载进度条 */
-.z-progress-fix{
+
+.z-progress-fix {
     width: 0;
     height: 3px;
     background: #1be8e8;
@@ -2744,8 +2748,8 @@ html #zcss-skincodecss {
     top: 0;
     left: 0;
     z-index: 9999;
-    -webkit-box-shadow: 0 0 4px rgba(0,255,255,.4);
-    box-shadow: 0 0 4px rgba(0,255,255,.4);
+    -webkit-box-shadow: 0 0 4px rgba(0, 255, 255, .4);
+    box-shadow: 0 0 4px rgba(0, 255, 255, .4);
     -webkit-transition-property: width opacity;
     -o-transition-property: width opacity;
     transition-property: width opacity;

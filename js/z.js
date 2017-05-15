@@ -84,92 +84,453 @@
         sliderLeftCls = function() {
             return $(z.sliderBtn)[0].className
         }()
-    // $ 拓展
-    $.extend({
-        // 创建遮罩层
-        createShade: createShade,
-        // 关闭遮罩层
-        closeShade: closeShade,
-        // 替换radio、checkbox样式
-        resetForm: resetForm,
-        // ajax提交表单
-        submit: submit,
-        // 日期格式化
-        date: date,
-        // 获取file路径
-        getFileUrl: getFileUrl,
-        // 判断是否支持css3
-        supportCss3: supportCss3,
-        // 加载图片
-        loadImg: loadImg,
-        // 滚动到底部加载
-        flow: flow,
-        // 加载进度条
-        progressBar: progressBar,
-        // 自定义弹框
-        open: function(content, title, btns, cb) {
-            cb = _getCb(arguments)
-            showMsg('open', content, title, btns, function(obj, i) {
-                if ((cb && !cb(i, obj)) || !cb) _doClose(obj)
+    //////////
+    // $ 拓展 //
+    //////////
+    /**
+     * 创建遮罩
+     * @param  {fn} createCb 成功后的回调
+     * @param  {fn} closeCb  关闭时的回调
+     * @param  {str} opacity  透明的
+     */
+    $.createShade = function(createCb, closeCb, opacity) {
+        if (!zShade) {
+            zShade = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';' + function() {
+                return _bool(opacity) ? 'opacity:' + opacity : ''
+            }() + '"></div>')
+            $(_b).addClass(z.overflow).css('paddingRight', '8px').append(zShade)
+            zShade.fadeIn(z.transTime, createCb && createCb)
+        } else {
+            createCb && createCb()
+        }
+        ++zShades
+        zShade.on(_ck, function() {
+            closeCb && closeCb() && $.closeShade()
+        })
+        return zShade
+    }
+    /**
+     * 关闭遮罩层
+     * @param  {num}   time 过渡时间
+     * @param  {fn} cb   关闭后的回调
+     * @param  {bool}   rm   是否强制关闭
+     */
+    $.closeShade = function(time, cb, rm) {
+        if (!zShade) return false
+        if (rm) zShades = 0
+            --zShades
+        if (zShades <= 0) {
+            zShades = 0
+            if ($.type(time) === 'function') {
+                cb = time
+                time = z.transTime
+            }
+            time = time || z.transTime
+            zShade.fadeOut(time, function() {
+                zShade.remove()
+                $(_b).removeClass(z.overflow).css('paddingRight', '')
+                zShade = null
+                cb && cb()
             })
-        },
-        // 消息提示框
-        alert: function(content, title) {
-            showMsg('alert', content, title, function(obj, i) {
-                _doClose(obj)
+        }
+    }
+    /**
+     * 替换radio、checkbox样式
+     * @param  {str} box 要操作的元素集合
+     */
+    $.resetForm = function(box) {
+        if (_bool(box, true)) {
+            doing($('.z-form input[type="radio"],.z-form input[type="checkbox"]'))
+        } else {
+            if (!box instanceof $) box = $(box)
+            doing(box)
+        }
+
+        function doing(ele) {
+            ele.length && ele.each(function(i) {
+                var isCheck = this.checked
+                var zname = this.name
+                var zid = zname + i.toString()
+                var type = this.type
+                if (_bool($(this).zdata('noreform'))) {
+                    $(this).show()
+                    return true
+                }
+                if (_bool($(this).zdata('name'), true)) {
+                    var html = '<div class="z-unselect z-form-' + type + function() {
+                        return isCheck ? " " + z.active : ""
+                    }() + '" zdata-id="' + zid + '" zdata-name="' + zname + '"><i class="z-anim z-icon">' + function() {
+                        return type == 'radio' ? "&#xe998;" : "&#xe615;"
+                    }() + '</i><span>' + this.title + '</span></div>'
+                    $(this).zdata('id', zid)
+                    $(this).after(html)
+                }
             })
-        },
-        // 询问框
-        confirm: function(content, title, btns, cb) {
-            cb = _getCb(arguments)
-            showMsg('confirm', content, title, btns, function(obj, i) {
-                cb && i > 0 && cb(i, obj)
-                _doClose(obj)
+        }
+    }
+    /**
+     * ajax提交表单
+     * @param  {str}   ele       要操作的form
+     * @param  {fn} cb        成功后的回调
+     * @param  {str}   tip       提示
+     * @param  {bool}   parseJson 是否要转成json
+     * @return {data}             服务器返回值
+     */
+    $.submit = function(ele, cb, tip, parseJson) {
+        var form = ele instanceof $ ? ele : $(ele)
+        var datatip = form.zdata('tip')
+        var notdatatip = _bool(datatip, true)
+        parseJson = _bool(parseJson, true) ? true : _bool(parseJson)
+        tip = (_bool(tip, true) && notdatatip) ? '数据提交中...' : (notdatatip ? tip : datatip)
+        if (!form || !form.length || !form.attr('action')) return false
+        if ($.fn.ajaxSubmit) {
+            doing()
+        } else {
+            $.loadJs(z.libs.form, function() {
+                doing()
             })
-        },
-        // 输入询问框
-        prompt: function(title, btns, cb) {
-            cb = _getCb(arguments)
-            showMsg('prompt', '<input type="text" autofocus class="z-input" placeholder="' + function() {
-                return title || z.title['prompt']
-            }() + '" />', title, btns, function(obj, i) {
-                cb && i > 0 && cb(obj.find('.z-input').val())
-                _doClose(obj)
-            })
-        },
-        // 自动消失的提示
-        toast: function(content, color) {
-            showMsg('toast', content, color || z.color[3])
-        },
-        // 自动消失的成功提示及回调
-        success: function(content, cb) {
-            showMsg('success', content, z.color[5], cb && function() {
-                var html = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';opacity:0;display:block;"></div>')
+        }
+
+        function doing() {
+            if (!form.find('fieldset').length) form.wrapInner('<fieldset></fieldset>')
+            var fieldset = form.find('fieldset')
+            if (fieldset.attr('disabled')) return false
+            fieldset.attr('disabled', true)
+            if (_bool(tip)) {
+                var html = $('<div class="z-msg" style="z-index:' + z.zIndex() + '">' + tip + '</div>')
                 $(_b).append(html)
-                setTimeout(function() {
-                    cb()
-                    html.remove()
-                }, z.successTime)
+                html.css({
+                    marginTop: -html.innerHeight() / 2,
+                    marginLeft: -html.innerWidth() / 2
+                })
+            }
+            form.ajaxForm()
+            form.ajaxSubmit({
+                success: function(responseText, statusText, xhr, $form) {
+                    if (statusText == "success") {
+                        var ret = responseText
+                        fieldset.removeAttr('disabled')
+                        if (tip) html.remove()
+                        if ($.type(ret) === 'string' && parseJson) {
+                            if (w.JSON) {
+                                ret = JSON.parse(responseText)
+                            } else {
+                                ret = eval(responseText)
+                            }
+                        }
+                        cb(ret)
+                    }
+                }
             })
-        },
-        // 自动消失的半透明居中的提示框
-        msg: function(content) {
-            showMsg('msg', content)
-        },
-        // 异步加载js
-        loadJs: function(files, cb) {
-            include('js', files, cb)
-        },
-        // 异步加载css
-        loadCss: function(files, cb) {
-            include('css', files, cb)
-        },
-        // 返回上一页
-        back: function() {
-            w.history.go(-1)
-        },
-    })
-    // $.fn 拓展
+        }
+    }
+    /**
+     * 日期格式化
+     * @param  {str} format 格式化的格式
+     * @param  {date | num} time   要处理的时间：当前时间
+     * @return {str}        格式后的日期格式
+     */
+    $.date = function(format, time) {
+        var dt = dateNow
+        var defaultFormat = 'yyyy/MM/dd H:mm'
+        var defaultTime = dt.getTime()
+        var hasDt = false
+        if ($.type(format) === 'date' || $.type(format) === 'number') {
+            time = format
+            format = defaultFormat
+        } else if (_bool(format, true)) {
+            format = defaultFormat
+            time = defaultTime
+        }
+        if (_bool(time, true)) {
+            time = defaultTime
+        } else if ($.type(time) === 'string') {
+            time = parseInt(time)
+        } else if ($.type(time) === 'date') {
+            dt = time
+            hasDt = true
+        }
+        if (!hasDt) dt = new Date(time)
+        var y = dt.getFullYear(),
+            M = dt.getMonth(),
+            d = dt.getDate(),
+            h = dt.getHours(),
+            m = dt.getMinutes(),
+            s = dt.getSeconds(),
+            ms = dt.getMilliseconds(),
+            z = dt.getTimezoneOffset(),
+            wd = dt.getDay(),
+            w = ["\u65E5", "\u4E00", "\u4E8C", "\u4E09", "\u56DB", "\u4E94", "\u516D"];
+        var h12 = h > 12 ? h - 12 : h
+        var o = {
+            "y+": y, //年份
+            "M+": M + 1, //月份
+            "d+": d, //月份中的天数 
+            "H+": h, //小时24H制            
+            "h+": h12 == 0 ? 12 : h12, //小时12H制
+            "m+": m, //分钟
+            "s+": s, //秒
+            "ms": ms, //毫秒
+            "a+": h > 12 || h == 0 ? "PM" : "AM", //AM/PM 标记 
+            "w+": wd, //星期 数字格式
+            "W+": w[wd], //星期 中文格式
+            "q+": Math.floor((m + 3) / 3), //一月中的第几周
+            "z+": z //时区
+        }
+        if (/(y+)/.test(format)) format = format.replace(RegExp.$1, (dt.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var i in o)
+            if (new RegExp("(" + i + ")").test(format)) format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[i] : ("00" + o[i]).substr(("" + o[i]).length));
+        return format;
+    }
+    /**
+     * 获取file路径
+     * @param  {dom} file 要处理的file元素
+     * @return {str | arr}      文件路径
+     */
+    $.getFileUrl = function(file) {
+        var url = null
+        var urls = []
+        var files = file.files
+        if (!files || !files.length) return
+        $.each(files, function(k, v) {
+            urls.push(getUrl(v))
+        })
+        if (urls.length > 1) return urls
+        else return urls[0]
+
+        function getUrl(f) {
+            var _url = null
+            if (w.createObjectURL != undefined) {
+                _url = w.createObjectURL(f)
+            } else if (w.URL != undefined) {
+                _url = w.URL.createObjectURL(f)
+            } else if (w.webkitURL != undefined) {
+                _url = w.webkitURL.createObjectURL(f)
+            }
+            return _url
+        }
+    }
+    /**
+     * 判断是否支持css3
+     * @param  {str} style 要检查的样式
+     * @return {bool}       是否支持
+     */
+    $.supportCss3 = function(style) {
+        var prefix = ['webkit', 'Moz', 'ms', 'o'],
+            i,
+            humpString = [],
+            htmlStyle = d.documentElement.style,
+            _toHumb = function(string) {
+                return string.replace(/-(\w)/g, function($0, $1) {
+                    return $1.toUpperCase()
+                })
+            }
+        style = style || 'animation'
+        for (i in prefix) humpString.push(_toHumb(prefix[i] + '-' + style))
+        humpString.push(_toHumb(style))
+        for (i in humpString)
+            if (humpString[i] in htmlStyle) return true
+        return false
+    }
+    /**
+     * 加载图片
+     * @param  {str}   url   图片路径
+     * @param  {fn} cb    成功的回调
+     * @param  {fn}   error 失败的回调
+     */
+    $.loadImg = function(url, cb, error) {
+        var img = new Image()
+        img.src = url
+        if (img.complete) {
+            return cb(img)
+        }
+        img.onload = function() {
+            img.onload = null
+            cb(img)
+        }
+        img.onerror = function(e) {
+            img.onerror = null
+            error && error(e)
+        }
+    }
+    /**
+     * 滚动到底部加载
+     * @param  {str}   ele  滚动元素
+     * @param  {fn} cb   回调函数
+     * @param  {json}   opts 参数
+     * @return {json}        操作对象
+     */
+    $.flow = function(ele, cb, opts) {
+        if ($.type(ele) === 'string' || !ele instanceof $) ele = $(ele)
+        var inits = {
+            scrollElem: d,
+            isAuto: true,
+            endTxt: '没有更多了',
+            eleTxt: '加载更多',
+            loadingTxt: '加载中...'
+        }
+        opts = $.extend({}, inits, opts)
+        var moreBtn = $('<button type="button" class="z-btn z-block" zdata-loading-text="' + opts.loadingTxt + '">' + opts.eleTxt + '</button>'),
+            beforeBtn = moreBtn.clone().addClass('z-btn-link'),
+            content = $('<div class="z-wrap"></div>'),
+            page = 1,
+            lock, isOver, timer
+        var notDocment = opts.scrollElem && opts.scrollElem !== d
+        var sElem = $(opts.scrollElem)
+        var backs = {
+            reset: function() {
+                page = 1
+                lock = null
+                isOver = false
+                moreBtn.html(opts.eleTxt).button('reset')
+            },
+            refresh: function() {
+                this.reset()
+                ele.prepend(beforeBtn)
+                beforeBtn.button('loading')
+                moreBtn.hide()
+                lock = true
+                cb(page, content)
+            },
+            disabled: function() {
+                lock = true
+                moreBtn.addClass(z.disabled)
+            },
+            done: function(over) {
+                lock = null
+                moreBtn.show()
+                if (over) {
+                    isOver = over
+                    moreBtn.html(opts.endTxt).addClass(z.disabled)
+                } else {
+                    moreBtn.button('reset')
+                }
+                beforeBtn.remove()
+            }
+        }
+        ele.wrapInner(content).append(moreBtn)
+        content = ele.children('div.z-wrap')
+        moreBtn.on(_ck, function() {
+            if (isOver) return
+            lock || done()
+        })
+        if (!opts.isAuto) return backs
+        _scroll(function() {
+            if (isOver) return backs
+            var _this = sElem,
+                top = _this.scrollTop()
+            var height = notDocment ? _this.innerHeight() : winHeight
+            var scrollHeight = notDocment ? _this.prop('scrollHeight') : d.documentElement.scrollHeight
+            if (scrollHeight - top - height <= 0) {
+                lock || done()
+            }
+        }, sElem)
+        return backs
+
+        function done() {
+            lock = true
+            moreBtn.button('loading')
+            cb(++page, content)
+        }
+    }
+    /**
+     * 加载进度条
+     * @param  {str} type start|done
+     */
+    $.progressBar = function(type) {
+        var bar = $('.z-progress-fix'),
+            num = 0,
+            step = 10,
+            time = 0
+        if ('start' == type && bar.length) return
+        if ('done' == type && !bar.length) return
+        if (bar.length) {
+            bar.css('opacity', 0).width('100%')
+            setTimeout(function() {
+                bar.remove()
+                clearInterval(progressTimer)
+            }, 300)
+        } else {
+            bar = $('<div class="z-progress-fix"></div>')
+            $(_b).append(bar)
+            progressTimer = setInterval(function() {
+                num += step
+                    ++time
+                bar.width(num + '%')
+                if (num === 99) step /= 10
+                if (time >= 9) {
+                    time = 0
+                    step /= 10
+                }
+            }, 300)
+        }
+        return bar
+    }
+    // 自定义弹框
+    $.open = function(content, title, btns, cb) {
+        cb = _getCb(arguments)
+        showMsg('open', content, title, btns, function(obj, i) {
+            if ((cb && !cb(i, obj)) || !cb) _doClose(obj)
+        })
+    }
+    // 消息提示框
+    $.alert = function(content, title) {
+        showMsg('alert', content, title, function(obj, i) {
+            _doClose(obj)
+        })
+    }
+    // 询问框
+    $.confirm = function(content, title, btns, cb) {
+        cb = _getCb(arguments)
+        showMsg('confirm', content, title, btns, function(obj, i) {
+            cb && i > 0 && cb(i, obj)
+            _doClose(obj)
+        })
+    }
+    // 输入询问框
+    $.prompt = function(title, btns, cb) {
+        cb = _getCb(arguments)
+        showMsg('prompt', '<input type="text" autofocus class="z-input" placeholder="' + function() {
+            return title || z.title['prompt']
+        }() + '" />', title, btns, function(obj, i) {
+            cb && i > 0 && cb(obj.find('.z-input').val())
+            _doClose(obj)
+        })
+    }
+    // 自动消失的提示
+    $.toast = function(content, color) {
+        showMsg('toast', content, color || z.color[3])
+    }
+    // 自动消失的成功提示及回调
+    $.success = function(content, cb) {
+        showMsg('success', content, z.color[5], cb && function() {
+            var html = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';opacity:0;display:block;"></div>')
+            $(_b).append(html)
+            setTimeout(function() {
+                cb()
+                html.remove()
+            }, z.successTime)
+        })
+    }
+    // 自动消失的半透明居中的提示框
+    $.msg = function(content) {
+        showMsg('msg', content)
+    }
+    // 异步加载js
+    $.loadJs = function(files, cb) {
+        include('js', files, cb)
+    }
+    // 异步加载css
+    $.loadCss = function(files, cb) {
+        include('css', files, cb)
+    }
+    // 返回上一页
+    $.back = function() {
+        w.history.go(-1)
+    }
+    /////////////
+    // $.fn 拓展 //
+    /////////////
     /**
      * 获取标签名
      */
@@ -242,7 +603,7 @@
         if ('show' === type && !isHidden) return _this
         if ('hide' === type && isHidden) return _this
         if (isHidden) {
-            createShade(function() {
+            $.createShade(function() {
                 _this.css('zIndex', z.zIndex()).show().css({
                     'left': '50%',
                     'marginLeft': -_this.innerWidth() / 2
@@ -673,7 +1034,6 @@
         var rollBtn = _this
         var options = _getOpts(rollBtn, inits, opts)
         var onCls = 'z-on'
-        var timer
         _scroll(function() {
             if ($(d).scrollTop() > options.top) {
                 rollBtn.addClass(onCls)
@@ -683,15 +1043,9 @@
         })
         rollBtn.on(_ck, function(e) {
             _prevent(e, true)
-            var t = options.time
-            var top = $(d).scrollTop()
-            var v = 20
-            var st = top / v
-            st = Math.min(t * 2.5, st)
-            st = Math.max(t / 1.5, st)
             $('body,html').animate({
                 scrollTop: 0,
-            }, st)
+            }, options.time)
         })
         return rollBtn
     }
@@ -776,10 +1130,12 @@
                             return
                         }
                         var item = queue[i]
-                        item.addClass(item.zdata('aniName')).addClass('z-anim-ms' + parseInt(item.zdata('aniTime')) / 100).removeAttr('zdata-top').removeAttr('zdata-aniName').removeAttr('zdata-aniTime').animate({
+                        if(item.zdata('aniTime')){
+                            item.addClass(item.zdata('aniName')).addClass('z-anim-ms' + parseInt(item.zdata('aniTime')) / 100).removeAttr('zdata-top').removeAttr('zdata-aniName').removeAttr('zdata-aniTime').animate({
                                 'opacity': 1
                             }, z.transTime)
                             ++i
+                        }
                     }, 100)
                 }
             } else {
@@ -872,7 +1228,7 @@
         if (!_this.length) return
         var nav = _this.first()
         var inits = {
-            item: '.z-nav-item',
+            item: '.z-nav-item,.z-nav-box',
             logo: 'z-logo',
             navCls: 'z-nav-blue',
             menuCls: '',
@@ -905,7 +1261,7 @@
             can = false
             var _this = $(this)
             if (fixNav.is(':hidden')) {
-                createShade(function() {
+                $.createShade(function() {
                     fixNav.css('zIndex', z.zIndex()).show().animate({
                         'left': 0
                     }, transtime)
@@ -921,7 +1277,7 @@
                 }, transtime, function() {
                     fixNav.hide()
                     _this.removeClass(active)
-                    closeShade(function() {
+                    $.closeShade(function() {
                         can = true
                     })
                 })
@@ -1004,7 +1360,7 @@
             if (elemTop >= start && elemTop <= end) {
                 if (item.zdata('src')) {
                     var src = item.zdata('src')
-                    loadImg(src, function() {
+                    $.loadImg(src, function() {
                         var next = _this.eq(index)
                         item.attr('src', src).removeAttr('zdata-src')
                         cb && cb(item)
@@ -1089,7 +1445,7 @@
                 src = image.src
                 tip = $(image).zdata('tip') || image.title
                 tip = tip ? '&nbsp;&nbsp;' + tip : ''
-                loadImg(src, function(img) {
+                $.loadImg(src, function(img) {
                     var blank = winWidth > 768 ? 100 : 20
                     var imgWidth = img.width
                     var imgHeight = img.height
@@ -1179,85 +1535,6 @@
         return _this
     }
     /**
-     * @param  {str}   ele  滚动元素
-     * @param  {fn} cb   回调函数
-     * @param  {json}   opts 参数
-     * @return {json}        操作对象
-     */
-    function flow(ele, cb, opts) {
-        if ($.type(ele) === 'string' || !ele instanceof $) ele = $(ele)
-        var inits = {
-            scrollElem: d,
-            isAuto: true,
-            endTxt: '没有更多了',
-            eleTxt: '加载更多',
-            loadingTxt: '加载中...'
-        }
-        opts = $.extend({}, inits, opts)
-        var moreBtn = $('<button type="button" class="z-btn z-block" zdata-loading-text="' + opts.loadingTxt + '">' + opts.eleTxt + '</button>'),
-            beforeBtn = moreBtn.clone().addClass('z-btn-link'),
-            content = $('<div class="z-wrap"></div>'),
-            page = 1,
-            lock, isOver, timer
-        var notDocment = opts.scrollElem && opts.scrollElem !== d
-        var sElem = $(opts.scrollElem)
-        var backs = {
-            reset: function() {
-                page = 1
-                lock = null
-                isOver = false
-                moreBtn.html(opts.eleTxt).button('reset')
-            },
-            refresh: function() {
-                this.reset()
-                ele.prepend(beforeBtn)
-                beforeBtn.button('loading')
-                moreBtn.hide()
-                lock = true
-                cb(page, content)
-            },
-            disabled: function() {
-                lock = true
-                moreBtn.addClass(z.disabled)
-            },
-            done: function(over) {
-                lock = null
-                moreBtn.show()
-                if (over) {
-                    isOver = over
-                    moreBtn.html(opts.endTxt).addClass(z.disabled)
-                } else {
-                    moreBtn.button('reset')
-                }
-                beforeBtn.remove()
-            }
-        }
-        ele.wrapInner(content).append(moreBtn)
-        content = ele.children('div.z-wrap')
-        moreBtn.on(_ck, function() {
-            if (isOver) return
-            lock || done()
-        })
-        if (!opts.isAuto) return backs
-        _scroll(function() {
-            if (isOver) return backs
-            var _this = sElem,
-                top = _this.scrollTop()
-            var height = notDocment ? _this.innerHeight() : winHeight
-            var scrollHeight = notDocment ? _this.prop('scrollHeight') : d.documentElement.scrollHeight
-            if (scrollHeight - top - height <= 0) {
-                lock || done()
-            }
-        }, sElem)
-        return backs
-
-        function done() {
-            lock = true
-            moreBtn.button('loading')
-            cb(++page, content)
-        }
-    }
-    /**
      * 手指事件
      * @param  {str}   type left|right
      * @param  {str}   ele  触发元素
@@ -1288,264 +1565,6 @@
                 if (timer) clearTimeout(timer)
             }
         })
-    }
-    /**
-     * @param  {fn} createCb 成功后的回调
-     * @param  {fn} closeCb  关闭时的回调
-     * @param  {str} opacity  透明的
-     */
-    function createShade(createCb, closeCb, opacity) {
-        if (!zShade) {
-            zShade = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';' + function() {
-                return _bool(opacity) ? 'opacity:' + opacity : ''
-            }() + '"></div>')
-            $(_b).addClass(z.overflow).css('paddingRight', '8px').append(zShade)
-            zShade.fadeIn(z.transTime, createCb && createCb)
-        } else {
-            createCb && createCb()
-        }
-        ++zShades
-        zShade.on(_ck, function() {
-            closeCb && closeCb() && closeShade()
-        })
-        return zShade
-    }
-    /**
-     * @param  {num}   time 过渡时间
-     * @param  {fn} cb   关闭后的回调
-     * @param  {bool}   rm   是否强制关闭
-     */
-    function closeShade(time, cb, rm) {
-        if (!zShade) return false
-        if (rm) zShades = 0
-            --zShades
-        if (zShades <= 0) {
-            zShades = 0
-            if ($.type(time) === 'function') {
-                cb = time
-                time = z.transTime
-            }
-            time = time || z.transTime
-            zShade.fadeOut(time, function() {
-                zShade.remove()
-                $(_b).removeClass(z.overflow).css('paddingRight', '')
-                zShade = null
-                cb && cb()
-            })
-        }
-    }
-    /**
-     * @param  {str} box 要操作的元素集合
-     */
-    function resetForm(box) {
-        if (_bool(box, true)) {
-            doing($('.z-form input[type="radio"],.z-form input[type="checkbox"]'))
-        } else {
-            if (!box instanceof $) box = $(box)
-            doing(box)
-        }
-
-        function doing(ele) {
-            ele.length && ele.each(function(i) {
-                var isCheck = this.checked
-                var zname = this.name
-                var zid = zname + i.toString()
-                var type = this.type
-                if (_bool($(this).zdata('noreform'))) {
-                    $(this).show()
-                    return true
-                }
-                if (_bool($(this).zdata('name'), true)) {
-                    var html = '<div class="z-unselect z-form-' + type + function() {
-                        return isCheck ? " " + z.active : ""
-                    }() + '" zdata-id="' + zid + '" zdata-name="' + zname + '"><i class="z-anim z-icon">' + function() {
-                        return type == 'radio' ? "&#xe998;" : "&#xe615;"
-                    }() + '</i><span>' + this.title + '</span></div>'
-                    $(this).zdata('id', zid)
-                    $(this).after(html)
-                }
-            })
-        }
-    }
-    /**
-     * @param  {str}   ele       要操作的form
-     * @param  {fn} cb        成功后的回调
-     * @param  {str}   tip       提示
-     * @param  {bool}   parseJson 是否要转成json
-     * @return {data}             服务器返回值
-     */
-    function submit(ele, cb, tip, parseJson) {
-        var form = ele instanceof $ ? ele : $(ele)
-        var datatip = form.zdata('tip')
-        var notdatatip = _bool(datatip, true)
-        parseJson = _bool(parseJson, true) ? true : _bool(parseJson)
-        tip = (_bool(tip, true) && notdatatip) ? '数据提交中...' : (notdatatip ? tip : datatip)
-        if (!form || !form.length || !form.attr('action')) return false
-        if ($.fn.ajaxSubmit) {
-            doing()
-        } else {
-            $.loadJs(z.libs.form, function() {
-                doing()
-            })
-        }
-
-        function doing() {
-            if (!form.find('fieldset').length) form.wrapInner('<fieldset></fieldset>')
-            var fieldset = form.find('fieldset')
-            if (fieldset.attr('disabled')) return false
-            fieldset.attr('disabled', true)
-            if (_bool(tip)) {
-                var html = $('<div class="z-msg" style="z-index:' + z.zIndex() + '">' + tip + '</div>')
-                $(_b).append(html)
-                html.css({
-                    marginTop: -html.innerHeight() / 2,
-                    marginLeft: -html.innerWidth() / 2
-                })
-            }
-            form.ajaxForm()
-            form.ajaxSubmit({
-                success: function(responseText, statusText, xhr, $form) {
-                    if (statusText == "success") {
-                        var ret = responseText
-                        fieldset.removeAttr('disabled')
-                        if (tip) html.remove()
-                        if ($.type(ret) === 'string' && parseJson) {
-                            if (w.JSON) {
-                                ret = JSON.parse(responseText)
-                            } else {
-                                ret = eval(responseText)
-                            }
-                        }
-                        cb(ret)
-                    }
-                }
-            })
-        }
-    }
-    /**
-     * @param  {str} format 格式化的格式
-     * @param  {date | num} time   要处理的时间：当前时间
-     * @return {str}        格式后的日期格式
-     */
-    function date(format, time) {
-        var dt = dateNow
-        var defaultFormat = 'yyyy/MM/dd H:mm'
-        var defaultTime = dt.getTime()
-        var hasDt = false
-        if ($.type(format) === 'date' || $.type(format) === 'number') {
-            time = format
-            format = defaultFormat
-        } else if (_bool(format, true)) {
-            format = defaultFormat
-            time = defaultTime
-        }
-        if (_bool(time, true)) {
-            time = defaultTime
-        } else if ($.type(time) === 'string') {
-            time = parseInt(time)
-        } else if ($.type(time) === 'date') {
-            dt = time
-            hasDt = true
-        }
-        if (!hasDt) dt = new Date(time)
-        var y = dt.getFullYear(),
-            M = dt.getMonth(),
-            d = dt.getDate(),
-            h = dt.getHours(),
-            m = dt.getMinutes(),
-            s = dt.getSeconds(),
-            ms = dt.getMilliseconds(),
-            z = dt.getTimezoneOffset(),
-            wd = dt.getDay(),
-            w = ["\u65E5", "\u4E00", "\u4E8C", "\u4E09", "\u56DB", "\u4E94", "\u516D"];
-        var h12 = h > 12 ? h - 12 : h
-        var o = {
-            "y+": y, //年份
-            "M+": M + 1, //月份
-            "d+": d, //月份中的天数 
-            "H+": h, //小时24H制            
-            "h+": h12 == 0 ? 12 : h12, //小时12H制
-            "m+": m, //分钟
-            "s+": s, //秒
-            "ms": ms, //毫秒
-            "a+": h > 12 || h == 0 ? "PM" : "AM", //AM/PM 标记 
-            "w+": wd, //星期 数字格式
-            "W+": w[wd], //星期 中文格式
-            "q+": Math.floor((m + 3) / 3), //一月中的第几周
-            "z+": z //时区
-        }
-        if (/(y+)/.test(format)) format = format.replace(RegExp.$1, (dt.getFullYear() + "").substr(4 - RegExp.$1.length));
-        for (var i in o)
-            if (new RegExp("(" + i + ")").test(format)) format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[i] : ("00" + o[i]).substr(("" + o[i]).length));
-        return format;
-    }
-    /**
-     * @param  {dom} file 要处理的file元素
-     * @return {str | arr}      文件路径
-     */
-    function getFileUrl(file) {
-        var url = null
-        var urls = []
-        var files = file.files
-        if (!files || !files.length) return
-        $.each(files, function(k, v) {
-            urls.push(getUrl(v))
-        })
-        if (urls.length > 1) return urls
-        else return urls[0]
-
-        function getUrl(f) {
-            var _url = null
-            if (w.createObjectURL != undefined) {
-                _url = w.createObjectURL(f)
-            } else if (w.URL != undefined) {
-                _url = w.URL.createObjectURL(f)
-            } else if (w.webkitURL != undefined) {
-                _url = w.webkitURL.createObjectURL(f)
-            }
-            return _url
-        }
-    }
-    /**
-     * @param  {str}   url   图片路径
-     * @param  {fn} cb    成功的回调
-     * @param  {fn}   error 失败的回调
-     */
-    function loadImg(url, cb, error) {
-        var img = new Image()
-        img.src = url
-        if (img.complete) {
-            return cb(img)
-        }
-        img.onload = function() {
-            img.onload = null
-            cb(img)
-        }
-        img.onerror = function(e) {
-            img.onerror = null
-            error && error(e)
-        }
-    }
-    /**
-     * @param  {str} style 要检查的样式
-     * @return {bool}       是否支持
-     */
-    function supportCss3(style) {
-        var prefix = ['webkit', 'Moz', 'ms', 'o'],
-            i,
-            humpString = [],
-            htmlStyle = d.documentElement.style,
-            _toHumb = function(string) {
-                return string.replace(/-(\w)/g, function($0, $1) {
-                    return $1.toUpperCase()
-                })
-            }
-        style = style || 'animation'
-        for (i in prefix) humpString.push(_toHumb(prefix[i] + '-' + style))
-        humpString.push(_toHumb(style))
-        for (i in humpString)
-            if (humpString[i] in htmlStyle) return true
-        return false
     }
     /**
      * @param  {[str]}   type  js|css
@@ -1697,38 +1716,6 @@
         return html
     }
     /**
-     * @param  {str} type start|done
-     */
-    function progressBar(type) {
-        var bar = $('.z-progress-fix'),
-            num = 0,
-            step = 10,
-            time = 0
-        if ('start' == type && bar.length) return
-        if ('done' == type && !bar.length) return
-        if (bar.length) {
-            bar.css('opacity', 0).width('100%')
-            setTimeout(function() {
-                bar.remove()
-                clearInterval(progressTimer)
-            }, 300)
-        } else {
-            bar = $('<div class="z-progress-fix"></div>')
-            $(_b).append(bar)
-            progressTimer = setInterval(function() {
-                num += step
-                    ++time
-                bar.width(num + '%')
-                if (num === 99) step /= 10
-                if (time >= 9) {
-                    time = 0
-                    step /= 10
-                }
-            }, 300)
-        }
-        return bar
-    }
-    /**
      * 获取z的路径，判断文件是否已加载
      * @param  {str} src 路径
      * @return {bool}     是否存在
@@ -1786,7 +1773,7 @@
         else box.slideUp(delay, doing)
 
         function doing() {
-            !box.hasClass(zBoxs[0].cls.replace('.', '')) && closeShade(delay)
+            !box.hasClass(zBoxs[0].cls.replace('.', '')) && $.closeShade(delay)
             if (rm) box.remove()
             if (cb) cb()
         }
