@@ -98,7 +98,11 @@
             zShade = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';' + function() {
                 return _bool(opacity) ? 'opacity:' + opacity : ''
             }() + '"></div>')
-            $(_b).addClass(z.overflow).css('paddingRight', '8px').append(zShade)
+            $(_b).addClass(z.overflow)
+            if (!isMobile) {
+                $(_b).css('paddingRight', '8px')
+            }
+            $(_b).append(zShade)
             zShade.fadeIn(z.transTime, createCb && createCb)
         } else {
             createCb && createCb()
@@ -469,20 +473,20 @@
     // 自定义弹框
     $.open = function(content, title, btns, cb) {
         cb = _getCb(arguments)
-        showMsg('open', content, title, btns, function(obj, i) {
+        return showMsg('open', content, title, btns, function(obj, i) {
             if ((cb && !cb(i, obj)) || !cb) _doClose(obj)
         })
     }
     // 消息提示框
     $.alert = function(content, title) {
-        showMsg('alert', content, title, function(obj, i) {
+        return showMsg('alert', content, title, function(obj, i) {
             _doClose(obj)
         })
     }
     // 询问框
     $.confirm = function(content, title, btns, cb) {
         cb = _getCb(arguments)
-        showMsg('confirm', content, title, btns, function(obj, i) {
+        return showMsg('confirm', content, title, btns, function(obj, i) {
             cb && i > 0 && cb(i, obj)
             _doClose(obj)
         })
@@ -490,7 +494,7 @@
     // 输入询问框
     $.prompt = function(title, btns, cb) {
         cb = _getCb(arguments)
-        showMsg('prompt', '<input type="text" autofocus class="z-input" placeholder="' + function() {
+        return showMsg('prompt', '<input type="text" autofocus class="z-input" placeholder="' + function() {
             return title || z.title['prompt']
         }() + '" />', title, btns, function(obj, i) {
             cb && i > 0 && cb(obj.find('.z-input').val())
@@ -499,11 +503,11 @@
     }
     // 自动消失的提示
     $.toast = function(content, color) {
-        showMsg('toast', content, color || z.color[3])
+        return showMsg('toast', content, color || z.color[3])
     }
     // 自动消失的成功提示及回调
     $.success = function(content, cb) {
-        showMsg('success', content, z.color[5], cb && function() {
+        return showMsg('success', content, z.color[5], cb && function() {
             var html = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';opacity:0;display:block;"></div>')
             $(_b).append(html)
             setTimeout(function() {
@@ -514,19 +518,86 @@
     }
     // 自动消失的半透明居中的提示框
     $.msg = function(content) {
-        showMsg('msg', content)
+        return showMsg('msg', content)
     }
     // 异步加载js
     $.loadJs = function(files, cb) {
-        include('js', files, cb)
+        return include('js', files, cb)
     }
     // 异步加载css
     $.loadCss = function(files, cb) {
-        include('css', files, cb)
+        return include('css', files, cb)
     }
     // 返回上一页
     $.back = function() {
         w.history.go(-1)
+    }
+    /**
+     * 简易数据驱动(mvvm)
+     * @param  {json} opts 数据对象(必须包含$ele)
+     * @return {json}      数据整合结果和set函数
+     */
+    $.viewModel = function(opts) {
+        var selector = opts.$ele
+        var eves = ['animationend', 'blur', 'change', 'input', 'click', 'dblclick', 'focus', 'keydown', 'keypress', 'keyup', 'mousedown', 'mouseenter', 'mouseleave', 'mousemove', 'mouseout', 'mouseover', 'mouseup', 'scroll', 'submit']
+        var attrs = ['attr', 'className', 'css', 'text', 'html', 'addClass', 'addAttr', 'addData', 'removeClass', 'removeAttr', 'removeData']
+        var event_models = []
+        var attr_models = []
+        var ele = selector
+        if (_bool(ele, true)) {
+            throw new Error('需指定驱动元素')
+        }
+        if ($.type(ele) === 'string' || !ele instanceof $) {
+            ele = $(ele)
+        } else {
+            selector = ele.selector
+        }
+        $.each(eves.concat(attrs), function(i, on) {
+            var model = 'z-' + on
+            var objs = $(selector + ' [' + model + ']')
+            objs.length && objs.each(function() {
+                var _this = $(this)
+                var tar = _this.attr(model)
+                var val = {
+                    ele: _this,
+                    eve: on,
+                    tar: tar
+                }
+                _this.removeAttr(model)
+                if ($.inArray(on, eves) !== -1) {
+                    event_models.push(val)
+                    _this.on(on, opts[tar])
+                } else if ($.inArray(on, attrs) !== -1) {
+                    attr_models.push(val)
+                    _this.on(on, function() {
+                        var target = opts[tar]
+                        try {
+                            target = JSON.parse(target)
+                        } catch (e) {}
+                        _this[on](target)
+                    })
+                    if(!_bool(opts[tar], true)){
+                        _this.trigger(on)
+                    }
+                }
+            })
+        })
+        var callbacks = {
+            ele: ele,
+            selector: selector,
+            events: event_models,
+            attrs: attr_models,
+            set: function(key, val) {
+                opts[key] = val
+                $.each(attr_models, function(i, item) {
+                    if (item.tar == key) {
+                        item.ele.trigger(item.eve)
+                    }
+                })
+                return callbacks
+            }
+        }
+        return callbacks
     }
     /////////////
     // $.fn 拓展 //
@@ -777,7 +848,7 @@
             var box = null
             var mar = -width
             var mtype = 'marginLeft'
-            var sliderBtn = leg > 1 && !z.isMobile ? $(z.sliderBtn) : ''
+            var sliderBtn = leg > 1 && !isMobile ? $(z.sliderBtn) : ''
             var active = z.active
             if (_bool(opts.dots)) {
                 ele.append('<div class="z-dots">' + function() {
@@ -810,7 +881,7 @@
             item.width(width)
             items.height(item.innerHeight()).width(leg * width)
             timer = setInterval(movement, opts.delay)
-            if (z.isMobile) {
+            if (isMobile) {
                 var touch = null
                 var sx = 0
                 var direction = 'left'
@@ -1130,11 +1201,11 @@
                             return
                         }
                         var item = queue[i]
-                        if(item.zdata('aniTime')){
+                        if (item.zdata('aniTime')) {
                             item.addClass(item.zdata('aniName')).addClass('z-anim-ms' + parseInt(item.zdata('aniTime')) / 100).removeAttr('zdata-top').removeAttr('zdata-aniName').removeAttr('zdata-aniTime').animate({
-                                'opacity': 1
-                            }, z.transTime)
-                            ++i
+                                    'opacity': 1
+                                }, z.transTime)
+                                ++i
                         }
                     }, 100)
                 }
@@ -1241,11 +1312,12 @@
         var fixNav = $('<ul class="z-nav z-nav-tree z-nav-mobile"></ul>')
         var logo = ''
         var menu = $('<ul class="z-menu"><li></li><li></li><li></li></ul>')
-        var child = options.child.substr(1)
+        var child = options.child.replace('.', '')
         var transtime = z.transTime
         var active = z.active
         items.each(function() {
             if ($(this).hasClass(options.logo.replace('.', ''))) logo = $(this)
+            if ($(this).children(options.child).length) $(this).children('a').attr('href', 'javascript:;').removeAttr('target')
             fixNav.append($(this).addClass('z-nav-item'))
         })
         nav.html(logo).append(menu).addClass('z-nav-fixed-top').removeClass('z-action-mobilenav')
@@ -1283,7 +1355,7 @@
                 })
             }
         })
-        if (!z.isMobile) return
+        if (!isMobile) return
         $(d).swiperight(function() {
             if (!fixNav.is(':hidden')) return false
             menu.click()
@@ -1420,7 +1492,7 @@
             $.each(groups, function(k, v) {
                 if (v === self) index = k
             })
-            var sliderBtn = groups.length && !z.isMobile ? $(z.sliderBtn) : ''
+            var sliderBtn = groups.length && !isMobile ? $(z.sliderBtn) : ''
             var htmls = ['<div class="z-album">', '<span class="z-close z-action-close" zdata-box=".z-album">&times;</span>', '<div class="z-album-content ' + z.animCls + ' ' + _getAnim() + '">', '<div class="z-imgbox"></div>', '<div class="z-tipbox"></div>', '</div>', '</div>', ]
             var html = $(htmls.join(''))
             var loading = $(z.loadingHtml)
@@ -1472,7 +1544,7 @@
                     tipbox.html(index + 1 + '/<b>' + groups.length + '</b>' + tip)
                 })
             }
-            if (z.isMobile) {
+            if (isMobile) {
                 html.swipeleft(function(e) {
                     _prevent(e, true)
                         --index
@@ -1496,41 +1568,47 @@
     /**
      * 下拉组件
      * @param  {str} type hover|click:click
+     * @param  {bool} isTree
      */
-    $.fn.dropdown = function(type) {
+    $.fn.dropdown = function(type, isTree) {
         var _this = $(this)
-        var isTree = false
         var selector = _this.selector
-        var cls = '.z-nav-tree'
         var active = z.active
         type = type || _ck
-        if (type == 'hover') {
-            $(_b).on('mouseenter', selector, function() {
+        if (isTree) {
+            var affair = type
+            if ('hover' == affair) affair = 'mouseenter'
+            $(_b).on(affair, selector, function(e) {
                 var othis = $(this)
-                isTree = othis.parents(cls).length
-                if (!isTree || _bool(othis.parent().zdata('toggle'))) othis.siblings(selector).removeClass(active)
-                othis.addClass(active)
-                othis.on('mouseleave', function() {
-                    $(this).removeClass(active)
-                })
-            })
-        } else if (type == _ck) {
-            $(_b).on(_ck, selector, function(e) {
-                var othis = $(this)
-                var ev = _prevent(e)
-                isTree = othis.parents(cls).length
-                if (isTree && othis.context === ev.target.parentNode) ev.preventDefault()
                 if (othis.hasClass(active)) othis.removeClass(active)
                 else {
-                    if (!isTree || _bool(othis.parent().zdata('toggle'))) othis.siblings(selector).removeClass(active)
+                    if (_bool(othis.parent().zdata('toggle'))) othis.siblings(selector).removeClass(active)
                     othis.addClass(active)
                 }
             })
-            $(d).on(_ck, function() {
-                $(selector).each(function() {
-                    if (!$(this).parents(cls).length) $(this).removeClass(active)
+        } else {
+            if (type == 'hover') {
+                $(_b).on('mouseenter', selector, function() {
+                    var othis = $(this)
+                    othis.addClass(active)
+                    othis.on('mouseleave', function() {
+                        $(this).removeClass(active)
+                    })
                 })
-            })
+            } else if (type == _ck) {
+                $(_b).on(_ck, selector, function(e) {
+                    var othis = $(this)
+                    _prevent(e)
+                    if (othis.hasClass(active)) othis.removeClass(active)
+                    else {
+                        $(selector).removeClass(active)
+                        othis.addClass(active)
+                    }
+                })
+                $(d).on(_ck, function() {
+                    $(selector).removeClass(active)
+                })
+            }
         }
         return _this
     }
@@ -1580,6 +1658,7 @@
         var node, suffix = '.' + type
         var i = 0
         require()
+        return node
 
         function require() {
             if (i < files.length) {
@@ -1857,7 +1936,7 @@
         $('.z-action-code').code()
         // 日期选择器
         $('.z-action-datepicker').datepicker()
-        if (z.isMobile) {
+        if (isMobile) {
             // 移动端替换导航
             $('.z-action-mobilenav').mobileNav()
         } else {
@@ -1880,9 +1959,12 @@
         $('.z-action-album').album()
         // 数字输入框
         $('.z-action-numberbox').numberBox()
-        // 下拉导航 & 树形导航
+        // 下拉导航
         $('.z-action-dropdown').dropdown()
         $('.z-action-dropdown-hover').dropdown('hover')
+        // 树形导航
+        $('.z-action-tree').dropdown(_ck, true)
+        $('.z-action-tree-hover').dropdown('hover', true)
         // 替换单选框和复选框
         $.resetForm()
         // 单选框
@@ -1952,6 +2034,11 @@
         // 阻止默认
         $(d).on(_ck, '.z-disabled,:disabled', function(e) {
             _prevent(e, true)
+            return false
+        })
+        $('.z-disabled,:disabled').on(_ck, function(e) {
+            _prevent(e, true)
+            return false
         })
         // 变换窗体
         $(w).on('resize', function() {

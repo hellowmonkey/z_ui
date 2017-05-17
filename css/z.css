@@ -538,20 +538,30 @@ fieldset {
 /* 按钮 */
 
 .z-btn {
-    font-size: 14px;
-    font-weight: 400;
-    position: relative;
     display: inline-block;
     padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
     cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    position: relative;
     transition: all linear .2s;
     -webkit-transition: all linear .2s;
-    text-align: center;
-    vertical-align: middle;
-    white-space: nowrap;
     color: #333;
     border: 1px solid #ccc;
-    border-radius: 3px;
     background-color: #fff;
     background-clip: padding-box;
 }
@@ -571,7 +581,7 @@ fieldset {
     font-size: 12px;
 }
 
-.z-btn:enabled:active, .z-btn.z-active:enabled {
+.z-btn:active, .z-btn.z-active {
     background-color: #e0e0e0;
 }
 
@@ -581,7 +591,7 @@ fieldset {
     background-color: #337ab7;
 }
 
-.z-btn-primary:enabled:active, .z-btn-primary.z-active:enabled, .z-btn-blue:enabled:active, .z-btn-blue.z-active:enabled {
+.z-btn-primary:active, .z-btn-primary.z-active, .z-btn-blue:active, .z-btn-blue.z-active {
     color: #fff;
     border: 1px solid #286090;
     background-color: #286090;
@@ -593,7 +603,7 @@ fieldset {
     background-color: #4cd964;
 }
 
-.z-btn-success:enabled:active, .z-btn-success.z-active:enabled, .z-btn-green:enabled:active, .z-btn-green.z-active:enabled {
+.z-btn-success:active, .z-btn-success.z-active, .z-btn-green:active, .z-btn-green.z-active {
     color: #fff;
     border: 1px solid #2ac845;
     background-color: #2ac845;
@@ -605,7 +615,7 @@ fieldset {
     background-color: #f0ad4e;
 }
 
-.z-btn-warning:enabled:active, .z-btn-warning.z-active:enabled, .z-btn-yellow:enabled:active, .z-btn-yellow.z-active:enabled {
+.z-btn-warning:active, .z-btn-warning.z-active, .z-btn-yellow:active, .z-btn-yellow.z-active {
     color: #fff;
     border: 1px solid #ec971f;
     background-color: #ec971f;
@@ -617,7 +627,7 @@ fieldset {
     background-color: #dd524d;
 }
 
-.z-btn-danger:enabled:active, .z-btn-danger.z-active:enabled, .z-btn-red:enabled:active, .z-btn-red.z-active:enabled {
+.z-btn-danger:active, .z-btn-danger.z-active, .z-btn-red:active, .z-btn-red.z-active {
     color: #fff;
     border: 1px solid #cf2d28;
     background-color: #cf2d28;
@@ -629,7 +639,7 @@ fieldset {
     background-color: #393D49;
 }
 
-.z-btn-dark:enabled:active, .z-btn-dark.z-active:enabled {
+.z-btn-dark:active, .z-btn-dark.z-active {
     color: #fff;
     border: 1px solid #292C35;
     background-color: #292C35;
@@ -663,7 +673,7 @@ fieldset {
     color: #333;
 }
 
-.z-btn-outlined.z-btn-primary:enabled:active, .z-btn-outlined.z-btn-blue:enabled:active, .z-btn-outlined.z-btn-success:enabled:active, .z-btn-outlined.z-btn-green:enabled:active, .z-btn-outlined.z-btn-warning:enabled:active, .z-btn-outlined.z-btn-yellow:enabled:active, .z-btn-outlined.z-btn-danger:enabled:active, .z-btn-outlined.z-btn-red:enabled:active, .z-btn-outlined.z-btn-dark:enabled:active {
+.z-btn-outlined.z-btn-primary:active, .z-btn-outlined.z-btn-blue:active, .z-btn-outlined.z-btn-success:active, .z-btn-outlined.z-btn-green:active, .z-btn-outlined.z-btn-warning:active, .z-btn-outlined.z-btn-yellow:active, .z-btn-outlined.z-btn-danger:active, .z-btn-outlined.z-btn-red:active, .z-btn-outlined.z-btn-dark:active {
     color: #fff;
 }
 
@@ -673,7 +683,7 @@ fieldset {
     background-color: transparent;
 }
 
-.z-btn-link:enabled:active, .z-btn-link.z-active:enabled {
+.z-btn-link:active, .z-btn-link.z-active {
     color: #286090;
     background-color: transparent;
 }
@@ -1633,7 +1643,7 @@ input[type="search"] {
     margin-left: -1px;
 }
 
-.z-input-group .z-input, .z-input-group .z-btn {
+.z-input-group .z-input, .z-input-group .z-btn,.z-btn-group .z-btn {
     height: 34px;
 }
 
