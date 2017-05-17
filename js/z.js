@@ -1561,6 +1561,18 @@
                     else ++index
                     showImg()
                 })
+                $(w).on('keyup', function(e){
+                    var code = e.which
+                    if(37 == code){
+                        --index
+                        showImg()
+                    }else if(39 == code){
+                        ++index
+                        showImg()
+                    }else if(27 == code){
+                        _doClose(html, null, true, box)
+                    }
+                })
             }
         })
         return _this
@@ -1758,6 +1770,11 @@
                 html.find('.z-modal-footer .z-btn').on(_ck, function() {
                     cb && cb(html, $(this).index())
                 })
+            })
+            $(w).on('keyup', function(e){
+                if(27 == e.which){
+                    _doClose(html)
+                }
             })
         } else if (type === 'msg') {
             $('.z-msg').remove()
