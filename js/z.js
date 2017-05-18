@@ -563,7 +563,7 @@
                     var _this = $(this)
                     var tar = _this.attr(model)
                     var val = {
-                        ele: this,
+                        ele: _this,
                         eve: on,
                         tar: tar
                     }
@@ -597,17 +597,16 @@
             })
         }
 
-        function setModels(key, val, doPut){
+        function setModels(key, val, doPut) {
             opts[key] = val
             $.each(attr_models, function(i, item) {
                 if (item.tar == key) {
-                    $(item.ele).trigger(item.eve)
+                    item.ele.trigger(item.eve)
                 }
             })
-            _bool(doPut) && this.put()
+            _bool(doPut) && callbacks._put()
             return callbacks
         }
-
         callbacks.$events = event_models
         callbacks.$attrs = attr_models
         callbacks._put = putModels
@@ -1827,6 +1826,21 @@
         return html
     }
     /**
+     * 选项卡
+     * @param  {dom} ele 触发元素
+     */
+    function tabs(ele) {
+        var active = z.active
+        var _this = $(ele)
+        var lis = _this.parent().find('li')
+        var items = _this.parents('.z-tab').find('.z-tab-content>.z-tab-item')
+        var index = _this.index()
+        if (_this.hasClass(active)) return
+        lis.removeClass(active)
+        _this.addClass(active)
+        items.hide().eq(index).show()
+    }
+    /**
      * 获取z的路径，判断文件是否已加载
      * @param  {str} src 路径
      * @return {bool}     是否存在
@@ -2050,15 +2064,15 @@
             $.back()
         })
         // tabs
-        $(_b).on(_ck, '.z-tab-title li', function() {
-            var _this = $(this)
-            var lis = _this.parent().find('li')
-            var items = _this.parents('.z-tab').find('.z-tab-content .z-tab-item')
-            var index = _this.index()
-            if (_this.hasClass(active)) return
-            lis.removeClass(active)
-            _this.addClass(active)
-            items.removeClass('z-show').eq(index).addClass('z-show')
+        $(_b).on(_ck, '.z-tab-title>li', function() {
+            tabs(this)
+        })
+        $('.z-tab-title>li').on(_ck, function(e) {
+            _prevent(e)
+            tabs(this)
+        })
+        $('.z-tab-title').each(function() {
+            $(this).children('li:first').click()
         })
         // 固定导航
         if ($('.z-nav.z-nav-fixed-top').length) $(_b).css('paddingTop', $('.z-nav.z-nav-fixed-top').innerHeight() + 20)

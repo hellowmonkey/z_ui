@@ -706,24 +706,24 @@
 				<div class="z-box z-mb10">tab有默认、卡片(<code>z-tab-card</code>)、简约(<code>z-tab-brief</code>)三种风格</div>
 				<div class="z-tab z-tab-card">
 					<ul class="z-tab-title">
-						<li class="z-active">类别1</li>
+						<li>类别1</li>
 						<li>类别2</li>
 						<li>类别3</li>
 					</ul>
 					<div class="z-tab-content">
-						<div class="z-tab-item z-show">内容1</div>
+						<div class="z-tab-item">内容1</div>
 						<div class="z-tab-item">内容2</div>
 						<div class="z-tab-item">内容3</div>
 					</div>
 				</div>
 				<div class="z-tab z-tab-brief">
 					<ul class="z-tab-title">
-						<li class="z-active">类别1</li>
+						<li>类别1</li>
 						<li>类别2</li>
 						<li>类别3</li>
 					</ul>
 					<div class="z-tab-content">
-						<div class="z-tab-item z-show">内容1</div>
+						<div class="z-tab-item">内容1</div>
 						<div class="z-tab-item">内容2</div>
 						<div class="z-tab-item">内容3</div>
 					</div>
@@ -1083,6 +1083,7 @@
 				</pre>
 				<div class="z-quote z-quote-red" id="date">日期格式化</div>
 				<div class="z-box z-mb10">快速获取指定格式的指定时间的日期。如：<code>$.date()</code>什么参数都不传时会获取到以<code>'yyyy/MM/dd H:mm'</code>为格式的当前时间的日期。即为：<span id="date1"><script>$('#date1').html($.date())</script></span</div>
+				</div>
 				<pre class="z-action-code">
 					$.date(format, time)
 					/** format的格式：
@@ -1102,58 +1103,57 @@
 					time的格式： ["string", "number", "date"]
 					**/
 				</pre>
-				<div class="z-quote z-quote-red" id="dropdown">导航伸缩</div>
-				<div class="z-box z-mb10">通过<code>z-action-dropdown</code>快速添加导航伸缩功能，默认是通过点击触发，也可以通过<code>$.fn.dropdown('hover')</code>来手动指定鼠标悬停触发。适用于下拉菜单导航和垂直导航。前边的导航都是通过默认方式调用的。</div>
-				<pre class="z-action-code">
-					$(ele).dropdown(type)
-					type: 'click' || 'hover'
-				</pre>
-				<div class="z-quote z-quote-red" id="album">相册</div>
-				<div class="z-box z-mb10">通过<code>z-action-album</code>快速调用，通过指定<code>zdata-bigsrc="string"</code>来指定显示的大图地址，不设定会使用图片的src。通过指定<code>zdata-group="number"</code>来指定分组。通过<code>zdata-index="number"</code>来指定显示顺序。通过设置<code>title</code>或<code>zdata-title</code>属性指定图片说明。</div>
-				<img src="images/1.jpg" zdata-index="2" width="100" zdata-group="1" class="z-action-album" title="图片说明">
-				<img src="images/2.jpg" zdata-index="1" width="100" zdata-group="1" class="z-action-album" title="图片说明">
-				<img src="images/3.jpg" zdata-index="3" width="100" zdata-group="1" class="z-action-album" title="图片说明">
-				<pre class="z-action-code" zdata-encode="true">
-					<img src="images/1.jpg" width="100" class="z-action-album">
-					$(ele).album()
-				</pre>
-				<div class="z-quote z-quote-red" id="hovercard">悬浮卡片</div>
-				<div class="z-box z-mb10">通过<code>z-action-hovercard</code>快速调用。通过<code>zdata-html="string"</code>或<code>zdata-url="string"</code>来指定获取内容的方式。<code>zdata-html</code> 直接填充指定的html，<code>zdata-url</code> 指定获取的地址，通过ajax获取填充内容</div>
+			<div class="z-quote z-quote-red" id="dropdown">导航伸缩</div>
+			<div class="z-box z-mb10">通过<code>z-action-dropdown</code>快速添加导航伸缩功能，默认是通过点击触发，也可以通过<code>$.fn.dropdown('hover')</code>来手动指定鼠标悬停触发。适用于下拉菜单导航和垂直导航。前边的导航都是通过默认方式调用的。</div>
+			<pre class="z-action-code">
+				$(ele).dropdown(type)
+				type: 'click' || 'hover'
+			</pre>
+			<div class="z-quote z-quote-red" id="album">相册</div>
+			<div class="z-box z-mb10">通过<code>z-action-album</code>快速调用，通过指定<code>zdata-bigsrc="string"</code>来指定显示的大图地址，不设定会使用图片的src。通过指定<code>zdata-group="number"</code>来指定分组。通过<code>zdata-index="number"</code>来指定显示顺序。通过设置<code>title</code>或<code>zdata-title</code>属性指定图片说明。</div>
+			<img src="images/1.jpg" zdata-index="2" width="100" zdata-group="1" class="z-action-album" title="图片说明">
+			<img src="images/2.jpg" zdata-index="1" width="100" zdata-group="1" class="z-action-album" title="图片说明">
+			<img src="images/3.jpg" zdata-index="3" width="100" zdata-group="1" class="z-action-album" title="图片说明">
+			<pre class="z-action-code" zdata-encode="true">
+				<img src="images/1.jpg" width="100" class="z-action-album">
+				$(ele).album()
+			</pre>
+			<div class="z-quote z-quote-red" id="hovercard">悬浮卡片</div>
+			<div class="z-box z-mb10">通过<code>z-action-hovercard</code>快速调用。通过<code>zdata-html="string"</code>或<code>zdata-url="string"</code>来指定获取内容的方式。<code>zdata-html</code> 直接填充指定的html，<code>zdata-url</code> 指定获取的地址，通过ajax获取填充内容</div>
+			<div class="z-quote z-quote-red" id="viewModel">简易数据驱动(mvvm)</div>
+			<div class="z-box z-mb10">听说最近mvvm很火，用数据做驱动，省去dom的选择操作。<br>我这里的简易版通过<code>z-</code>作为绑定前缀，可以绑定动作，也可以绑定属性。通过<code>$.viewModel(opts)</code>获取vm实例。通过<code>vm._set(key, val, doPut)</code>魔术方法来改变数据，从而改变对应的属性。</div>
+			<div id="vmTest">
+				<input type="text" class="z-input" placeholder="最简单的todolist" z-keyup="listFn" z-focus="toggle" z-blur="toggle">
+				<div class="z-box" z-html="list" z-visible="vis"></div>
 			</div>
+			<script>
+				var vm = $.viewModel({
+					$ele: '#vmTest',
+					vis: false,
+					listFn: function(){
+						vm._set('list', this.value)
+					},
+					toggle: function(){
+						vm._set('vis', !vm.vis)
+					}
+				})
+			</script>
+			<pre class="z-action-code" zdata-encode="true"><div id="vmTest">
+				<input type="text" class="z-input" placeholder="最简单的todolist" z-keyup="listFn" z-focus="toggle" z-blur="toggle">
+				<div class="z-box" z-html="list" z-visible="vis"></div>
+			</div>
+				var vm = $.viewModel({
+					$ele: '#vmTest',
+					vis: false,
+					listFn: function(){
+						vm._set('list', this.value)
+					},
+					toggle: function(){
+						vm._set('vis', !vm.vis)
+					}
+				})
+			</pre>
 		</fieldset>
-		<div class="z-quote z-quote-red" id="viewModel">简易数据驱动(mvvm)</div>
-		<div class="z-box z-mb10">听说最近mvvm很火，用数据做驱动，省去dom的选择操作。<br>我这里的简易版通过<code>z-</code>作为绑定前缀，可以绑定动作，也可以绑定属性。通过<code>$.viewModel(opts)</code>获取vm实例。通过<code>vm.set(key, val)</code>魔术方法来改变数据，从而改变对应的属性。</div>
-		<div id="vmTest">
-			<input type="text" class="z-input" placeholder="最简单的todolist" z-keyup="listFn" z-focus="toggle" z-blur="toggle">
-			<div class="z-box" z-html="list" z-visible="vis"></div>
-		</div>
-		<script>
-			var vm = $.viewModel({
-				$ele: '#vmTest',
-				vis: false,
-				listFn: function(){
-					vm._set('list', this.value)
-				},
-				toggle: function(){
-					vm._set('vis', !vm.vis)
-				}
-			})
-		</script>
-		<pre class="z-action-code" zdata-encode="true"><div id="vmTest">
-			<input type="text" class="z-input" placeholder="最简单的todolist" z-keyup="listFn" z-focus="toggle" z-blur="toggle">
-			<div class="z-box" z-html="list" z-visible="vis"></div>
-		</div>
-			var vm = $.viewModel({
-				$ele: '#vmTest',
-				vis: false,
-				listFn: function(){
-					vm._set('list', this.value)
-				},
-				toggle: function(){
-					vm._set('vis', !vm.vis)
-				}
-			})
-		</pre>
 	</div>
 	<button class="z-btn z-action-gotop z-gotop z-icon">&#xe6be;</button>
 	<script>
