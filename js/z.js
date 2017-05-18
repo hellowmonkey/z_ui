@@ -538,9 +538,10 @@
      * @return {json}      数据整合结果和set函数
      */
     $.viewModel = function(opts) {
+        var callbacks = opts
         var selector = opts.$ele
         var eves = ['animationend', 'blur', 'change', 'input', 'click', 'dblclick', 'focus', 'keydown', 'keypress', 'keyup', 'mousedown', 'mouseenter', 'mouseleave', 'mousemove', 'mouseout', 'mouseover', 'mouseup', 'scroll', 'submit']
-        var attrs = ['attr', 'className', 'css', 'text', 'html', 'addClass', 'addAttr', 'addData', 'removeClass', 'removeAttr', 'removeData']
+        var attrs = ['attr', 'className', 'css', 'text', 'html', 'addClass', 'addAttr', 'addData', 'removeClass', 'removeAttr', 'removeData', 'visible']
         var event_models = []
         var attr_models = []
         var ele = selector
@@ -552,51 +553,65 @@
         } else {
             selector = ele.selector
         }
-        $.each(eves.concat(attrs), function(i, on) {
-            var model = 'z-' + on
-            var objs = $(selector + ' [' + model + ']')
-            objs.length && objs.each(function() {
-                var _this = $(this)
-                var tar = _this.attr(model)
-                var val = {
-                    ele: _this,
-                    eve: on,
-                    tar: tar
-                }
-                _this.removeAttr(model)
-                if ($.inArray(on, eves) !== -1) {
-                    event_models.push(val)
-                    _this.on(on, opts[tar])
-                } else if ($.inArray(on, attrs) !== -1) {
-                    attr_models.push(val)
-                    _this.on(on, function() {
-                        var target = opts[tar]
-                        try {
-                            target = JSON.parse(target)
-                        } catch (e) {}
-                        _this[on](target)
-                    })
-                    if(!_bool(opts[tar], true)){
-                        _this.trigger(on)
+        putModels()
+
+        function putModels() {
+            $.each(eves.concat(attrs), function(i, on) {
+                var model = 'z-' + on
+                var objs = $(selector + ' [' + model + ']')
+                objs.length && objs.each(function() {
+                    var _this = $(this)
+                    var tar = _this.attr(model)
+                    var val = {
+                        ele: this,
+                        eve: on,
+                        tar: tar
                     }
-                }
-            })
-        })
-        var callbacks = {
-            ele: ele,
-            selector: selector,
-            events: event_models,
-            attrs: attr_models,
-            set: function(key, val) {
-                opts[key] = val
-                $.each(attr_models, function(i, item) {
-                    if (item.tar == key) {
-                        item.ele.trigger(item.eve)
+                    if ($.inArray(val, event_models) !== -1 || $.inArray(val, attr_models) !== -1) return true
+                    _this.removeAttr(model)
+                    if ($.inArray(on, eves) !== -1) {
+                        event_models.push(val)
+                        _this.on(on, opts[tar])
+                    } else if ($.inArray(on, attrs) !== -1) {
+                        attr_models.push(val)
+                        _this.on(on, function() {
+                            var target = opts[tar]
+                            try {
+                                target = JSON.parse(target)
+                            } catch (e) {}
+                            if ('visible' == on) {
+                                if (_bool(target)) {
+                                    _this.show()
+                                } else {
+                                    _this.hide()
+                                }
+                            } else {
+                                _this[on](target)
+                            }
+                        })
+                        if (!_bool(opts[tar], true)) {
+                            _this.trigger(on)
+                        }
                     }
                 })
-                return callbacks
-            }
+            })
         }
+
+        function setModels(key, val, doPut){
+            opts[key] = val
+            $.each(attr_models, function(i, item) {
+                if (item.tar == key) {
+                    $(item.ele).trigger(item.eve)
+                }
+            })
+            _bool(doPut) && this.put()
+            return callbacks
+        }
+
+        callbacks.$events = event_models
+        callbacks.$attrs = attr_models
+        callbacks._put = putModels
+        callbacks._set = setModels
         return callbacks
     }
     /////////////
@@ -1561,15 +1576,15 @@
                     else ++index
                     showImg()
                 })
-                $(w).on('keyup', function(e){
+                $(w).on('keyup', function(e) {
                     var code = e.which
-                    if(37 == code){
+                    if (37 == code) {
                         --index
                         showImg()
-                    }else if(39 == code){
+                    } else if (39 == code) {
                         ++index
                         showImg()
-                    }else if(27 == code){
+                    } else if (27 == code) {
                         _doClose(html, null, true, box)
                     }
                 })
@@ -1771,8 +1786,8 @@
                     cb && cb(html, $(this).index())
                 })
             })
-            $(w).on('keyup', function(e){
-                if(27 == e.which){
+            $(w).on('keyup', function(e) {
+                if (27 == e.which) {
                     _doClose(html)
                 }
             })

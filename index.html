@@ -1124,25 +1124,33 @@
 		<div class="z-quote z-quote-red" id="viewModel">简易数据驱动(mvvm)</div>
 		<div class="z-box z-mb10">听说最近mvvm很火，用数据做驱动，省去dom的选择操作。<br>我这里的简易版通过<code>z-</code>作为绑定前缀，可以绑定动作，也可以绑定属性。通过<code>$.viewModel(opts)</code>获取vm实例。通过<code>vm.set(key, val)</code>魔术方法来改变数据，从而改变对应的属性。</div>
 		<div id="vmTest">
-			<input type="text" class="z-input" placeholder="最简单的todolist" z-keyup="listFn">
-			<div class="z-box" z-html="list"></div>
+			<input type="text" class="z-input" placeholder="最简单的todolist" z-keyup="listFn" z-focus="toggle" z-blur="toggle">
+			<div class="z-box" z-html="list" z-visible="vis"></div>
 		</div>
 		<script>
 			var vm = $.viewModel({
 				$ele: '#vmTest',
+				vis: false,
 				listFn: function(){
-					vm.set('list', this.value)
+					vm._set('list', this.value)
+				},
+				toggle: function(){
+					vm._set('vis', !vm.vis)
 				}
 			})
 		</script>
 		<pre class="z-action-code" zdata-encode="true"><div id="vmTest">
-			<input type="text" class="z-input" placeholder="最简单的todolist" z-keyup="listFn">
-			<div class="z-box" z-html="list"></div>
+			<input type="text" class="z-input" placeholder="最简单的todolist" z-keyup="listFn" z-focus="toggle" z-blur="toggle">
+			<div class="z-box" z-html="list" z-visible="vis"></div>
 		</div>
 			var vm = $.viewModel({
 				$ele: '#vmTest',
+				vis: false,
 				listFn: function(){
-					vm.set('list', this.value)
+					vm._set('list', this.value)
+				},
+				toggle: function(){
+					vm._set('vis', !vm.vis)
 				}
 			})
 		</pre>
