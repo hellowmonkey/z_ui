@@ -1506,7 +1506,7 @@
             $.each(groups, function(k, v) {
                 if (v === self) index = k
             })
-            var sliderBtn = groups.length && !isMobile ? $(z.sliderBtn) : ''
+            var sliderBtn = groups.length > 1 && !isMobile ? $(z.sliderBtn) : ''
             var htmls = ['<div class="z-album">', '<span class="z-close z-action-close" zdata-box=".z-album">&times;</span>', '<div class="z-album-content ' + z.animCls + ' ' + _getAnim() + '">', '<div class="z-imgbox"></div>', '<div class="z-tipbox"></div>', '</div>', '</div>', ]
             var html = $(htmls.join(''))
             var loading = $(z.loadingHtml)
@@ -1558,35 +1558,37 @@
                     tipbox.html(index + 1 + '/<b>' + groups.length + '</b>' + tip)
                 })
             }
-            if (isMobile) {
-                html.swipeleft(function(e) {
-                    _prevent(e, true)
-                        --index
-                    showImg()
-                })
-                html.swiperight(function(e) {
-                    _prevent(e, true)
-                        ++index
-                    showImg()
-                })
-            } else {
-                sliderBtn && sliderBtn.on(_ck, function() {
-                    if ($(this).hasClass(sliderLeftCls)) --index
-                    else ++index
-                    showImg()
-                })
-                $(w).on('keyup', function(e) {
-                    var code = e.which
-                    if (37 == code) {
-                        --index
+            if(groups.length > 1){
+                if (isMobile) {
+                    html.swipeleft(function(e) {
+                        _prevent(e, true)
+                            --index
                         showImg()
-                    } else if (39 == code) {
-                        ++index
+                    })
+                    html.swiperight(function(e) {
+                        _prevent(e, true)
+                            ++index
                         showImg()
-                    } else if (27 == code) {
-                        _doClose(html, null, true, box)
-                    }
-                })
+                    })
+                } else {
+                    sliderBtn && sliderBtn.on(_ck, function() {
+                        if ($(this).hasClass(sliderLeftCls)) --index
+                        else ++index
+                        showImg()
+                    })
+                    $(w).on('keyup', function(e) {
+                        var code = e.which
+                        if (37 == code) {
+                            --index
+                            showImg()
+                        } else if (39 == code) {
+                            ++index
+                            showImg()
+                        } else if (27 == code) {
+                            _doClose(html, null, true, box)
+                        }
+                    })
+                }
             }
         })
         return _this
