@@ -753,7 +753,7 @@ fieldset {
     border: 0;
 }
 
-.z-input[disabled], .z-input[readonly], fieldset[disabled] .z-input {
+.z-input[disabled], fieldset[disabled] .z-input {
     background-color: #eee;
     opacity: 1;
 }
@@ -1739,6 +1739,7 @@ input[type="search"] {
 
 .z-nav-item.z-logo>a {
     padding: 10px 20px 10px 0;
+    font-size: 21px;
 }
 
 .z-logo img {

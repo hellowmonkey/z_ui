@@ -72,6 +72,7 @@
             transTime: transTime,
             closeTime: transTime * 0.6,
             successTime: transTime * 8,
+            delayTime: 4000,
             active: 'z-active',
             disabled: 'z-disabled',
             overflow: 'z-overflow',
@@ -471,54 +472,124 @@
         return bar
     }
     // 自定义弹框
-    $.open = function(content, title, btns, cb) {
-        cb = _getCb(arguments)
-        return showMsg('open', content, title, btns, function(obj, i) {
-            if ((cb && !cb(i, obj)) || !cb) _doClose(obj)
+    $.open = function(content, title, btns, width, offset, cb) {
+        var isFirstArr = true,
+            html
+        var opts = {}
+        var args = arguments
+        $.each(args, function(k, arg) {
+            if ($.type(arg) === 'array') {
+                if (isFirstArr) {
+                    isFirstArr = false
+                    opts.btns = arg
+                    if ($.type(args[k + 1]) === 'string') {
+                        opts.width = args[k + 1]
+                    }
+                } else {
+                    opts.offset = arg
+                }
+            } else if (($.type(arg) === 'function')) {
+                cb = arg
+            }
         })
+        content = $.type(content) === 'string' ? content : ''
+        title = $.type(title) === 'string' ? title : z.title['open']
+        btns = opts.btns ? opts.btns : z.btns
+        width = $.type(width) === 'string' ? width : opts.width ? opts.width : null
+        offset = opts.offset ? opts.offset : null
+        html = getOpenHtml(content, title, btns)
+        width && html.width(width)
+        appendOpen(html, function(i) {
+            if ((cb && !cb(i)) || !cb) _doClose(html)
+        }, offset)
+        return html
     }
     // 消息提示框
-    $.alert = function(content, title) {
-        return showMsg('alert', content, title, function(obj, i) {
-            _doClose(obj)
+    $.alert = function(content, title, btn) {
+        var btns, html
+        content = content || ''
+        title = title || z.title['alert']
+        btns = btn ? ['', btn] : ['', z.btns[1]]
+        html = getOpenHtml(content, title, btns)
+        appendOpen(html, function() {
+            _doClose(html)
         })
+        return html
     }
     // 询问框
     $.confirm = function(content, title, btns, cb) {
-        cb = _getCb(arguments)
-        return showMsg('confirm', content, title, btns, function(obj, i) {
-            cb && i > 0 && cb(i, obj)
-            _doClose(obj)
+        var opts = {},
+            html
+        $.each(arguments, function(k, arg) {
+            if ($.type(arg) === 'array') {
+                opts.btns = arg
+            } else if (($.type(arg) === 'function')) {
+                cb = arg
+            }
         })
+        content = $.type(content) === 'string' ? content : ''
+        title = $.type(title) === 'string' ? title : z.title['confirm']
+        btns = opts.btns ? opts.btns : z.btns
+        html = getOpenHtml(content, title, btns)
+        appendOpen(html, function(i) {
+            cb && i > 0 && cb(i)
+            _doClose(html)
+        })
+        return html
     }
     // 输入询问框
-    $.prompt = function(title, btns, cb) {
-        cb = _getCb(arguments)
-        return showMsg('prompt', '<input type="text" autofocus class="z-input" placeholder="' + function() {
-            return title || z.title['prompt']
-        }() + '" />', title, btns, function(obj, i) {
-            cb && i > 0 && cb(obj.find('.z-input').val())
-            _doClose(obj)
+    $.prompt = function(title, holder, btns, cb) {
+        var opts = {}
+        var html, content
+        $.each(arguments, function(k, arg) {
+            if ($.type(arg) === 'array') {
+                opts.btns = arg
+            } else if (($.type(arg) === 'function')) {
+                cb = arg
+            }
         })
+        title = $.type(title) === 'string' ? title : z.title['prompt']
+        holder = $.type(holder) === 'string' ? holder : title
+        btns = opts.btns ? opts.btns : z.btns
+        content = '<input type="text" autofocus class="z-input" placeholder="' + holder + '" />'
+        html = getOpenHtml(content, title, btns)
+        appendOpen(html, function(i) {
+            cb && i > 0 && cb(html.find('.z-input').val())
+            _doClose(html)
+        })
+        return html
     }
     // 自动消失的提示
     $.toast = function(content, color) {
-        return showMsg('toast', content, color || z.color[3])
+        return getToastHtml(content, color)
     }
     // 自动消失的成功提示及回调
     $.success = function(content, cb) {
-        return showMsg('success', content, z.color[5], cb && function() {
+        cb && function() {
             var html = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';opacity:0;display:block;"></div>')
             $(_b).append(html)
             setTimeout(function() {
                 cb()
                 html.remove()
             }, z.successTime)
-        })
+        }()
+        return getToastHtml(content, z.color[5])
     }
     // 自动消失的半透明居中的提示框
     $.msg = function(content) {
-        return showMsg('msg', content)
+        $('.z-msg').remove()
+        var html = $('<div class="z-msg ' + z.anims[2] + ' ' + z.animCls + '" style="z-index:' + z.zIndex() + '">' + content + '</div>')
+        $(_b).append(html)
+        html.css({
+            marginTop: -html.innerHeight() / 2,
+            marginLeft: -html.innerWidth() / 2
+        })
+        setTimeout(function() {
+            html.hide(z.closeTime, function() {
+                html.remove()
+            })
+        }, z.delayTime)
+        return html
     }
     // 异步加载js
     $.loadJs = function(files, cb) {
@@ -1315,7 +1386,7 @@
         var inits = {
             item: '.z-nav-item,.z-nav-box',
             logo: 'z-logo',
-            navCls: 'z-nav-blue',
+            navCls: '',
             menuCls: '',
             child: '.z-dropdown-menu',
             toggle: true
@@ -1330,7 +1401,7 @@
         var transtime = z.transTime
         var active = z.active
         items.each(function() {
-            if ($(this).hasClass(options.logo.replace('.', ''))) logo = $(this)
+            if ($(this).hasClass(options.logo.replace('.', ''))) logo = $(this).clone()
             if ($(this).children(options.child).length) $(this).children('a').attr('href', 'javascript:;').removeAttr('target')
             fixNav.append($(this).addClass('z-nav-item'))
         })
@@ -1558,7 +1629,7 @@
                     tipbox.html(index + 1 + '/<b>' + groups.length + '</b>' + tip)
                 })
             }
-            if(groups.length > 1){
+            if (groups.length > 1) {
                 if (isMobile) {
                     html.swipeleft(function(e) {
                         _prevent(e, true)
@@ -1726,106 +1797,66 @@
         }
     }
     /**
-     * @param  {str}   type    弹框类型
-     * @param  {str}   content 内容
-     * @param  {str}   title   标题
-     * @param  {arr}   btns    按钮
-     * @param  {fn} cb      成功后的回调
+     * 生成open类型的弹框dom
      */
-    function showMsg(type, content, title, btns, cb) {
-        var html = ''
-        var htmls = []
-        var modal_arr = ['alert', 'confirm', 'prompt', 'open']
-        var delay = 4000
-        var closeBtn = '<button type="button" class="z-close z-action-close">&times;</button>'
-        var animCls = z.animCls
-        var anims = z.anims
-        if ($.inArray(type, modal_arr) !== -1) {
-            var def_title = z.title[type]
-            var def_btns = z.btns
-            if ($.type(title) === 'array') {
-                if ($.type(btns) !== 'array') btns = title
-                title = def_title
-            } else if ($.type(title) === 'function') {
-                if ($.type(cb) !== 'function') cb = title
-                title = def_title
-            }
-            if ($.type(btns) === 'function') {
-                if ($.type(cb) !== 'function') cb = btns
-                btns = def_btns
-            }
-            title = title || def_title
-            if (_bool(btns, true)) btns = def_btns
-            if (_bool(content, true)) content = ''
-            htmls = ['<div class="z-modal z-move ' + function() {
-                    return 'open' === type ? '' : 'z-modal-sm'
-                }() + ' ' + animCls + ' ' + _getAnim() + '">', '<div class="z-modal-header z-move-title z-action-move">',
-                closeBtn, '<h4 class="z-modal-title">' + title + '</h4>', '</div>', '<div class="z-modal-body">',
-                content, '</div>', '<div class="z-modal-footer z-text-center">'
-            ]
-            if ('alert' === type) btns = ['', btns.slice(-1)]
-            else if ('open' !== type) btns = btns.slice(0, 2)
-            for (var i = 0; i < btns.length; i++) {
-                if (btns[i].length) htmls.push('<button type="button" class="z-btn z-btn-' + z.color[i] + '">' + btns[i] + '</button>')
-            }
-            htmls.push('</div></div>')
-            html = $(htmls.join(''))
-            $.createShade(function() {
-                $(_b).append(html)
-                html.css('zIndex', z.zIndex()).show()
-                var win = html.innerWidth()
-                var hig = html.innerHeight()
-                var ww = winWidth
-                var wh = winHeight
-                html.css({
-                    'margin': 0,
-                    'top': (wh - hig) / 3 > 0 ? (wh - hig) / 3 : 0,
-                    'left': (ww - win) / 2 > 0 ? (ww - win) / 2 : 0
-                })
-                _modalHeight(html)
-                html.find('.z-modal-footer .z-btn').on(_ck, function() {
-                    cb && cb(html, $(this).index())
-                })
-            })
-            $(w).on('keyup', function(e) {
-                if (27 == e.which) {
-                    _doClose(html)
-                }
-            })
-        } else if (type === 'msg') {
-            $('.z-msg').remove()
-            html = $('<div class="z-msg ' + anims[2] + ' ' + animCls + '" style="z-index:' + z.zIndex() + '">' + content + '</div>')
-            $(_b).append(html)
-            html.css({
-                marginTop: -html.innerHeight() / 2,
-                marginLeft: -html.innerWidth() / 2
-            })
-            setTimeout(function() {
-                html.hide(z.closeTime, function() {
-                    html.remove()
-                })
-            }, delay)
-        } else {
-            var color = title
-            var box = $('.z-alert-box')
-            cb = btns
-            if (!box || !box.length) {
-                box = $('<div class="z-alert-box"></div>')
-                $(_b).append(box)
-            }
-            box.css('zIndex', z.zIndex())
-            htmls = ['<div class="z-alert z-alert-' + color + ' z-alert-dismissible ' + anims[4] + ' ' + animCls + '">',
-                closeBtn,
-                content, '</div>'
-            ]
-            html = $(htmls.join(''))
-            box.prepend(html)
-            cb && cb()
-            setTimeout(function() {
-                _doClose(html)
-            }, delay)
+    function getOpenHtml(content, title, btns) {
+        var htmls = ['<div class="z-modal z-move z-modal-sm ' + z.animCls + ' ' + _getAnim() + '">', '<div class="z-modal-header z-move-title z-action-move">', '<button type="button" class="z-close z-action-close">&times;</button>', '<h4 class="z-modal-title">' + title + '</h4>', '</div>', '<div class="z-modal-body">',
+            content, '</div>', '<div class="z-modal-footer z-text-center">'
+        ]
+        for (var i = 0; i < btns.length; i++) {
+            if (btns[i].length) htmls.push('<button type="button" class="z-btn z-btn-' + z.color[i] + '">' + btns[i] + '</button>')
         }
+        htmls.push('</div></div>')
+        return $(htmls.join(''))
+    }
+    /**
+     * 生成toast类型的弹框dom
+     */
+    function getToastHtml(content, color) {
+        var box = $('.z-alert-box')
+        color = color || z.color[3]
+        content = content || ''
+        if (!box || !box.length) {
+            box = $('<div class="z-alert-box"></div>')
+            $(_b).append(box)
+        }
+        box.css('zIndex', z.zIndex())
+        htmls = ['<div class="z-alert z-alert-' + color + ' z-alert-dismissible ' + z.anims[4] + ' ' + z.animCls + '">', '<button type="button" class="z-close z-action-close">&times;</button>',
+            content, '</div>'
+        ]
+        html = $(htmls.join(''))
+        box.prepend(html)
+        setTimeout(function() {
+            _doClose(html)
+        }, z.delayTime)
         return html
+    }
+    /**
+     * open dom 生成后的操作
+     */
+    function appendOpen(html, cb, offset) {
+        $.createShade(function() {
+            $(_b).append(html)
+            html.css('zIndex', z.zIndex()).show()
+            var win = html.innerWidth()
+            var hig = html.innerHeight()
+            var ww = winWidth
+            var wh = winHeight
+            html.css({
+                'margin': 0,
+                'top': (offset && offset[0]) ? offset[0] : (wh - hig) / 3 > 0 ? (wh - hig) / 3 : 0,
+                'left': (offset && offset[1]) ? offset[1] : (ww - win) / 2 > 0 ? (ww - win) / 2 : 0
+            })
+            _modalHeight(html)
+            html.find('.z-modal-footer .z-btn').on(_ck, function() {
+                cb && cb($(this).index())
+            })
+        })
+        $(w).on('keyup', function(e) {
+            if (27 == e.which) {
+                _doClose(html)
+            }
+        })
     }
     /**
      * 选项卡
