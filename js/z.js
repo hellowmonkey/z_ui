@@ -469,7 +469,16 @@
         }
         return bar
     }
-    // 自定义弹框
+    /**
+     * 自定义弹框
+     * @param  {str}   content 内容
+     * @param  {str}   title   标题
+     * @param  {arr}   btns    按钮
+     * @param  {str}   width   宽度
+     * @param  {json}   offset  位置(top，left)
+     * @param  {fn} cb      点击按钮的回调
+     * @return {ele}           弹框元素
+     */
     $.open = function(content, title, btns, width, offset, cb) {
         var isFirstArr = true,
             html
@@ -502,7 +511,13 @@
         }, offset)
         return html
     }
-    // 消息提示框
+    /**
+     * 消息提示框
+     * @param  {str} content 内容
+     * @param  {str} title   标题
+     * @param  {str} btn     按钮文字
+     * @return {ele}         弹框元素
+     */
     $.alert = function(content, title, btn) {
         var btns, html
         content = content || ''
@@ -514,7 +529,14 @@
         })
         return html
     }
-    // 询问框
+    /**
+     * 询问框
+     * @param  {str}   content 内容
+     * @param  {str}   title   标题
+     * @param  {arr}   btns    按钮
+     * @param  {fn} cb      点击确认时的回调
+     * @return {ele}           弹框元素
+     */
     $.confirm = function(content, title, btns, cb) {
         var opts = {},
             html
@@ -535,7 +557,14 @@
         })
         return html
     }
-    // 输入询问框
+    /**
+     * 输入询问框
+     * @param  {str}   title  标题
+     * @param  {str}   holder placeholder文字
+     * @param  {arr}   btns   按钮
+     * @param  {fn} cb     点击确认的回调
+     * @return {ele}          弹框元素
+     */
     $.prompt = function(title, holder, btns, cb) {
         var opts = {}
         var html, content
@@ -557,11 +586,21 @@
         })
         return html
     }
-    // 自动消失的提示
+    /**
+     * 自动消失的提示框
+     * @param  {str} content 内容
+     * @param  {str} color   弹框颜色
+     * @return {ele}         弹框元素
+     */
     $.toast = function(content, color) {
         return getToastHtml(content, color)
     }
-    // 自动消失的成功提示及回调
+    /**
+     * 成功提示框
+     * @param  {str}   content 内容
+     * @param  {fn} cb      回调
+     * @return {ele}           弹框元素
+     */
     $.success = function(content, cb) {
         cb && function() {
             var html = $('<div class="z-shade" style="z-index:' + z.zIndex() + ';opacity:0;display:block;"></div>')
@@ -573,7 +612,11 @@
         }()
         return getToastHtml(content, z.color[5])
     }
-    // 自动消失的半透明居中的提示框
+    /**
+     * 自动消失的半透明居中的提示框
+     * @param  {str} content 内容
+     * @return {ele}         弹框元素
+     */
     $.msg = function(content) {
         $('.z-msg').remove()
         var html = $('<div class="z-msg ' + z.anims[2] + ' ' + z.animCls + '" style="z-index:' + z.zIndex() + '">' + content + '</div>')
