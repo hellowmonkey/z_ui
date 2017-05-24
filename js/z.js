@@ -1701,20 +1701,23 @@
                         else ++index
                         showImg()
                     })
-                    $(w).on('keyup', function(e) {
-                        var code = e.which
-                        if (37 == code) {
-                            --index
-                            showImg()
-                        } else if (39 == code) {
-                            ++index
-                            showImg()
-                        } else if (27 == code) {
-                            _doClose(html, null, true, box)
-                        }
-                    })
                 }
             }
+            $(w).on('keyup', function(e) {
+                var code = e.which
+                if (groups.length > 1) {
+                    if (37 == code) {
+                        --index
+                        showImg()
+                    } else if (39 == code) {
+                        ++index
+                        showImg()
+                    }
+                }
+                if (27 == code) {
+                    _doClose(html, null, true, box)
+                }
+            })
         })
         return _this
     }
