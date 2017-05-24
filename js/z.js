@@ -92,7 +92,7 @@
      * 创建遮罩
      * @param  {fn} createCb 成功后的回调
      * @param  {fn} closeCb  关闭时的回调
-     * @param  {str} opacity  透明的
+     * @param  {str} opacity  透明度
      */
     $.createShade = function(createCb, closeCb, opacity) {
         if (!zShade) {
@@ -191,9 +191,7 @@
         if ($.fn.ajaxSubmit) {
             doing()
         } else {
-            $.loadJs(z.libs.form, function() {
-                doing()
-            })
+            $.loadJs(z.libs.form, doing)
         }
 
         function doing() {
@@ -1045,9 +1043,7 @@
         if ($.fn.masonry) {
             doing()
         } else {
-            $.loadJs(z.libs.waterfall, function() {
-                doing()
-            })
+            $.loadJs(z.libs.waterfall, doing)
         }
         return _this
 
@@ -1075,9 +1071,7 @@
             doing()
         } else {
             $.loadCss(lib, function() {
-                $.loadJs(lib, function() {
-                    doing()
-                })
+                $.loadJs(lib, doing)
             })
         }
         return _this
