@@ -972,19 +972,19 @@
                 var direction = 'left'
                 var move = 0
                 ele.on('touchmove', function(e) {
-                    _prevent(e, true)
+                    _prevent(e)
                     move = touch.clientX - sx
                     touch = e.originalEvent.changedTouches[0]
                     box.css(mtype, mar + move)
                 })
                 ele.on('touchstart', function(e) {　　　　
-                    _prevent(e, true)
+                    _prevent(e)
                     touch = e.originalEvent.touches[0]
                     sx = touch.clientX
                     clearInterval(timer)
                 })
                 ele.on('touchend', function(e) {　　　　
-                    _prevent(e, true)
+                    _prevent(e)
                     touch = e.originalEvent.changedTouches[0]
                     if (touch.clientX - sx > 0) direction = 'right'
                     else direction = 'left'
@@ -1173,7 +1173,10 @@
             }
             html.show().className(cls + wayCls).css({
                 'top': targetTop,
-                'left': targetLeft
+                'left': targetLeft,
+                'bottom': 'auto',
+                'right': 'auto',
+                'zIndex': z.zIndex()
             })
         }
     }
@@ -1492,7 +1495,7 @@
      */
     $.fn.lazyimg = function(scrollEle, cb) {
         var _this = $(this)
-        if (!_this.length || _this.tagName() !== 'img') return _this
+        if (!_this.length) return _this
         if ($.type(scrollEle) === 'function') {
             cb = scrollEle
             scrollEle = d
@@ -1519,7 +1522,12 @@
                     var src = item.zdata('src')
                     $.loadImg(src, function() {
                         var next = _this.eq(index)
-                        item.attr('src', src).removeAttr('zdata-src')
+                        if (item.tagName() === 'img') {
+                            item.attr('src', src)
+                        } else {
+                            item.css('backgroundImage', 'url("' + src + '")')
+                        }
+                        item.removeAttr('zdata-src')
                         cb && cb(item)
                         next[0] && render(next)
                         index++
@@ -1556,10 +1564,8 @@
         $(_b).on(_ck, selector, function() {
             var self = this
             var othis = $(self)
-            if (othis.tagName() !== 'img') return _this
-            if (!this.src || othis.zdata('src')) return _this
-            var src = othis.zdata('bigsrc') || this.src
-            var tip = othis.zdata('tip') || this.title
+            var src = getSrc(othis)
+            if (!src || othis.zdata('src')) return _this
             var groups = []
             var group = othis.zdata('group')
             var index = 0
@@ -1599,8 +1605,9 @@
                 if (index > groups.length - 1) index = 0
                 if (index < 0) index = groups.length - 1
                 var image = groups[index]
-                src = image.src
-                tip = $(image).zdata('tip') || image.title
+                var oimage = $(image)
+                var tip = oimage.zdata('tip') || image.title
+                var src = getSrc(oimage)
                 tip = tip ? '&nbsp;&nbsp;' + tip : ''
                 $.loadImg(src, function(img) {
                     var blank = winWidth > 768 ? 100 : 20
@@ -1628,6 +1635,16 @@
                     imgbox.html(img)
                     tipbox.html(index + 1 + '/<b>' + groups.length + '</b>' + tip)
                 })
+            }
+
+            function getSrc(ele) {
+                if (ele.tagName() === 'img') {
+                    var src = ele[0].src
+                } else {
+                    var src = ele.css('backgroundImage').replace(/url\([\'|"]+(.*)[\'|"]+\)/, '$1').toString()
+                }
+                src = ele.zdata('bigsrc') || src
+                return src
             }
             if (groups.length > 1) {
                 if (isMobile) {
@@ -1824,7 +1841,7 @@
         htmls = ['<div class="z-alert z-alert-' + color + ' z-alert-dismissible ' + z.anims[4] + ' ' + z.animCls + '">', '<button type="button" class="z-close z-action-close">&times;</button>',
             content, '</div>'
         ]
-        html = $(htmls.join(''))
+        var html = $(htmls.join(''))
         box.prepend(html)
         setTimeout(function() {
             _doClose(html)
@@ -1892,21 +1909,6 @@
             }
         }
         return false
-    }
-    /**
-     * 从args中得到函数：获得回调
-     * @param  {args} args 参数集
-     * @return {fn}      得到的函数
-     */
-    function _getCb(args) {
-        var cb
-        $.each(args, function(i, v) {
-            if ($.type(v) === 'function') {
-                cb = v
-                return false
-            }
-        })
-        return cb
     }
     /**
      * 获得随机动画

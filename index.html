@@ -9,7 +9,7 @@
 	<script src="js/z.js"></script>
 </head>
 <body>
-	<div class="z-nav z-nav-blue z-action-mobilenav z-nav-fixed-top">
+	<div class="z-nav z-nav-blue z-action-mobilenav z-nav-fixed-top" zdata-navCls="z-nav-blue">
 		<div class="z-content">
 			<div class="z-nav-item z-logo"><a href="#jianjie" style="padding: 5px 20px;font-size: 2em;text-shadow: 1px 1px 1px #333">z ui</a></div>
 			<ul class="z-nav-ul z-pull-right">
@@ -76,7 +76,7 @@
 		</div>
 	</div>
 	<div class="z-content" id="content">
-		<fieldset class="z-elem-field z-action-anibox" id="jianjie">
+		<fieldset class="z-elem-field" id="jianjie">
 			<legend>简介</legend>
 			<div class="z-field-box">
 				z ui 是一套轻便、简易的UI。以下是对z ui 的一个大致的介绍：
@@ -85,7 +85,7 @@
 				<hr>
 				所有class名都有<code>z-</code>作为前缀，目的是防止全局污染。
 				<hr>
-				所有js所需的属性都是以<code>zdata-</code>作为前缀。z也提供了<code>$.fn.zdata()</code>作为获取办法。
+				所有js所需的属性都是以<code>zdata-</code>作为前缀。z也提供了<code>$.fn.zdata()</code>作为获取方法。
 				<hr>
 				需要注意的是 在z里的所有元素盒子属性都被定义成<code>border-box</code>了，如果您需要使用常规的盒子属性，只需要在需要使用的地方加上class<code>z-box-content</code>
 				<hr>
@@ -96,9 +96,9 @@
 				在z里默认功能模块都是以class<code>z-action-</code>作为前缀的，比如说您想使用内置的幻灯组件，您只需要在您的幻灯元素上加上class<code>z-action-slider</code>即可，这时候z并不会给您的幻灯任何样式，您可以随意定义。当然slider组件还有别的配置办法，下边会说到。
 				<hr>
 				所有的组件配置方式都有三种：<br>
-				1、通过添加class<code>z-action-</code>来快速使用默认值配置。
-				2、通过<code>$.fn.</code>调用，不写参数时使用默认参数，填写对应参数后会替换默认参数。
-				3、通过<code>zdata-</code>来指定最高优先级的配置项。
+				1、通过添加class<code>z-action-</code>来快速使用默认值配置。<br>
+				2、通过<code>$.fn.</code>调用，不写参数时使用默认参数，填写对应参数后会替换默认参数。<br>
+				3、通过在元素上设置<code>zdata-</code>属性来指定最高优先级的配置项。
 			</div>
 		</fieldset>
 		<fieldset class="z-elem-field" id="gongyou">
@@ -379,8 +379,8 @@
 	                </li>
 		        </ul>
 		        <pre class="z-action-code" zdata-encode="true"><i class="z-icon">&amp;#xe61e;</i></pre>
-		        <div class="z-quote z-quote-blue z-mt20 z-action-anibox" id="jc">基础</div>
-				<div class="z-mb10"><code>z-text-</code>color，<code>z-bg-</code>color获得相应的颜色</div>
+		        <div class="z-quote z-quote-blue z-mt20" id="jc">基础</div>
+				<div class="z-mb10"><code>z-text-color</code>，<code>z-bg-color</code>获得相应的颜色</div>
 				<div class="z-text-blue">测试文字</div>
 				<div class="z-bg-blue">测试文字</div>
 				<pre class="z-action-code" zdata-encode="true"><div class="z-text-blue">测试文字</div>
@@ -543,7 +543,7 @@
 			<legend>css组件</legend>
 			<div class="z-field-box">
 				<div class="z-quote z-quote-yellow" id="anniuzu">按钮组</div>
-				<div class="z-box z-mb10">按钮组是在<code>z-btn-group</code>包裹着<code>z-btn</code>形成的组件，可用于分页，垂直按钮组只需在<code>z-btn-group</code>上添加<code>z-btn-group-vertical</code></div>
+				<div class="z-box z-mb10">按钮组是在<code>z-btn-group</code>包裹着<code>z-btn</code>形成的组件，常用于分页，垂直按钮组只需在<code>z-btn-group</code>上添加<code>z-btn-group-vertical</code></div>
 				<div class="z-btn-group">
 					<a href="javascript:;" class="z-btn z-disabled">上一页</a>
 					<a href="javascript:;" class="z-btn z-active z-btn-blue">1</a>
@@ -569,7 +569,7 @@
 					<button class="z-btn">垂直导航</button>
 				</div></pre>
 				<div class="z-quote z-quote-yellow" id="xialadaohang">下拉导航</div>
-				<div class="z-box z-mb10">下拉菜单本身是没有过多样式的，可以灵活营运于按钮、导航等组件上，需要在<code>z-dropup || z-dropdown</code>下包裹<code>dropdown-menu</code>即可</div>
+				<div class="z-box z-mb10">下拉菜单本身是没有过多样式的，可以灵活营运于按钮、导航等组件上，需要在<code>z-dropup || z-dropdown</code>下包裹<code>z-dropdown-menu</code>即可</div>
 				<div class="z-btn z-dropdown z-action-dropdown">下拉测试 <span class="z-caret"></span>
 				<ul class="z-dropdown-menu">
 					<li><a href="#">列表</a></li>
@@ -856,22 +856,27 @@
 				</fieldset></pre>
 			</div>
 		</fieldset>
-		<fieldset class="z-elem-field z-action-anibox">
+		<fieldset class="z-elem-field">
 			<legend>js组件</legend>
 			<div class="z-field-box">
 				<div class="z-quote z-quote-red" id="include">动态加载js、css</div>
 				<div class="z-box z-mb10">在js组件调用的时候，你不必特意先去加载libs里的js，因为在调用的时候z会自动判断加载所需要的库。paths默认的使用路径是和z.js所在的目录，如果您不想写全路径，可以通过配置<code>z.root_path="string"</code>来全局配置默认路径</div>
 				<pre class="z-action-code">
+/**
+* @param  {[str | arr]}   paths 文件路径
+* @param  {fn} cb    成功后的回调
+*/
 					$.loadJs(paths, cb)
 					$.loadCss(paths, cb)
-					// paths: 要调用的js路径 (数组 || 字符串)
-					// cb: 加载完成时候的回调 (函数)
 				</pre>
 				<div class="z-quote z-quote-red" id="resetform">重置radio和checkbox</div>
 				<div class="z-box z-mb10">动态生成的radio和checkbox需要重置一下才行</div>
 				<pre class="z-action-code">
+/**
+* 替换radio、checkbox样式
+* @param  {str} box 要操作的元素集合
+*/
 					$.resetForm(ele)
-					// ele：要重置的元素选择器 可选
 				</pre>
 				<div class="z-quote z-quote-red" id="alert">弹框</div>
 				<div class="z-box z-mb10">弹框是modal和move的整合的拓展</div>
@@ -880,10 +885,35 @@
 				<button class="z-btn z-btn-red" onclick="$.prompt('输入弹框', function(v){$.msg(v)})">prompt</button>
 				<button class="z-btn z-btn-yellow" onclick="$.open('自定义弹框', ['哈哈', '呵呵', '嘿嘿'], function(i, obj){$.msg(i);return i<1})">open</button>
 				<pre class="z-action-code">
-					$.alert(content, title)
+/**
+* @param  {str} content 内容
+* @param  {str} title 标题
+* @param  {str} btn 按钮文字
+*/
+					$.alert(content, title, btn)
+/**
+* @param  {str} content 内容
+* @param  {str} title 标题
+* @param  {arr} btns 按钮
+* @param  {fn} btns 点击确认的回调
+*/
 					$.confirm(content, title, btns, cb)
-					$.prompt(title, btns, cb)
-					$.open(content, title)
+/**
+* @param  {str} title 标题
+* @param  {str} holder placeholder文字
+* @param  {arr} btns 按钮
+* @param  {fn} btns 点击确认的回调
+*/
+					$.prompt(title, holder, btns, cb)
+/**
+* @param  {str} content 内容
+* @param  {str} title 标题
+* @param  {arr} btns 按钮
+* @param  {str} width 宽度
+* @param  {arr} offset 位置(top,left)
+* @param  {fn} btns 点击按钮的回调
+*/
+					$.open(content, title, btns, width, offset, cb)
 				</pre>
 				<button class="z-btn z-btn-blue" onclick="$.toast('提示')">toast</button>
 				<button class="z-btn z-btn-red" onclick="$.success('成功信息的提示', function(){$.msg('我是成功信息提示的回调，通常会是链接跳转')})">success</button>
@@ -961,7 +991,7 @@
 					// cb 完成的回调
 				</pre>
 				<div class="z-quote z-quote-red" id="tips">提示</div>
-				<div class="z-box z-mb10">两种调用方式：1、元素上添加<code>z-action-tips</code>2、手动指定要出发的元素。要显示的内容就是元素的title属性。所以<code>title</code>必须有。鼠标移到下边的按钮看看效果吧</div>
+				<div class="z-box z-mb10">两种调用方式：1、元素上添加<code>z-action-tips</code>2、手动指定要触发的元素。要显示的内容就是元素的title属性。所以<code>title</code>必须有。鼠标移到下边的按钮看看效果吧。ps：移动端没有效果</div>
 				<button class="z-btn z-action-tips" title="提示呗">提示</button>
 				<pre class="z-action-code">
 					$(ele).tips()
@@ -1015,7 +1045,7 @@
 				<div class="z-box z-mb10">
 					如果您自定义的导航想要在移动端拥有z提供的展现形式。可以在导航上添加<code>z-action-mobilenav</code>，也可以用过下边的调用方式来配置。
 				</div>
-				<pre class="z-action-code z-action-anibox">
+				<pre class="z-action-code">
 					$(ele).mobileNav({
 						item: '.z-nav-item',
 						logo: 'z-logo',
@@ -1070,12 +1100,17 @@
 					})
 				</pre>
 				<div class="z-quote z-quote-red" id="lazyimg">图片懒加载</div>
-				<img src="" class="z-action-lazyimg" zdata-group="10" zdata-src="images/1.jpg" height="100" alt=""">
-				<img src="" class="z-action-lazyimg" zdata-group="10" zdata-src="images/2.jpg" height="100" alt=""">
-				<img src="" class="z-action-lazyimg" zdata-group="10" zdata-src="images/3.jpg" height="100" alt=""">
+				<img src="" class="z-action-lazyimg z-action-album" zdata-group="10" zdata-src="images/1.jpg" height="100" alt=""">
+				<img src="" class="z-action-lazyimg z-action-album" zdata-group="10" zdata-src="images/2.jpg" height="100" alt=""">
+				<img src="" class="z-action-lazyimg z-action-album" zdata-group="10" zdata-src="images/3.jpg" height="100" alt=""">
 				<div class="z-box z-mb10">快速调用方法：在<code>img</code>标签上添加class<code>z-action-lazyimg</code>，<code>src</code>指定占位图片或不写。通过<code>zdata-src="string"</code>来指定需要动态加载的图片地址。当然也可以只用js配置。</div>
 				<pre class="z-action-code">
-					$(img).lazyimg(scrollElem) //默认为document
+					$(img).lazyimg(scrollElem, cb)
+/**
+* 图片懒加载
+* @param  {str}   scrollEle 滚动元素
+* @param  {fn} cb        加载完成回调
+*/
 				</pre>
 				<div class="z-quote z-quote-red" id="loadImg">图片加载判断</div>
 				<pre class="z-action-code">
@@ -1164,12 +1199,12 @@
 					box.append('<p>加载第'+page+'页</p>')
 					flow.done(over)
 					if(over){
-						$.msg('模拟加载完成，2秒后模拟刷新（重置加载）')
+						$.msg('模拟加载完成，8秒后模拟刷新（重置加载）')
 						setTimeout(function(){
 							flow.refresh()
-						}, 2000)
+						}, 8000)
 					}
-				}, 1000)
+				}, 2000)
 			})
 		})
 	</script>
