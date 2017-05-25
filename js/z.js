@@ -200,6 +200,7 @@
             if (fieldset.attr('disabled')) return false
             fieldset.attr('disabled', true)
             if (_bool(tip)) {
+                $('.z-msg').remove()
                 var html = $('<div class="z-msg" style="z-index:' + z.zIndex() + '">' + tip + '</div>')
                 $(_b).append(html)
                 html.css({
@@ -505,6 +506,7 @@
         width = $.type(width) === 'string' ? width : opts.width ? opts.width : null
         offset = opts.offset ? opts.offset : null
         html = getOpenHtml(content, title, btns)
+        html.removeClass('z-modal-sm')
         width && html.width(width)
         appendOpen(html, function(i) {
             if ((cb && !cb(i)) || !cb) _doClose(html)
