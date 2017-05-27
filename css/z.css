@@ -1738,7 +1738,9 @@ input[type="search"] {
 }
 
 .z-nav-item.z-logo>a {
-    padding: 10px 20px 10px 0;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-left: -20px;
     font-size: 21px;
 }
 
@@ -1748,6 +1750,7 @@ input[type="search"] {
 
 @media (max-width: 768px) {
     .z-nav-item.z-logo>a {
+        margin-left: 0;
         padding-left: 10px;
     }
 }
