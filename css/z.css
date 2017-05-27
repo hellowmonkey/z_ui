@@ -2723,12 +2723,12 @@ html #zcss-skincodecss {
 }
 
 .z-album .z-anim-rotate {
-    font-size: 4.5em;
+    font-size: 3em;
     position: fixed;
     top: 50%;
     left: 50%;
-    margin-top: -50px;
-    margin-left: -50px;
+    margin-top: -31px;
+    margin-left: -21px;
     color: #fff;
     text-shadow: 1px 1px 1px #333;
 }

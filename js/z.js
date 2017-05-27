@@ -1625,7 +1625,7 @@
             var sliderBtn = groups.length > 1 && !isMobile ? $(z.sliderBtn) : ''
             var htmls = ['<div class="z-album">', '<span class="z-close z-action-close" zdata-box=".z-album">&times;</span>', '<div class="z-album-content ' + z.animCls + ' ' + _getAnim() + '">', '<div class="z-imgbox"></div>', '<div class="z-tipbox"></div>', '</div>', '</div>', ]
             var html = $(htmls.join(''))
-            var loading = $(z.loadingHtml)
+            var loading = $(z.loadingHtml).html('&#xe623;')
             var box = html.find('.z-album-content')
             var imgbox = html.find('.z-imgbox')
             var tipbox = html.find('.z-tipbox')
@@ -1680,7 +1680,7 @@
                 if (ele.tagName() === 'img') {
                     var src = ele[0].src
                 } else {
-                    var src = ele.css('backgroundImage').replace(/url\([\'|"]+(.*)[\'|"]+\)/, '$1').toString()
+                    var src = ele.css('backgroundImage').replace(/url\([\'\"]?(.*)[\'\"]?\)/, '$1').toString()
                 }
                 src = ele.zdata('bigsrc') || src
                 return src
@@ -1939,15 +1939,14 @@
      */
     function _getZsrc(src) {
         var pt = d.getElementsByTagName('script')
+        var reg = /[\\\/]z\.(min\.)?js/
         for (var i = 0; i < pt.length; i++) {
             var s = pt[i].src
-            if (src && s.indexOf(src) !== -1) {
-                return true
-            }
-            if (!src && s.indexOf('js/z.js') !== -1) {
-                return s.replace('z.js', '')
-            } else if (!src && s.indexOf('js/z.min.js') !== -1) {
-                return s.replace('z.min.js', '')
+            if (src) {
+                if (s.indexOf(src) !== -1) return true
+                else continue
+            } else {
+                if (s.match(reg)) return s.replace(/z\.(min\.)?js/, '')
             }
         }
         return false
