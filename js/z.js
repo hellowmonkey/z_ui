@@ -1680,7 +1680,7 @@
                 if (ele.tagName() === 'img') {
                     var src = ele[0].src
                 } else {
-                    var src = ele.css('backgroundImage').replace(/url\([\'\"]?(.*)[\'\"]?\)/, '$1').toString()
+                    var src = ele.css('backgroundImage').replace(/url\([\'\"]{1}(.*)[\'\"]{1}\)/, '$1').toString()
                 }
                 src = ele.zdata('bigsrc') || src
                 return src
