@@ -178,14 +178,12 @@
      * @param  {str}   ele       要操作的form
      * @param  {fn} cb        成功后的回调
      * @param  {str}   tip       提示
-     * @param  {bool}   parseJson 是否要转成json
      * @return {data}             服务器返回值
      */
-    $.submit = function(ele, cb, tip, parseJson) {
+    $.submit = function(ele, cb, tip) {
         var form = ele instanceof $ ? ele : $(ele)
         var datatip = form.zdata('tip')
         var notdatatip = _bool(datatip, true)
-        parseJson = _bool(parseJson, true) ? true : _bool(parseJson)
         tip = (_bool(tip, true) && notdatatip) ? '数据提交中...' : (notdatatip ? tip : datatip)
         if (!form || !form.length || !form.attr('action')) return false
         if ($.fn.ajaxSubmit) {
@@ -215,7 +213,7 @@
                         var ret = responseText
                         fieldset.removeAttr('disabled')
                         if (tip) html.remove()
-                        if ($.type(ret) === 'string' && parseJson) {
+                        if (likeObject(ret)) {
                             if (w.JSON) {
                                 ret = JSON.parse(responseText)
                             } else {
@@ -226,6 +224,9 @@
                     }
                 }
             })
+        }
+        function likeObject(str){
+            return str.indexOf('{') !== -1 && str.indexOf(':') !== -1 && str.indexOf('}') !== -1
         }
     }
     /**

@@ -154,7 +154,7 @@ fieldset {
     clear: both;
 }
 
-.z-clearfix:after {
+.z-clearfix:after,.z-row:after {
     display: table;
     height: 0;
     content: '';
@@ -477,13 +477,6 @@ fieldset {
     .z-col-lg-1 {
         width: 8.33333333%;
     }
-}
-
-.z-row:after {
-    display: table;
-    height: 0;
-    content: '';
-    clear: both;
 }
 
 @media (max-width: 768px) {
