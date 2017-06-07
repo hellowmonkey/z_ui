@@ -225,8 +225,12 @@
                 }
             })
         }
-        function likeObject(str){
-            return str.indexOf('{') !== -1 && str.indexOf(':') !== -1 && str.indexOf('}') !== -1
+        function likeObject(str) {
+            if($.type(str) !== 'string') return false
+            str = str.replace(/\s/g, '').replace(/\n|\r/, '')
+            if(/^\{(.*?)\}$/.test(str))
+                return /"(.*?)":(.*?)/g.test(str)
+            return false;
         }
     }
     /**
