@@ -217,7 +217,7 @@
                             if (w.JSON) {
                                 ret = JSON.parse(responseText)
                             } else {
-                                ret = eval(responseText)
+                                eval('ret = ' + responseText)
                             }
                         }
                         cb(ret)
@@ -1749,6 +1749,9 @@
                     othis.addClass(active)
                 }
             })
+            _this.find('.z-nav-child').on(_ck, function(event){
+                event.stopPropagation()
+            })
         } else {
             if (type == 'hover') {
                 $(_b).on('mouseenter', selector, function() {
@@ -2030,7 +2033,7 @@
         var header = ele.children('.z-modal-header')
         var body = ele.children('.z-modal-body')
         var footer = ele.children('.z-modal-footer')
-        body.css('maxHeight', ele.innerHeight() - header.innerHeight() - footer.innerHeight())
+        body.css('maxHeight', winHeight - header.innerHeight() - footer.innerHeight() - 20)
     }
     /**
      * 统一滚动处理

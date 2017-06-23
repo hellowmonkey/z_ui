@@ -1754,6 +1754,7 @@ input[type="search"] {
 .z-nav-tree {
     height: auto;
     border-bottom: 0;
+    margin-bottom: 0;
 }
 
 .z-nav-tree .z-nav-item {
