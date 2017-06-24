@@ -1954,7 +1954,7 @@
                 if (s.indexOf(src) !== -1) return true
                 else continue
             } else {
-                if (s.match(reg)) return s.replace(/z\.(min\.)?js/, '')
+                if (s.match(reg)) return s.replace(/z\.(min\.)?js(\?.*)?/, '')
             }
         }
         return false
@@ -2033,7 +2033,7 @@
         var header = ele.children('.z-modal-header')
         var body = ele.children('.z-modal-body')
         var footer = ele.children('.z-modal-footer')
-        body.css('maxHeight', winHeight - header.innerHeight() - footer.innerHeight() - 20)
+        body.css('maxHeight', winHeight - header.innerHeight() - footer.innerHeight() - 30)
     }
     /**
      * 统一滚动处理
