@@ -790,7 +790,7 @@
 				<div class="z-quote z-quote-yellow" id="tanchu">弹出区域</div>
 				<div class="z-box z-mb10">示例里用的<code>z-action-modal</code>和<code>z-action-close</code>既是提现功能跟样式分开的方便之处，不用写一行js也不用覆盖任何css就可以得到想要的功能。另一种调用的方式在js篇会说到：<code>$('#modal').modal()</code>。需要注意的是在关闭按钮上需要加上<code> zdata-remove="false"</code>不然这个modal组件关闭的时候会被移除。当然也需要用<code>zdata-target</code>指定要操作的dom选择器</div>
 				<button class="z-btn z-btn-blue z-action-modal" zdata-target="#modal">打开modal</button>
-				<div class="z-modal" id="modal">
+				<div class="z-modal" id="modalBox">
 					<div class="z-modal-header">
 						<span class="z-modal-title">淡定的标题</span>
 						<button class="z-close z-action-close" zdata-remove="false">&times;</button>
@@ -880,7 +880,7 @@
 						<button class="z-btn z-btn-blue">确认</button>
 					</div>
 				</div>
-				<pre class="z-action-code" zdata-encode="true"><button class="z-btn z-btn-blue z-action-modal" zdata-target="#modal">打开modal</button>
+				<pre class="z-action-code" zdata-encode="true"><button class="z-btn z-btn-blue z-action-modal" zdata-target="#modalBox">打开modal</button>
 				<div class="z-modal" id="modal">
 					<div class="z-modal-header">
 						<span class="z-modal-title">淡定的标题</span>
@@ -1270,12 +1270,6 @@
 	<button class="z-btn z-action-gotop z-gotop z-icon">&#xe6be;</button>
 	<script>
 		$(function(){
-			console.log(JSON.parse('{"result":{"songCount":3070,"songs":[{"id":447495462,"name":"告白气球。。。","artists":[{"id":0,"name":"渣渣女神","picUrl":null}],"album":{"id":0,"name":"[DJ节目]渣渣女神的DJ节目 第2期","artist":{"id":0,"name":"渣渣女神","picUrl":null},"picUrl":"http://p1.music.126.net/v04qFAo5EDLWmUu4zzdGpg==/18769762999408619.jpg"},"audio":"http://m2.music.126.net/oYAnZP-cC3zr0jvpzmQM2g==/18663110371464934.mp3","djProgramId":798881520,"page":"http://music.163.com/m/song/447495462"},{"id":426739088,"name":"告白气球.","artists":[{"id":0,"name":"萝莉控最棒了","picUrl":null}],"album":{"id":0,"name":"[DJ节目]萝莉控最棒了的DJ节目 第102期","artist":{"id":0,"name":"萝莉控最棒了","picUrl":null},"picUrl":"http://p1.music.126.net/x0S1Wi9chptqU4wGv7WNRw==/3427177747355011.jpg"},"audio":"http://m2.music.126.net/kaFBrp1SDMYIur44ZjjE9g==/3402988499905856.mp3","djProgramId":792854690,"page":"http://music.163.com/m/song/426739088"},{"id":452198470,"name":"告白气球。","artists":[{"id":0,"name":"留叔","picUrl":null}],"album":{"id":0,"name":"[DJ节目]留叔的DJ节目 第14期","artist":{"id":0,"name":"留叔","picUrl":null},"picUrl":"http://p1.music.126.net/mWDibv9mO2nSd9tY0HyaFw==/18611433325068036.jpg"},"audio":"http://m2.music.126.net/NbFR-Io5K3ZAlniaXTIzDQ==/18665309394803748.mp3","djProgramId":899821606,"page":"http://music.163.com/m/song/452198470"},{"id":460629883,"name":"告白气球·","artists":[{"id":0,"name":"爱跑调调","picUrl":null}],"album":{"id":0,"name":"[DJ节目]爱跑调调的DJ节目 第1期","artist":{"id":0,"name":"爱跑调调","picUrl":null},"picUrl":"http://p1.music.126.net/ezoXGBfblXSRqJ0Sklqomg==/18640020627490426.jpg"},"audio":"http://m2.music.126.net/gdIPFtz4XqcUTc4D3J6CdQ==/18510278255466885.mp3","djProgramId":901457563,"page":"http://music.163.com/m/song/460629883"},{"id":461856316,"name":"告白气球。","artists":[{"id":0,"name":"Future_tomorrow","picUrl":null}],"album":{"id":0,"name":"[DJ节目]Future_tomorrow的DJ节目 第1期","artist":{"id":0,"name":"Future_tomorrow","picUrl":null},"picUrl":"http://p1.music.126.net/ShiNDROYoH9yBL9C9i55_A==/18701593278661914.jpg"},"audio":"http://m2.music.126.net/AbY99rvloPT1p5QU_yS4rQ==/19190875951270567.mp3","djProgramId":901811655,"page":"http://music.163.com/m/song/461856316"},{"id":442872856,"name":"告白气球。","artists":[{"id":0,"name":"Eden-张","picUrl":null}],"album":{"id":0,"name":"[DJ节目]Eden-张的DJ节目 第1期","artist":{"id":0,"name":"Eden-张","picUrl":null},"picUrl":"http://p1.music.126.net/HNvyHJHUX-K-BMX8PEN73A==/3313928053710581.jpg"},"audio":"http://m2.music.126.net/BKkDObprw5fgIlaNjOFKVQ==/18641120138807931.mp3","djProgramId":797367834,"page":"http://music.163.com/m/song/442872856"},{"id":443709151,"name":"告白气球。","artists":[{"id":0,"name":"来自包克图的老杨","picUrl":null}],"album":{"id":0,"name":"[DJ节目]来自包克图的老杨的DJ节目 第3期","artist":{"id":0,"name":"来自包克图的老杨","picUrl":null},"picUrl":"http://p1.music.126.net/TKGuhthY9QzXlgJb8MMAOw==/18539965068887674.jpg"},"audio":"http://m2.music.126.net/5zI9Wto6zoyegFcFqB35Kw==/18718085952628748.mp3","djProgramId":797258032,"page":"http://music.163.com/m/song/443709151"},{"id":471761395,"name":"告白气球","artists":[{"id":12074141,"name":"刘佳欣","picUrl":null}],"album":{"id":35358311,"name":"把酒倒满","artist":{"id":0,"name":"","picUrl":null},"picUrl":"http://p1.music.126.net/ICHn5IKD8BXYHG1WaRilNw==/19221662276856449.jpg"},"audio":"http://m2.music.126.net/S0xEzC6t0EZlj2a1IabyZQ==/19201871067558134.mp3","djProgramId":0,"page":"http://music.163.com/m/song/471761395"}]},"code":200}'))
-			return
-			$.post('http://music.163.com/api/playlist/detail?id=37880978&updateTime=-1', function(data){
-				console.log(data)
-			}, 'jsonp')
-
 			var flow = $.flow('#content', function(page, box){
 				setTimeout(function(){
 					var over = page >= 3

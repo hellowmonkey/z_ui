@@ -1954,7 +1954,7 @@
                 if (s.indexOf(src) !== -1) return true
                 else continue
             } else {
-                if (s.match(reg)) return s.replace(/z\.(min\.)?js(\?.*)?/, '')
+                if (s.match(reg)) return s.replace(/z\.(min\.)?js(\?.*)?$/, '')
             }
         }
         return false
