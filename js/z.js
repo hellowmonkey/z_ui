@@ -225,11 +225,11 @@
                 }
             })
         }
+
         function likeObject(str) {
-            if($.type(str) !== 'string') return false
+            if ($.type(str) !== 'string') return false
             str = str.replace(/\s/g, '').replace(/\n|\r/, '')
-            if(/^\{(.*?)\}$/.test(str))
-                return /"(.*?)":(.*?)/g.test(str)
+            if (/^\{(.*?)\}$/.test(str)) return /"(.*?)":(.*?)/g.test(str)
             return false;
         }
     }
@@ -1749,7 +1749,7 @@
                     othis.addClass(active)
                 }
             })
-            _this.find('.z-nav-child').on(_ck, function(event){
+            _this.find('.z-nav-child').on(_ck, function(event) {
                 event.stopPropagation()
             })
         } else {
@@ -1954,7 +1954,7 @@
                 if (s.indexOf(src) !== -1) return true
                 else continue
             } else {
-                if (s.match(reg)) return s.replace(/z\.(min\.)?js(\?.*)?$/, '')
+                if (s.match(reg)) return s.replace(/z\.(min\.)?js/, '')
             }
         }
         return false
@@ -2033,7 +2033,7 @@
         var header = ele.children('.z-modal-header')
         var body = ele.children('.z-modal-body')
         var footer = ele.children('.z-modal-footer')
-        body.css('maxHeight', winHeight - header.innerHeight() - footer.innerHeight() - 30)
+        body.css('maxHeight', winHeight - header.innerHeight() - footer.innerHeight() - 20)
     }
     /**
      * 统一滚动处理
@@ -2151,9 +2151,15 @@
         $(_b).on(_ck, '.z-tab-title>li', function() {
             tabs(this)
         })
-        $('.z-tab-title>li').on(_ck, function(e) {
+        $(_b).on(_ck, '.z-tab-title .z-tab-close', function(e) {
             _prevent(e)
-            tabs(this)
+            var li = $(this).parent()
+            if(li.hasClass(active)){
+                var next = li.next().length ? li.next() : li.prev()
+                next.length && next.click()
+            }
+            $(this).parents('.z-tab').find('.z-tab-content>.z-tab-item:eq(' + li.index() + ')').remove()
+            li.remove()
         })
         $('.z-tab-title').each(function() {
             $(this).children('li:first').click()

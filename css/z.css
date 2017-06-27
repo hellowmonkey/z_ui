@@ -400,7 +400,7 @@ fieldset {
 
 /* 布局 */
 
-.z-content {
+.z-content,.z-content-full {
     margin-right: auto;
     margin-left: auto;
     padding-right: 10px;
@@ -427,7 +427,6 @@ fieldset {
         width: 1170px;
     }
 }
-
 
 /* 栅格 */
 
@@ -1970,14 +1969,22 @@ input[type="search"] {
 /* Tab关闭 */
 
 .z-tab-title li .z-tab-close {
-    position: relative;
-    margin-left: 8px;
-    top: 1px;
+    position: absolute;
     color: #c2c2c2;
+    border-radius: 50%;
+    top: 0;
+    right: 0;
+    display: inline-block;
+    line-height: 15px;
+    width: 15px;
+    height: 15px;
+    opacity: .2;
+}
+.z-tab-title li.z-active .z-tab-close,.z-tab-title li:hover .z-tab-close{
+    opacity: 1;
 }
 
 .z-tab-title li .z-tab-close:hover {
-    border-radius: 10px;
     background-color: #FF5722;
     color: #fff;
 }
@@ -2265,6 +2272,7 @@ input[type="search"] {
     -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
     box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
     margin: 10px auto;
+    max-height: 90%;
     max-width: 95%;
     min-width: 250px;
     display: none;
