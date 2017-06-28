@@ -117,6 +117,17 @@ fieldset {
     background-color: rgba(0, 0, 0, .45);
 }
 
+/* 自动填充 */
+input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill,
+input:-webkit-autofill:focus, textarea:-webkit-autofill:focus, select:-webkit-autofill:focus,
+input:-webkit-autofill:hover, textarea:-webkit-autofill:hover, select:-webkit-autofill:hover,
+input:-webkit-autofill:active, textarea:-webkit-autofill:active, select:-webkit-autofill:active {
+    background-color: transparent;
+    background-image: none;
+    color: #333;
+    -webkit-box-shadow: 0 0 0 1000px #fff inset;
+    box-shadow: 0 0 0 1000px #fff inset;
+}
 
 /* 字体图标 */
 
@@ -1476,7 +1487,7 @@ input[type="search"] {
     bottom: -7px;
 }
 
-.z-dropdown-menu .z-dropdown:hover .z-dropdown-menu {
+.z-dropdown-menu .z-dropdown:hover > .z-dropdown-menu {
     display: block;
 }
 
@@ -1638,6 +1649,14 @@ input[type="search"] {
 .z-input-group .z-input, .z-input-group .z-btn, .z-btn-group .z-btn {
     height: 34px;
 }
+.z-input-group .z-btn.z-btn-lg,
+.z-input-group .z-btn.z-btn-sm,
+.z-input-group .z-btn.z-btn-xs,
+.z-btn-group .z-btn.z-btn-lg,
+.z-btn-group .z-btn.z-btn-sm,
+.z-btn-group .z-btn.z-btn-xs{
+    height: auto;
+}
 
 
 /** 导航菜单 **/
@@ -1645,7 +1664,7 @@ input[type="search"] {
 .z-nav {
     background-color: #f8f8f8;
     position: relative;
-    z-index: 9;
+    z-index: 12;
     border-bottom: 1px solid #e7e7e7;
     height: 50px;
     margin-bottom: 20px;
@@ -2272,7 +2291,6 @@ input[type="search"] {
     -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
     box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
     margin: 10px auto;
-    max-height: 90%;
     max-width: 95%;
     min-width: 250px;
     display: none;
