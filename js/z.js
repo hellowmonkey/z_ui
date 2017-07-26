@@ -43,6 +43,9 @@
         }],
         progressTimer = null,
         aniBoxTops = [],
+        Fn = $.fn,
+        showed = 'showed',
+        hideed = 'hideed',
         // 最终返回的变量，可以修改对应的值来修改部分组件的默认参数 如：通过修改z.rootPath的值来指定要动态加载的js或css的默认路径
         z = {
             version: '2.0.0',
@@ -150,6 +153,7 @@
             if (!box instanceof $) box = $(box)
             doing(box)
         }
+        return box
 
         function doing(ele) {
             ele.length && ele.each(function(i) {
@@ -185,12 +189,14 @@
         var datatip = form.zdata('tip')
         var notdatatip = _bool(datatip, true)
         tip = (_bool(tip, true) && notdatatip) ? '数据提交中...' : (notdatatip ? tip : datatip)
+        var html = $('<div class="z-msg" style="z-index:' + z.zIndex() + '">' + tip + '</div>')
         if (!form || !form.length || !form.attr('action')) return false
         if ($.fn.ajaxSubmit) {
             doing()
         } else {
             $.loadJs(z.libs.form, doing)
         }
+        return html
 
         function doing() {
             if (!form.find('fieldset').length) form.wrapInner('<fieldset></fieldset>')
@@ -199,7 +205,6 @@
             fieldset.attr('disabled', true)
             if (_bool(tip)) {
                 $('.z-msg').remove()
-                var html = $('<div class="z-msg" style="z-index:' + z.zIndex() + '">' + tip + '</div>')
                 $(_b).append(html)
                 html.css({
                     marginTop: -html.innerHeight() / 2,
@@ -224,13 +229,6 @@
                     }
                 }
             })
-        }
-
-        function likeObject(str) {
-            if ($.type(str) !== 'string') return false
-            str = str.replace(/\s/g, '').replace(/\n|\r/, '')
-            if (/^\{(.*?)\}$/.test(str)) return /"(.*?)":(.*?)/g.test(str)
-            return false;
         }
     }
     /**
@@ -351,7 +349,7 @@
         var img = new Image()
         img.src = url
         if (img.complete) {
-            return cb(img)
+            cb(img)
         }
         img.onload = function() {
             img.onload = null
@@ -361,6 +359,7 @@
             img.onerror = null
             error && error(e)
         }
+        return img
     }
     /**
      * 滚动到底部加载
@@ -445,12 +444,14 @@
     /**
      * 加载进度条
      * @param  {str} type start|done
+     * @param  {ele} ele 父元素
      */
-    $.progressBar = function(type) {
-        var bar = $('.z-progress-fix'),
-            num = 0,
+    $.progressBar = function(type, ele) {
+        var num = 0,
             step = 10,
-            time = 0
+            time = 0,
+            ele = _bool(ele, true) ? $(_b) : $(ele),
+            bar = ele.find('.z-progress-fix')
         if ('start' == type && bar.length) return
         if ('done' == type && !bar.length) return
         if (bar.length) {
@@ -461,7 +462,7 @@
             }, 300)
         } else {
             bar = $('<div class="z-progress-fix"></div>')
-            $(_b).append(bar)
+            ele.append(bar)
             progressTimer = setInterval(function() {
                 num += step
                     ++time
@@ -634,9 +635,11 @@
         })
         setTimeout(function() {
             html.hide(z.closeTime, function() {
+                html.trigger(hideed)
                 html.remove()
             })
         }, z.delayTime)
+        html.trigger(showed)
         return html
     }
     // 异步加载js
@@ -658,26 +661,16 @@
      */
     $.viewModel = function(opts) {
         var callbacks = opts
-        var selector = opts.$ele
         var eves = ['animationend', 'blur', 'change', 'input', 'click', 'dblclick', 'focus', 'keydown', 'keypress', 'keyup', 'mousedown', 'mouseenter', 'mouseleave', 'mousemove', 'mouseout', 'mouseover', 'mouseup', 'scroll', 'submit']
         var attrs = ['attr', 'className', 'css', 'text', 'html', 'addClass', 'addAttr', 'addData', 'removeClass', 'removeAttr', 'removeData', 'visible']
         var event_models = []
         var attr_models = []
-        var ele = selector
-        if (_bool(ele, true)) {
-            throw new Error('需指定驱动元素')
-        }
-        if ($.type(ele) === 'string' || !ele instanceof $) {
-            ele = $(ele)
-        } else {
-            selector = ele.selector
-        }
         putModels()
 
         function putModels() {
             $.each(eves.concat(attrs), function(i, on) {
                 var model = 'z-' + on
-                var objs = $(selector + ' [' + model + ']')
+                var objs = $('[' + model + ']')
                 objs.length && objs.each(function() {
                     var _this = $(this)
                     var tar = _this.attr(model)
@@ -695,9 +688,7 @@
                         attr_models.push(val)
                         _this.on(on, function() {
                             var target = opts[tar]
-                            try {
-                                target = JSON.parse(target)
-                            } catch (e) {}
+                            if (likeObject(target)) target = JSON.parse(target)
                             if ('visible' == on) {
                                 if (_bool(target)) {
                                     _this.show()
@@ -738,14 +729,14 @@
     /**
      * 获取标签名
      */
-    $.fn.tagName = function() {
+    Fn.tagName = function() {
         return this[0].tagName.toLowerCase()
     }
     /**
      * 处理元素class
      * @param  {str} cls class
      */
-    $.fn.className = function(cls) {
+    Fn.className = function(cls) {
         if (_bool(cls, true)) {
             return this.className
         } else {
@@ -760,7 +751,7 @@
      * @param  {str} name 属性名
      * @param  {str} val  属性值
      */
-    $.fn.zdata = function(name, val) {
+    Fn.zdata = function(name, val) {
         if (_bool(val, true)) {
             return $(this).attr('zdata-' + name)
         } else {
@@ -772,7 +763,7 @@
      * 按钮loading
      * @param  {str} type reset | loading
      */
-    $.fn.button = function(type) {
+    Fn.button = function(type) {
         var _this = $(this)
         var disabled = z.disabled
         if (!_this.length) return _this
@@ -799,7 +790,7 @@
      * 模态框
      * @param  {str} type show|hide
      */
-    $.fn.modal = function(type) {
+    Fn.modal = function(type) {
         var _this = $(this)
         if (!_this.length) return _this
         if (!_this.hasClass('z-modal')) return _this
@@ -813,6 +804,7 @@
                     'marginLeft': -_this.innerWidth() / 2
                 }).addClass(z.anims[4] + ' ' + z.animCls)
                 _modalHeight(_this)
+                _this.trigger(showed)
             }, function() {
                 _doClose(_this, null, false)
             })
@@ -824,7 +816,7 @@
     /**
      * 鼠标悬停提示
      */
-    $.fn.tips = function(opts) {
+    Fn.tips = function(opts) {
         var _this = $(this)
         var inits = {
             bgColor: 'black',
@@ -895,7 +887,7 @@
     /**
      * 拖动组件
      */
-    $.fn.move = function(opts) {
+    Fn.move = function(opts) {
         var _this = $(this)
         var inits = {
             box: '.z-move',
@@ -952,7 +944,7 @@
     /**
      * 幻灯
      */
-    $.fn.slider = function(opts) {
+    Fn.slider = function(opts) {
         var _this = $(this)
         if (!_this.length) return _this
         var inits = {
@@ -983,6 +975,7 @@
             var mtype = 'marginLeft'
             var sliderBtn = leg > 1 && !isMobile ? $(z.sliderBtn) : ''
             var active = z.active
+            if (leg < 1) return
             if (_bool(opts.dots)) {
                 ele.append('<div class="z-dots">' + function() {
                     var li = ''
@@ -1010,7 +1003,7 @@
                 items.wrap('<div></div>')
                 box = items.parent()
                 box.css(mtype, mar)
-            } else return
+            }
             item.width(width)
             items.height(item.innerHeight()).width(leg * width)
             timer = setInterval(movement, opts.delay)
@@ -1058,17 +1051,17 @@
                 canMove = false
                 direction = direction || 'left'
                 if (direction === 'left') {
-                    if (Math.abs(mar) >= (leg - 2) * width) {
-                        mar = 0
-                        box.css(mtype, mar)
-                    }
-                    mar = mar - width
-                } else if (direction === 'right') {
                     if (Math.abs(mar) <= width) {
                         mar = -(leg - 1) * width
                         box.css(mtype, mar)
                     }
                     mar = mar + width
+                } else if (direction === 'right') {
+                    if (Math.abs(mar) >= (leg - 2) * width) {
+                        mar = 0
+                        box.css(mtype, mar)
+                    }
+                    mar = mar - width
                 } else {
                     mar = direction
                 }
@@ -1087,10 +1080,10 @@
     /**
      * 瀑布流
      */
-    $.fn.waterfall = function(opts) {
+    Fn.waterfall = function(opts) {
         var _this = $(this)
         if (!_this.length) return _this
-        if ($.fn.masonry) {
+        if (Fn.masonry) {
             doing()
         } else {
             $.loadJs(z.libs.waterfall, doing)
@@ -1113,11 +1106,11 @@
     /**
      * 日历
      */
-    $.fn.datepicker = function(opts) {
+    Fn.datepicker = function(opts) {
         var _this = $(this)
         var lib = z.libs.datepicker
         if (!_this.length) return _this
-        if ($.fn.datetimepicker) {
+        if (Fn.datetimepicker) {
             doing()
         } else {
             $.loadCss(lib, function() {
@@ -1139,7 +1132,7 @@
     /**
      * 悬停卡片
      */
-    $.fn.hovercard = function() {
+    Fn.hovercard = function() {
         var html, othis, cls, timer, selector = $(this).selector
         $(_b).on('mouseenter', selector, function(e) {
             var _this = $(this)
@@ -1172,18 +1165,23 @@
                     })
                 }
                 if (!html) return
+                _this.trigger(showed)
                 html.off('mouseenter').on('mouseenter', function() {
                     isHover = true
                 })
                 html.off('mouseleave').on('mouseleave', function() {
                     clearTimeout(timer)
-                    html.fadeOut(transTime)
+                    html.fadeOut(transTime, function() {
+                        _this.trigger(hideed)
+                    })
                 })
             }, 800)
             _this.off('mouseleave').on('mouseleave', function() {
                 clearTimeout(timer)
                 setTimeout(function() {
-                    !isHover && html && html.fadeOut(transTime)
+                    !isHover && html && html.fadeOut(transTime, function() {
+                        _this.trigger(hideed)
+                    })
                 }, 400)
             })
         })
@@ -1227,7 +1225,7 @@
     /**
      * 返回顶部
      */
-    $.fn.goTop = function(opts) {
+    Fn.goTop = function(opts) {
         var _this = $(this)
         if (!_this.length) return _this
         var inits = {
@@ -1255,7 +1253,7 @@
     /**
      * 代码修饰器
      */
-    $.fn.code = function(opts) {
+    Fn.code = function(opts) {
         var _this = $(this)
         if (!_this.length) return _this
         _this.each(function() {
@@ -1289,7 +1287,7 @@
     /**
      * 动态进入盒子
      */
-    $.fn.aniBox = function(opts) {
+    Fn.aniBox = function(opts) {
         var _this = $(this)
         if (!_this.length) return _this
         var inits = {
@@ -1351,7 +1349,7 @@
     /**
      * 数字输入框
      */
-    $.fn.numberBox = function(opts) {
+    Fn.numberBox = function(opts) {
         var _this = $(this)
         if (!_this.length) return _this
         var inits = {
@@ -1412,21 +1410,21 @@
     /**
      * 手指左划
      */
-    $.fn.swipeleft = function(cb) {
+    Fn.swipeleft = function(cb) {
         swipe('left', $(this), cb)
         return $(this)
     }
     /**
      * 手指右划
      */
-    $.fn.swiperight = function(cb) {
+    Fn.swiperight = function(cb) {
         swipe('right', $(this), cb)
         return $(this)
     }
     /**
      * 移动端导航
      */
-    $.fn.mobileNav = function(opts) {
+    Fn.mobileNav = function(opts) {
         var _this = $(this)
         if (!_this.length) return
         var nav = _this.first()
@@ -1471,9 +1469,10 @@
                     }, transtime)
                     _this.addClass(active)
                     can = true
+                    _this.trigger(showed)
                 }, function() {
                     menu.click()
-                }, '.12')
+                }, '.2')
                 nav.css('zIndex', z.zIndex())
             } else {
                 fixNav.animate({
@@ -1481,6 +1480,7 @@
                 }, transtime, function() {
                     fixNav.hide()
                     _this.removeClass(active)
+                    _this.trigger(hideed)
                     $.closeShade(function() {
                         can = true
                     })
@@ -1503,7 +1503,7 @@
      * @param  {num}   t  过渡时间
      * @param  {fn} cb 完成后的回调
      */
-    $.fn.flyOut = function(t, cb) {
+    Fn.flyOut = function(t, cb) {
         var _this = $(this)
         var alpha = _this.css('opacity')
         var left = 0
@@ -1537,7 +1537,7 @@
      * @param  {str}   scrollEle 滚动元素
      * @param  {fn} cb        加载完成回调
      */
-    $.fn.lazyimg = function(scrollEle, cb) {
+    Fn.lazyimg = function(scrollEle, cb) {
         var _this = $(this)
         if (!_this.length) return _this
         if ($.type(scrollEle) === 'function') {
@@ -1602,7 +1602,7 @@
     /**
      * 相册
      */
-    $.fn.album = function() {
+    Fn.album = function() {
         var _this = $(this)
         var selector = _this.selector
         $(_b).on(_ck, selector, function() {
@@ -1642,6 +1642,9 @@
             }, function() {
                 _doClose(html, null, true, box)
             })
+            html.on(hideed, function() {
+                othis.trigger(hideed)
+            })
 
             function showImg() {
                 html.css('zIndex', z.zIndex())
@@ -1650,7 +1653,7 @@
                 if (index < 0) index = groups.length - 1
                 var image = groups[index]
                 var oimage = $(image)
-                var tip = oimage.zdata('tip') || image.title
+                var tip = oimage.zdata('tip') || image.title || image.alt
                 var src = getSrc(oimage)
                 tip = tip ? '&nbsp;&nbsp;' + tip : ''
                 $.loadImg(src, function(img) {
@@ -1678,6 +1681,7 @@
                     loading.remove()
                     imgbox.html(img)
                     tipbox.html(index + 1 + '/<b>' + groups.length + '</b>' + tip)
+                    othis.trigger(showed, index)
                 })
             }
 
@@ -1685,7 +1689,11 @@
                 if (ele.tagName() === 'img') {
                     var src = ele[0].src
                 } else {
-                    var src = ele.css('backgroundImage').replace(/url\([\'\"]{1}(.*)[\'\"]{1}\)/, '$1').toString()
+                    var src = ele.css('backgroundImage').replace(/url\([\'\"]?(.*)[\'\"]?\)/, "$1").toString()
+                    var leg = src.length - 1
+                    if (src[leg] === '\'' || src[leg] === '\"') {
+                        src = src.substr(0, leg)
+                    }
                 }
                 src = ele.zdata('bigsrc') || src
                 return src
@@ -1694,18 +1702,18 @@
                 if (isMobile) {
                     html.swipeleft(function(e) {
                         _prevent(e, true)
-                            --index
+                            ++index
                         showImg()
                     })
                     html.swiperight(function(e) {
                         _prevent(e, true)
-                            ++index
+                            --index
                         showImg()
                     })
                 } else {
                     sliderBtn && sliderBtn.on(_ck, function() {
-                        if ($(this).hasClass(sliderLeftCls)) --index
-                        else ++index
+                        if ($(this).hasClass(sliderLeftCls)) ++index
+                        else --index
                         showImg()
                     })
                 }
@@ -1714,10 +1722,10 @@
                 var code = e.which
                 if (groups.length > 1) {
                     if (37 == code) {
-                        --index
+                        ++index
                         showImg()
                     } else if (39 == code) {
-                        ++index
+                        --index
                         showImg()
                     }
                 }
@@ -1733,7 +1741,7 @@
      * @param  {str} type hover|click:click
      * @param  {bool} isTree
      */
-    $.fn.dropdown = function(type, isTree) {
+    Fn.dropdown = function(type, isTree) {
         var _this = $(this)
         var selector = _this.selector
         var active = z.active
@@ -1743,10 +1751,10 @@
             if ('hover' == affair) affair = 'mouseenter'
             $(_b).on(affair, selector, function(e) {
                 var othis = $(this)
-                if (othis.hasClass(active)) othis.removeClass(active)
+                if (othis.hasClass(active)) hide(othis)
                 else {
                     if (_bool(othis.parent().zdata('toggle'))) othis.siblings(selector).removeClass(active)
-                    othis.addClass(active)
+                    show(othis)
                 }
             })
             _this.find('.z-nav-child').on(_ck, function(event) {
@@ -1756,25 +1764,36 @@
             if (type == 'hover') {
                 $(_b).on('mouseenter', selector, function() {
                     var othis = $(this)
-                    othis.addClass(active)
+                    show(othis)
                     othis.on('mouseleave', function() {
-                        $(this).removeClass(active)
+                        hide($(this))
                     })
                 })
             } else if (type == _ck) {
                 $(_b).on(_ck, selector, function(e) {
                     var othis = $(this)
                     _prevent(e)
-                    if (othis.hasClass(active)) othis.removeClass(active)
+                    if (othis.hasClass(active)) hide(othis)
                     else {
                         $(selector).removeClass(active)
-                        othis.addClass(active)
+                        show(othis)
                     }
-                })
-                $(d).on(_ck, function() {
-                    $(selector).removeClass(active)
+                    $(d).on(_ck, function() {
+                        $(selector).removeClass(active)
+                        hide(othis, true)
+                    })
                 })
             }
+        }
+
+        function show(othis) {
+            othis.addClass(active)
+            othis.trigger(showed)
+        }
+
+        function hide(othis, slip) {
+            !slip && othis.removeClass(active)
+            othis && othis.trigger(hideed)
         }
         return _this
     }
@@ -1893,6 +1912,7 @@
         ]
         var html = $(htmls.join(''))
         box.prepend(html)
+        html.trigger(showed)
         setTimeout(function() {
             _doClose(html)
         }, z.delayTime)
@@ -1918,6 +1938,7 @@
             html.find('.z-modal-footer .z-btn').on(_ck, function() {
                 cb && cb($(this).index())
             })
+            html.trigger(showed)
         })
         $(w).on('keyup', function(e) {
             if (27 == e.which) {
@@ -1939,6 +1960,17 @@
         lis.removeClass(active)
         _this.addClass(active)
         items.hide().eq(index).show()
+    }
+    /**
+     * 判断是否是json字符串
+     * @param  {str} str 字符串
+     * @return {bool}
+     */
+    function likeObject(str) {
+        if ($.type(str) !== 'string') return false
+        str = str.replace(/\s/g, '').replace(/\n|\r/, '')
+        if (/^\{(.*?)\}$/.test(str)) return /"(.*?)":(.*?)/g.test(str)
+        return false;
     }
     /**
      * 获取z的路径，判断文件是否已加载
@@ -1983,6 +2015,7 @@
 
         function doing() {
             !box.hasClass(zBoxs[0].cls.replace('.', '')) && $.closeShade(delay)
+            box.trigger(hideed)
             if (rm) box.remove()
             if (cb) cb()
         }
@@ -2154,7 +2187,7 @@
         $(_b).on(_ck, '.z-tab-title .z-tab-close', function(e) {
             _prevent(e)
             var li = $(this).parent()
-            if(li.hasClass(active)){
+            if (li.hasClass(active)) {
                 var next = li.next().length ? li.next() : li.prev()
                 next.length && next.click()
             }
