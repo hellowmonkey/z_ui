@@ -1605,7 +1605,8 @@
     Fn.album = function() {
         var _this = $(this)
         var selector = _this.selector
-        $(_b).on(_ck, selector, function() {
+        $(_b).on(_ck, selector, function(e) {
+            _prevent(e)
             var self = this
             var othis = $(self)
             var src = getSrc(othis)
@@ -1681,7 +1682,7 @@
                     loading.remove()
                     imgbox.html(img)
                     tipbox.html(index + 1 + '/<b>' + groups.length + '</b>' + tip)
-                    othis.trigger(showed, index)
+                    othis.trigger(showed, [othis, index])
                 })
             }
 
@@ -1702,18 +1703,18 @@
                 if (isMobile) {
                     html.swipeleft(function(e) {
                         _prevent(e, true)
-                            ++index
+                            --index
                         showImg()
                     })
                     html.swiperight(function(e) {
                         _prevent(e, true)
-                            --index
+                            ++index
                         showImg()
                     })
                 } else {
                     sliderBtn && sliderBtn.on(_ck, function() {
-                        if ($(this).hasClass(sliderLeftCls)) ++index
-                        else --index
+                        if ($(this).hasClass(sliderLeftCls)) --index
+                        else ++index
                         showImg()
                     })
                 }
@@ -1722,10 +1723,10 @@
                 var code = e.which
                 if (groups.length > 1) {
                     if (37 == code) {
-                        ++index
+                        --index
                         showImg()
                     } else if (39 == code) {
-                        --index
+                        ++index
                         showImg()
                     }
                 }
@@ -1771,8 +1772,8 @@
                 })
             } else if (type == _ck) {
                 $(_b).on(_ck, selector, function(e) {
-                    var othis = $(this)
                     _prevent(e)
+                    var othis = $(this)
                     if (othis.hasClass(active)) hide(othis)
                     else {
                         $(selector).removeClass(active)
@@ -2131,7 +2132,8 @@
         // 替换单选框和复选框
         $.resetForm()
         // 单选框
-        $(_b).on(_ck, '.z-form-radio', function() {
+        $(_b).on(_ck, '.z-form-radio', function(e) {
+            _prevent(e)
             if ($(this).hasClass(active)) return
             var zid = $(this).zdata('id')
             var zname = $(this).zdata('name')
@@ -2143,7 +2145,8 @@
             })
         })
         // 复选框
-        $(_b).on(_ck, '.z-form-checkbox', function() {
+        $(_b).on(_ck, '.z-form-checkbox', function(e) {
+            _prevent(e)
             var zid = $(this).zdata('id')
             var _this = $(this)
             _this.toggleClass(active)
@@ -2153,13 +2156,15 @@
             })
         })
         // modal
-        $(_b).on(_ck, '.z-action-modal', function() {
+        $(_b).on(_ck, '.z-action-modal', function(e) {
+            _prevent(e)
             var tar = $(this).zdata('target')
             if (!tar || !tar.length || !$(tar).length) return
             $(tar).modal()
         })
         // 关闭按钮
-        $(_b).on(_ck, '.z-action-close', function() {
+        $(_b).on(_ck, '.z-action-close', function(e) {
+            _prevent(e)
             var _this = $(this)
             var box = null
             var ibox = null
@@ -2177,11 +2182,13 @@
             if (box && box.length) _doClose(box, null, _this.zdata('remove'), ibox)
         })
         // 上一页
-        $(_b).on(_ck, '.z-action-back', function() {
+        $(_b).on(_ck, '.z-action-back', function(e) {
+            _prevent(e)
             $.back()
         })
         // tabs
-        $(_b).on(_ck, '.z-tab-title>li', function() {
+        $(_b).on(_ck, '.z-tab-title>li', function(e) {
+            _prevent(e)
             tabs(this)
         })
         $(_b).on(_ck, '.z-tab-title .z-tab-close', function(e) {
