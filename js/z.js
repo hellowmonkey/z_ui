@@ -639,7 +639,7 @@
                 html.remove()
             })
         }, z.delayTime)
-        html.trigger(showed)
+        html.trigger(showed, html)
         return html
     }
     // 异步加载js
@@ -1027,8 +1027,8 @@
                 ele.on('touchend', function(e) {　　　　
                     _prevent(e)
                     touch = e.originalEvent.changedTouches[0]
-                    if (touch.clientX - sx > 0) direction = 'right'
-                    else direction = 'left'
+                    if (touch.clientX - sx > 0) direction = 'left'
+                    else direction = 'right'
                     movement(direction)
                     timer = setInterval(movement, opts.delay)
                 })
@@ -1165,7 +1165,7 @@
                     })
                 }
                 if (!html) return
-                _this.trigger(showed)
+                _this.trigger(showed, html)
                 html.off('mouseenter').on('mouseenter', function() {
                     isHover = true
                 })
@@ -1682,7 +1682,7 @@
                     loading.remove()
                     imgbox.html(img)
                     tipbox.html(index + 1 + '/<b>' + groups.length + '</b>' + tip)
-                    othis.trigger(showed, [othis, index])
+                    othis.trigger(showed, [othis, index, html])
                 })
             }
 
@@ -1703,12 +1703,12 @@
                 if (isMobile) {
                     html.swipeleft(function(e) {
                         _prevent(e, true)
-                            --index
+                            ++index
                         showImg()
                     })
                     html.swiperight(function(e) {
                         _prevent(e, true)
-                            ++index
+                            --index
                         showImg()
                     })
                 } else {
@@ -1913,7 +1913,7 @@
         ]
         var html = $(htmls.join(''))
         box.prepend(html)
-        html.trigger(showed)
+        html.trigger(showed, html)
         setTimeout(function() {
             _doClose(html)
         }, z.delayTime)
@@ -1939,7 +1939,7 @@
             html.find('.z-modal-footer .z-btn').on(_ck, function() {
                 cb && cb($(this).index())
             })
-            html.trigger(showed)
+            html.trigger(showed, html)
         })
         $(w).on('keyup', function(e) {
             if (27 == e.which) {
