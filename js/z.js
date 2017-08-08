@@ -52,8 +52,9 @@
             rootPath: rootPath,
             libsPath: libsPath,
             index: 99,
-            zIndex: function() {
-                return ++this.index
+            zIndex: function(i) {
+                i = i || 1
+                return this.index += i
             },
             anims: ['z-anim-upbit', 'z-anim-scale', 'z-anim-scaleSpring', 'z-anim-up', 'z-anim-downbit'],
             animCls: 'z-anim-ms3',
@@ -1434,7 +1435,8 @@
             navCls: '',
             menuCls: '',
             child: '.z-dropdown-menu',
-            toggle: true
+            toggle: true,
+            margin: 20
         }
         var options = _getOpts(nav, inits, opts)
         var can = true
@@ -1456,6 +1458,7 @@
         })
         options.navCls && fixNav.addClass(options.navCls)
         options.toggle && fixNav.zdata('toggle', options.toggle)
+        options.margin && fixNav.zdata('margin', options.margin)
         options.menuCls && menu.addClass(options.menuCls)
         nav.after(fixNav)
         menu.on(_ck, function() {
@@ -1648,7 +1651,7 @@
             })
 
             function showImg() {
-                html.css('zIndex', z.zIndex())
+                html.css('zIndex', z.zIndex(6))
                 html.append(loading)
                 if (index > groups.length - 1) index = 0
                 if (index < 0) index = groups.length - 1
@@ -2205,8 +2208,10 @@
             $(this).children('li:first').click()
         })
         // 固定导航
-        if ($('.z-nav.z-nav-fixed-top').length) $(_b).css('paddingTop', $('.z-nav.z-nav-fixed-top').innerHeight() + 20)
-        if ($('.z-nav.z-nav-fixed-bottom').length) $(_b).css('paddingBottom', $('.z-nav.z-nav-fixed-bottom').innerHeight() + 20)
+        var fixTop = $('.z-nav.z-nav-fixed-top')
+        var fixBottom = $('.z-nav.z-nav-fixed-bottom')
+        fixTop.length && $(_b).css('paddingTop', fixTop.innerHeight() + parseFloat(fixTop.zdata('margin') || 20))
+        fixBottom.length && $(_b).css('paddingBottom', fixBottom.innerHeight() + parseFloat(fixBottom.zdata('margin') || 20))
         // 阻止默认
         $(d).on(_ck, '.z-disabled,:disabled', function(e) {
             _prevent(e, true)
