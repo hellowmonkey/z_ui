@@ -30,7 +30,6 @@
         isMobile = function() {
             return navigator.userAgent.match(/mobile/i)
         }(),
-        dateNow = new Date(),
         zShade = null,
         zShades = 0,
         zBoxs = [{
@@ -80,7 +79,6 @@
             active: 'z-active',
             disabled: 'z-disabled',
             overflow: 'z-overflow',
-            dt: dateNow,
             loadingHtml: '<span class="z-anim-rotate z-icon">&#xe624;</span>',
             sliderBtn: '<button class="z-slider-btn z-icon z-slider-prev">&#xe605;</button><button class="z-slider-btn z-icon z-slider-next">&#xe61d;</button>',
             winWidth: winWidth,
@@ -239,7 +237,7 @@
      * @return {str}        格式后的日期格式
      */
     $.date = function(format, time) {
-        var dt = dateNow
+        var dt = new Date()
         var defaultFormat = 'yyyy/MM/dd H:mm'
         var defaultTime = dt.getTime()
         var hasDt = false
@@ -724,6 +722,8 @@
         callbacks._set = setModels
         return callbacks
     }
+    $.likeObject = likeObject
+    $.getBackgroundUrl = getBackgroundUrl
     /////////////
     // $.fn 拓展 //
     /////////////
@@ -1649,6 +1649,41 @@
             html.on(hideed, function() {
                 othis.trigger(hideed)
             })
+            if (groups.length > 1) {
+                if (isMobile) {
+                    html.swipeleft(function(e) {
+                        _prevent(e, true)
+                            ++index
+                        showImg()
+                    })
+                    html.swiperight(function(e) {
+                        _prevent(e, true)
+                            --index
+                        showImg()
+                    })
+                } else {
+                    sliderBtn && sliderBtn.on(_ck, function() {
+                        if ($(this).hasClass(sliderLeftCls)) --index
+                        else ++index
+                        showImg()
+                    })
+                }
+            }
+            $(w).on('keyup', function(e) {
+                var code = e.which
+                if (groups.length > 1) {
+                    if (37 == code) {
+                        --index
+                        showImg()
+                    } else if (39 == code) {
+                        ++index
+                        showImg()
+                    }
+                }
+                if (27 == code) {
+                    _doClose(html, null, true, box)
+                }
+            })
 
             function showImg() {
                 html.css('zIndex', z.zIndex(6))
@@ -1690,53 +1725,8 @@
             }
 
             function getSrc(ele) {
-                if (ele.tagName() === 'img') {
-                    var src = ele[0].src
-                } else {
-                    var src = ele.css('backgroundImage').replace(/url\([\'\"]?(.*)[\'\"]?\)/, "$1").toString()
-                    var leg = src.length - 1
-                    if (src[leg] === '\'' || src[leg] === '\"') {
-                        src = src.substr(0, leg)
-                    }
-                }
-                src = ele.zdata('bigsrc') || src
-                return src
+                return ele.zdata('bigsrc') ? ele.zdata('bigsrc') : ele.tagName() === 'img' ? ele[0].src : getBackgroundUrl(ele)
             }
-            if (groups.length > 1) {
-                if (isMobile) {
-                    html.swipeleft(function(e) {
-                        _prevent(e, true)
-                            ++index
-                        showImg()
-                    })
-                    html.swiperight(function(e) {
-                        _prevent(e, true)
-                            --index
-                        showImg()
-                    })
-                } else {
-                    sliderBtn && sliderBtn.on(_ck, function() {
-                        if ($(this).hasClass(sliderLeftCls)) --index
-                        else ++index
-                        showImg()
-                    })
-                }
-            }
-            $(w).on('keyup', function(e) {
-                var code = e.which
-                if (groups.length > 1) {
-                    if (37 == code) {
-                        --index
-                        showImg()
-                    } else if (39 == code) {
-                        ++index
-                        showImg()
-                    }
-                }
-                if (27 == code) {
-                    _doClose(html, null, true, box)
-                }
-            })
         })
         return _this
     }
@@ -1975,6 +1965,19 @@
         str = str.replace(/\s/g, '').replace(/\n|\r/, '')
         if (/^\{(.*?)\}$/.test(str)) return /"(.*?)":(.*?)/g.test(str)
         return false;
+    }
+    /**
+     * 获取背景图地址
+     * @param  {ele} ele 元素
+     * @return {str}     地址
+     */
+    function getBackgroundUrl(ele) {
+        var src = ele.css('backgroundImage').replace(/url\([\'\"]?(.*)[\'\"]?\)/, "$1").toString()
+        var leg = src.length - 1
+        if (src[leg] === '\'' || src[leg] === '\"') {
+            src = src.substr(0, leg)
+        }
+        return src
     }
     /**
      * 获取z的路径，判断文件是否已加载

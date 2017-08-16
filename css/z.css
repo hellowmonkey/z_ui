@@ -2328,9 +2328,9 @@ input[type="search"] {
     height: 1px;
     width: 0%;
     opacity: .4;
-    -webkit-animation: width 3.8s linear;
-    -o-animation: width 3.8s linear;
-    animation: width 3.8s linear;
+    -webkit-animation: width 3.8s ease-in-out;
+    -o-animation: width 3.8s ease-in-out;
+    animation: width 3.8s ease-in-out;
 }
 
 .z-alert-box>.z-alert.z-alert-blue:after {
