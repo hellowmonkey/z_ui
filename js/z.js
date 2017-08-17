@@ -19,7 +19,6 @@
     // 注册全局变量
     var w = window,
         d = document,
-        log = console.log,
         _ck = 'click',
         _b = 'body',
         winWidth = $(w).innerWidth(),
@@ -27,9 +26,8 @@
         transTime = 200,
         rootPath = _getZsrc(),
         libsPath = rootPath.replace('js/', '') + 'libs/',
-        isMobile = function() {
-            return navigator.userAgent.match(/mobile/i)
-        }(),
+        browser = browser(),
+        isMobile = browser.isMobile,
         zShade = null,
         zShades = 0,
         zBoxs = [{
@@ -83,6 +81,7 @@
             sliderBtn: '<button class="z-slider-btn z-icon z-slider-prev">&#xe605;</button><button class="z-slider-btn z-icon z-slider-next">&#xe61d;</button>',
             winWidth: winWidth,
             winHeight: winHeight,
+            browser: browser
         },
         sliderLeftCls = function() {
             return $(z.sliderBtn)[0].className
@@ -1792,6 +1791,30 @@
         return _this
     }
     /**
+     * ajax提交表单
+     * @param  {fn} verify  验证函数
+     * @param  {fn} success 回调函数
+     * @return {ele}         提示元素
+     */
+    Fn.sendForm = function(verify, success) {
+        if (!success) {
+            success = verify
+            verify = null
+        }
+        var form = $(this)
+        form.on('submit', function() {
+            if (verify && verify.call(this) == false) {
+                return false
+            }
+            var html = $.submit(this, function(data) {
+                success(data)
+            })
+            form.trigger('showed', html)
+            return false
+        })
+        return form
+    }
+    /**
      * 手指事件
      * @param  {str}   type left|right
      * @param  {str}   ele  触发元素
@@ -2096,6 +2119,56 @@
         ev.stopPropagation()
         pre && ev.preventDefault()
         return ev
+    }
+    /**
+     * 获取浏览器信息
+     * @return {json} 浏览器信息
+     */
+    function browser() {
+        var userAgent = navigator.userAgent;
+        var isOpera = userAgent.indexOf("Opera") > -1
+        var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera
+        var isEdge = userAgent.indexOf("Windows NT 6.1; Trident/7.0;") > -1 && !isIE
+        var isFF = userAgent.indexOf("Firefox") > -1
+        var isSafari = userAgent.indexOf("Safari") > -1 && userAgent.indexOf("Chrome") == -1
+        var isChrome = userAgent.indexOf("Chrome") > -1 && userAgent.indexOf("Safari") > -1
+        var isMobile = userAgent.search(/mobile/i) > -1
+        return {
+            isIE: isIE,
+            isMobile: isMobile,
+            name: getName()
+        }
+
+        function getName() {
+            if (isIE) {
+                var reIE = new RegExp("MSIE (\\d+\\.\\d+);")
+                reIE.test(userAgent)
+                var fIEVersion = parseFloat(RegExp["$1"])
+                if (fIEVersion == 7) {
+                    return "IE7"
+                } else if (fIEVersion == 8) {
+                    return "IE8"
+                } else if (fIEVersion == 9) {
+                    return "IE9"
+                } else if (fIEVersion == 10) {
+                    return "IE10"
+                } else if (fIEVersion == 11) {
+                    return "IE11"
+                } else {
+                    return "IE"
+                }
+            } else if (isFF) {
+                return "FF"
+            } else if (isOpera) {
+                return "Opera"
+            } else if (isSafari) {
+                return "Safari"
+            } else if (isChrome) {
+                return "Chrome"
+            } else if (isEdge) {
+                return "Edge"
+            }
+        }
     }
     /**
      * 初始化
