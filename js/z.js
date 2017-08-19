@@ -953,8 +953,8 @@
             complete: null,
             keys: true,
             dots: true,
-            items: 'ul',
-            item: 'li'
+            items: '.ul',
+            item: '.li'
         }
         _this.each(function() {
             slider($(this), _getOpts($(this), inits, opts))
@@ -1803,9 +1803,7 @@
         }
         var form = $(this)
         form.on('submit', function() {
-            if (verify && verify.call(this) == false) {
-                return false
-            }
+            if (verify && verify.call(this) == false) return false
             var html = $.submit(this, function(data) {
                 success(data)
             })
@@ -1813,6 +1811,49 @@
             return false
         })
         return form
+    }
+    /**
+     * 图片居中
+     * @return {ele} 元素
+     */
+    Fn.imagePosition = function() {
+        $(this).each(function() {
+            var img = $(this)
+            var src = this.src
+            if (img.tagName() !== 'img') return false
+            if (!src) return false
+            var pbox = img.parent()
+            var pwidth = pbox.innerWidth()
+            var pheight = pbox.innerHeight()
+            pbox.css({
+                'overflow': 'hidden',
+                'position': 'relative'
+            })
+            $.loadImg(src, function(image) {
+                var imgWidth = image.width
+                var imgHeight = image.height
+                img.css({
+                    'position': 'absolute',
+                    'display': 'block',
+                })
+                if (imgWidth / imgHeight > pwidth / pheight) {
+                    img.css({
+                        'height': '100%',
+                        'left': -(pheight * imgWidth / imgHeight - pwidth) / 2,
+                        'top': 0,
+                        'width': 'auto'
+                    })
+                } else {
+                    img.css({
+                        'width': '100%',
+                        'top': -(pwidth * imgHeight / imgWidth - pheight) / 2,
+                        'left': 0,
+                        'height': 'auto'
+                    })
+                }
+            })
+        })
+        return $(this)
     }
     /**
      * 手指事件
@@ -2210,6 +2251,18 @@
         $('.z-action-tree-hover').dropdown('hover', true)
         // 替换单选框和复选框
         $.resetForm()
+        // ie8不支持cover问题
+        if (!$.supportCss3('backgroundSize')) {
+            $('.z-cover').each(function() {
+                var _this = $(this)
+                var src = $.getBackgroundUrl(_this)
+                if (_this.children('*').length) {
+                    _this.wrapInner('<div style="position:relative;z-index:2;height:100%"></div>')
+                }
+                _this.append('<img src="' + src + '" />').css('backgroundImage', '')
+            })
+            $('.z-cover > img').imagePosition()
+        }
         // 单选框
         $(_b).on(_ck, '.z-form-radio', function(e) {
             _prevent(e)
