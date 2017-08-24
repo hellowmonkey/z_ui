@@ -81,7 +81,11 @@
             sliderBtn: '<button class="z-slider-btn z-icon z-slider-prev">&#xe605;</button><button class="z-slider-btn z-icon z-slider-next">&#xe61d;</button>',
             winWidth: winWidth,
             winHeight: winHeight,
-            browser: browser
+            browser: browser,
+            date: {
+                format: 'M月dd日 H:mm',
+                coverTime: 24 * 60 * 60 * 1000
+            }
         },
         sliderLeftCls = function() {
             return $(z.sliderBtn)[0].className
@@ -123,6 +127,7 @@
      */
     $.closeShade = function(time, cb, rm) {
         if (!zShade) return false
+        zShade.trigger(hideed, zShades)
         if (rm) zShades = 0
             --zShades
         if (zShades <= 0) {
@@ -236,56 +241,99 @@
      * @return {str}        格式后的日期格式
      */
     $.date = function(format, time) {
-        var dt = new Date()
-        var defaultFormat = 'yyyy/MM/dd H:mm'
-        var defaultTime = dt.getTime()
-        var hasDt = false
-        if ($.type(format) === 'date' || $.type(format) === 'number') {
+        var nowDt = new Date()
+        var dt = nowDt
+        var settings = {
+            prefixAgo: '',
+            suffixAgo: '后',
+            inPast: '快到了',
+            seconds: "小于一分钟",
+            minute: "一分钟",
+            minutes: "%d分钟",
+            hour: "一小时",
+            hours: "%d小时",
+            day: "一天",
+            days: "%d天",
+            month: "一个月",
+            months: "%d月",
+            year: "一年",
+            years: "%d年",
+            wordSeparator: "",
+            numbers: ['', "\u4E00", "\u4e24", "\u4E09", "\u56DB", "\u4E94", "\u516D", "\u4e03", "\u516b", "\u4e5d", "\u5341"]
+        }
+        $.extend(settings, z.date)
+        var defaultFormat = settings.format
+        if ($.type(format) !== 'string') {
             time = format
             format = defaultFormat
-        } else if (_bool(format, true)) {
-            format = defaultFormat
-            time = defaultTime
         }
-        if (_bool(time, true)) {
-            time = defaultTime
-        } else if ($.type(time) === 'string') {
-            time = parseInt(time)
-        } else if ($.type(time) === 'date') {
-            dt = time
-            hasDt = true
+        if (!_bool(time, true)) {
+            dt = new Date(time)
         }
-        if (!hasDt) dt = new Date(time)
-        var y = dt.getFullYear(),
-            M = dt.getMonth(),
-            d = dt.getDate(),
-            h = dt.getHours(),
-            m = dt.getMinutes(),
-            s = dt.getSeconds(),
-            ms = dt.getMilliseconds(),
-            z = dt.getTimezoneOffset(),
-            wd = dt.getDay(),
-            w = ["\u65E5", "\u4E00", "\u4E8C", "\u4E09", "\u56DB", "\u4E94", "\u516D"];
-        var h12 = h > 12 ? h - 12 : h
-        var o = {
-            "y+": y, //年份
-            "M+": M + 1, //月份
-            "d+": d, //月份中的天数 
-            "H+": h, //小时24H制            
-            "h+": h12 == 0 ? 12 : h12, //小时12H制
-            "m+": m, //分钟
-            "s+": s, //秒
-            "ms": ms, //毫秒
-            "a+": h > 12 || h == 0 ? "PM" : "AM", //AM/PM 标记 
-            "w+": wd, //星期 数字格式
-            "W+": w[wd], //星期 中文格式
-            "q+": Math.floor((m + 3) / 3), //一月中的第几周
-            "z+": z //时区
+        if (format === defaultFormat) {
+            return convert()
+        } else {
+            return layout()
         }
-        if (/(y+)/.test(format)) format = format.replace(RegExp.$1, (dt.getFullYear() + "").substr(4 - RegExp.$1.length));
-        for (var i in o)
-            if (new RegExp("(" + i + ")").test(format)) format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[i] : ("00" + o[i]).substr(("" + o[i]).length));
-        return format;
+
+        function layout() {
+            var od = {
+                y: dt.getFullYear(),
+                M: dt.getMonth(),
+                d: dt.getDate(),
+                h: dt.getHours(),
+                m: dt.getMinutes(),
+                s: dt.getSeconds(),
+                ms: dt.getMilliseconds(),
+                z: dt.getTimezoneOffset(),
+                wd: dt.getDay(),
+                w: ["\u65E5", settings.numbers[1], "\u4E8C", settings.numbers[3], settings.numbers[4], settings.numbers[5], settings.numbers[6]]
+            }
+            var h12 = od.h > 12 ? od.h - 12 : od.h
+            var o = {
+                "y+": od.y,
+                "M+": od.M + 1,
+                "d+": od.d,
+                "H+": od.h,
+                "h+": h12 == 0 ? 12 : h12,
+                "m+": od.m,
+                "s+": od.s,
+                "ms": od.ms,
+                "a+": od.h > 12 || od.h == 0 ? "PM" : "AM",
+                "w+": od.wd,
+                "W+": od.w[od.wd],
+                "q+": Math.floor((od.m + 3) / 3),
+                "z+": od.z
+            }
+            if (format === defaultFormat && od.y !== nowDt.getFullYear()) {
+                format = 'yyyy年' + format
+            }
+            for (var i in o) {
+                if (new RegExp("(" + i + ")").test(format)) format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[i] : ("00" + o[i]).substr(("" + o[i]).length))
+            }
+            return format
+        }
+
+        function convert() {
+            var distanceMillis = nowDt.getTime() - dt.getTime()
+            if (Math.abs(distanceMillis) > settings.coverTime) return layout()
+            var suffix = settings.prefixAgo
+            var seconds = Math.abs(distanceMillis) / 1000
+            var minutes = seconds / 60
+            var hours = minutes / 60
+            var days = hours / 24
+            var years = days / 365
+            var words = seconds < 45 && substitute(settings.seconds, Math.round(seconds)) || seconds < 90 && substitute(settings.minute, 1) || minutes < 45 && substitute(settings.minutes, Math.round(minutes)) || minutes < 90 && substitute(settings.hour, 1) || hours < 24 && substitute(settings.hours, Math.round(hours)) || hours < 42 && substitute(settings.day, 1) || days < 30 && substitute(settings.days, Math.round(days)) || days < 45 && substitute(settings.month, 1) || days < 365 && substitute(settings.months, Math.round(days / 30)) || years < 1.5 && substitute(settings.year, 1) || substitute(settings.years, Math.round(years));
+            if (distanceMillis < 0) {
+                suffix = settings.suffixAgo
+            }
+            return $.trim([words, suffix].join(settings.wordSeparator));
+
+            function substitute(string, number) {
+                var value = (settings.numbers && settings.numbers[number]) || number
+                return string.replace(/%d/i, value)
+            }
+        }
     }
     /**
      * 获取file路径
@@ -348,6 +396,7 @@
         img.src = url
         if (img.complete) {
             cb(img)
+            return img
         }
         img.onload = function() {
             img.onload = null
@@ -804,7 +853,7 @@
                     'marginLeft': -_this.innerWidth() / 2
                 }).addClass(z.anims[4] + ' ' + z.animCls)
                 _modalHeight(_this)
-                _this.trigger(showed)
+                _this.trigger(showed, _this)
             }, function() {
                 _doClose(_this, null, false)
             })
@@ -953,8 +1002,8 @@
             complete: null,
             keys: true,
             dots: true,
-            items: 'ul',
-            item: 'li'
+            items: 'ul,.ul',
+            item: 'li,.li'
         }
         _this.each(function() {
             slider($(this), _getOpts($(this), inits, opts))
@@ -1781,7 +1830,7 @@
 
         function show(othis) {
             othis.addClass(active)
-            othis.trigger(showed)
+            othis.trigger(showed, othis)
         }
 
         function hide(othis, slip) {
@@ -1803,9 +1852,7 @@
         }
         var form = $(this)
         form.on('submit', function() {
-            if (verify && verify.call(this) == false) {
-                return false
-            }
+            if (verify && verify.call(this) == false) return false
             var html = $.submit(this, function(data) {
                 success(data)
             })
@@ -1813,6 +1860,49 @@
             return false
         })
         return form
+    }
+    /**
+     * 图片居中
+     * @return {ele} 元素
+     */
+    Fn.imagePosition = function() {
+        $(this).each(function() {
+            var img = $(this)
+            var src = this.src
+            if (img.tagName() !== 'img') return false
+            if (!src) return false
+            var pbox = img.parent()
+            var pwidth = pbox.innerWidth()
+            var pheight = pbox.innerHeight()
+            pbox.css({
+                'overflow': 'hidden',
+                'position': 'relative'
+            })
+            $.loadImg(src, function(image) {
+                var imgWidth = image.width
+                var imgHeight = image.height
+                img.css({
+                    'position': 'absolute',
+                    'display': 'block',
+                })
+                if (imgWidth / imgHeight > pwidth / pheight) {
+                    img.css({
+                        'height': '100%',
+                        'left': -(pheight * imgWidth / imgHeight - pwidth) / 2,
+                        'top': 0,
+                        'width': 'auto'
+                    })
+                } else {
+                    img.css({
+                        'width': '100%',
+                        'top': -(pwidth * imgHeight / imgWidth - pheight) / 2,
+                        'left': 0,
+                        'height': 'auto'
+                    })
+                }
+            })
+        })
+        return $(this)
     }
     /**
      * 手指事件
@@ -2210,6 +2300,19 @@
         $('.z-action-tree-hover').dropdown('hover', true)
         // 替换单选框和复选框
         $.resetForm()
+        // ie8不支持cover问题
+        $(_b).addClass('browser-' + browser.name)
+        if (!$.supportCss3('backgroundSize')) {
+            $('.z-cover').each(function() {
+                var _this = $(this)
+                var src = $.getBackgroundUrl(_this)
+                if (_this.children('*').length) {
+                    _this.wrapInner('<div style="position:relative;z-index:2;height:100%"></div>')
+                }
+                _this.append('<img src="' + src + '" />').css('backgroundImage', '')
+            })
+            $('.z-cover > img').imagePosition()
+        }
         // 单选框
         $(_b).on(_ck, '.z-form-radio', function(e) {
             _prevent(e)
