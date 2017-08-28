@@ -1011,6 +1011,9 @@ input[type="search"] {
     min-height: 20px;
     line-height: 20px;
     vertical-align: middle;
+}
+
+.z-table th, .z-table td, .z-table .z-table-border th, .z-table .z-table-border td {
     border: 1px solid #d2d2d2;
 }
 
@@ -1022,11 +1025,11 @@ input[type="search"] {
     background-color: #fff;
 }
 
-.z-table tr:nth-child(even) {
+.z-table tr:nth-child(even), .z-table .z-table-striped tr:nth-child(even) {
     background: #fbfbfb;
 }
 
-.z-table tr:hover {
+.z-table tr:hover, .z-table .z-table-hover tr:hover {
     background-color: #f8f8f8;
 }
 

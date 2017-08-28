@@ -50,6 +50,7 @@
 						<li><a href="#loadimg">动态载入图片 <code>$.loadImg</code></a></li>
 						<li><a href="#progressBar">加载进度条 <code>$.progressBar</code></a></li>
 						<li><a href="#viewModel">简易数据驱动(mvvm) <code>$.viewModel</code></a></li>
+						<li><a href="#checkAll">CheckBox全选 <code>$.checkAll</code></a></li>
 						<li><a href="#tagname">标签名称 <code>$(ele).tagName</code></a></li>
 						<li><a href="#zdata">获取属性 <code>$(ele).zdata</code></a></li>
 						<li><a href="#button">按钮loading <code>$(ele).button</code></a></li>
@@ -69,6 +70,7 @@
 						<li><a href="#dropdown">导航伸缩 <code>$(ele).dropdown</code></a></li>
 						<li><a href="#album">相册 <code>$(ele).album</code></a></li>
 						<li><a href="#hovercard">悬浮卡片 <code>$(ele).hovercard</code></a></li>
+						<li><a href="#imagePosition">图片居中定位 <code>$(ele).imagePosition</code></a></li>
 					</ul>
 				</li>
 				<li class="z-nav-item"><a href="https://github.com/hellowmonkey/z_ui" target="_blank">下载</a></li>
@@ -1209,8 +1211,7 @@
 					$.loadImg(imgurl, complete, error)
 				</pre>
 				<div class="z-quote z-quote-red" id="date">日期格式化</div>
-				<div class="z-box z-mb10">快速获取指定格式的指定时间的日期。如：<code>$.date()</code>什么参数都不传时会获取到以<code>'yyyy/MM/dd H:mm'</code>为格式的当前时间的日期。即为：<span id="date1"><script>$('#date1').html($.date())</script></span</div>
-				</div>
+				<div class="z-box z-mb10">快速获取指定格式的指定时间的日期。如：<code>$.date()</code>什么参数都不传时会获取到以<code>timeago</code>为格式的当前时间的日期。即为：<span id="date1"><script>$('#date1').html($.date())</script></span>。 通过<code>z.date</code>中扩展的参数可指定超过多少时间使用格式化而不是timeago，具体参数如下</div>
 				<pre class="z-action-code">
 					$.date(format, time)
 					/** format的格式：
@@ -1228,6 +1229,27 @@
 						"q" => 一月中的第几周
 						"z" => 时区
 					time的格式： ["string", "number", "date"]
+					timeago参数：
+					z.date = {
+		                format: 'M月dd日 H:mm',
+		                coverTime: 24 * 60 * 60 * 1000,
+			            prefixAgo: '',
+			            suffixAgo: '后',
+			            inPast: '快到了',
+			            seconds: "小于一分钟",
+			            minute: "一分钟",
+			            minutes: "%d分钟",
+			            hour: "一小时",
+			            hours: "%d小时",
+			            day: "一天",
+			            days: "%d天",
+			            month: "一个月",
+			            months: "%d月",
+			            year: "一年",
+			            years: "%d年",
+			            wordSeparator: "",
+			            numbers: ['', "\u4E00", "\u4e24", "\u4E09", "\u56DB", "\u4E94", "\u516D", "\u4e03", "\u516b", "\u4e5d", "\u5341"]
+		            }
 					**/
 				</pre>
 			<div class="z-quote z-quote-red" id="dropdown">导航伸缩</div>
@@ -1247,6 +1269,8 @@
 			</pre>
 			<div class="z-quote z-quote-red" id="hovercard">悬浮卡片</div>
 			<div class="z-box z-mb10">通过<code>z-action-hovercard</code>快速调用。通过<code>zdata-html="string"</code>或<code>zdata-url="string"</code>来指定获取内容的方式。<code>zdata-html</code> 直接填充指定的html，<code>zdata-url</code> 指定获取的地址，通过ajax获取填充内容</div>
+			<div class="z-quote z-quote-red" id="imagePosition">图片居中定位</div>
+			<div class="z-box z-mb10">相对父元素定位，效果和css的<code>background-size:cover</code>一样</div>
 			<div class="z-quote z-quote-red" id="viewModel">简易数据驱动(mvvm)</div>
 			<div class="z-box z-mb10">听说最近mvvm很火，用数据做驱动，省去dom的选择操作。<br>我这里的简易版通过<code>z-</code>作为绑定前缀，可以绑定动作，也可以绑定属性。通过<code>$.viewModel(opts)</code>获取vm实例。通过<code>vm._set(key, val, doPut)</code>魔术方法来改变数据，从而改变对应的属性。</div>
 			<div id="vmTest">
@@ -1280,6 +1304,25 @@
 					}
 				})
 			</pre>
+			<div class="z-quote z-quote-red" id="checkAll">CheckBox全选</div>
+			<div class="z-form">
+				<input type="checkbox" name="all" title="全选">
+				<input type="checkbox" name="check" title="选项1">
+				<input type="checkbox" name="check" title="选项2">
+				<input type="checkbox" name="check" title="选项3">
+				<input type="checkbox" name="check" title="选项4">
+				<input type="checkbox" name="check" title="选项5">
+				<input type="checkbox" name="all" title="全选">
+			</div>
+			<pre class="z-action-code" zdata-encode="true">
+				$.checkAll($('input[name="all"]'), $('input[name="check"]'))
+				/**
+     * 全选
+     * @param  {ele} allEle    全选按钮元素
+     * @param  {ele} childEles 被全选按钮元素
+     */
+			</pre>
+			
 		</fieldset>
 	</div>
 	<button class="z-btn z-action-gotop z-gotop z-icon">&#xe6be;</button>
@@ -1298,6 +1341,7 @@
 					}
 				}, 2000)
 			})
+			$.checkAll($('input[name="all"]'), $('input[name="check"]'))
 		})
 	</script>
 </body>

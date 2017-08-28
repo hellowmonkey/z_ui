@@ -770,6 +770,48 @@
         callbacks._set = setModels
         return callbacks
     }
+    /**
+     * 全选
+     * @param  {ele} allEle    全选按钮元素
+     * @param  {ele} childEles 被全选按钮元素
+     */
+    $.checkAll = function(allEle, childEles) {
+        if (!allEle.length || !childEles.length || allEle[0].type !== 'checkbox' || childEles[0].type !== 'checkbox') return
+        var change = 'change'
+        allEle.on(change, function() {
+            var checked = this.checked
+            eachEle(allEle, checked)
+            eachEle(childEles, checked)
+        })
+        childEles.on(change, function() {
+            var checked = this.checked
+            if (checked) {
+                var leg = 0
+                childEles.each(function(key, item) {
+                    if (!item.checked) {
+                        return true
+                    }
+                    ++leg
+                })
+                if (childEles.length === leg) {
+                    eachEle(allEle, checked)
+                }
+            } else {
+                eachEle(allEle, checked)
+            }
+        })
+
+        function eachEle(ele, checked) {
+            ele.each(function() {
+                var zid = $(this).zdata('id')
+                this.checked = checked
+                if (!_bool(zid, true)) {
+                    var box = $('.z-form-checkbox[zdata-id="' + zid + '"]')
+                    checked ? box.addClass(z.active) : box.removeClass(z.active)
+                }
+            })
+        }
+    }
     $.likeObject = likeObject
     $.getBackgroundUrl = getBackgroundUrl
     /////////////
@@ -2300,8 +2342,9 @@
         $('.z-action-tree-hover').dropdown('hover', true)
         // 替换单选框和复选框
         $.resetForm()
-        // ie8不支持cover问题
+        // 添加浏览器class
         $(_b).addClass('browser-' + browser.name)
+        // ie8不支持cover问题
         if (!$.supportCss3('backgroundSize')) {
             $('.z-cover').each(function() {
                 var _this = $(this)
