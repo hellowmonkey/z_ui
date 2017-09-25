@@ -78,7 +78,7 @@
             disabled: 'z-disabled',
             overflow: 'z-overflow',
             loadingHtml: '<span class="z-anim-rotate z-icon">&#xe624;</span>',
-            sliderBtn: '<button class="z-slider-btn z-icon z-slider-prev">&#xe605;</button><button class="z-slider-btn z-icon z-slider-next">&#xe61d;</button>',
+            sliderBtn: '<button class="z-slider-btn z-icon z-slider-prev">&#xe693;</button><button class="z-slider-btn z-icon z-slider-next">&#xe694;</button>',
             winWidth: winWidth,
             winHeight: winHeight,
             browser: browser,
@@ -561,8 +561,10 @@
         html = getOpenHtml(content, title, btns)
         html.removeClass('z-modal-sm')
         width && html.width(width)
-        appendOpen(html, function(i) {
-            if ((cb && !cb(i)) || !cb) _doClose(html)
+        appendOpen(html, function(i, btn) {
+            if ((cb && !cb(i, btn)) || !cb) {
+                _doClose(html)
+            }
         }, offset)
         return html
     }
@@ -606,8 +608,8 @@
         title = $.type(title) === 'string' ? title : z.title['confirm']
         btns = opts.btns ? opts.btns : z.btns
         html = getOpenHtml(content, title, btns)
-        appendOpen(html, function(i) {
-            cb && i > 0 && cb(i)
+        appendOpen(html, function(i, btn) {
+            cb && i > 0 && cb(i, btn)
             _doClose(html)
         })
         return html
@@ -1214,9 +1216,15 @@
             var inits = {
                 minView: "month",
                 format: "yyyy-mm-dd",
-                autoclose: true
+                autoclose: true,
+                startDate: null,
+                endDate: null,
+                startView: 2,
+                maxView: 4,
+                todayBtn: false
             }
             var options = _getOpts(_this, inits, opts)
+            console.log(options)
             _this.datetimepicker(options)
         }
     }
@@ -1724,7 +1732,7 @@
             var sliderBtn = groups.length > 1 && !isMobile ? $(z.sliderBtn) : ''
             var htmls = ['<div class="z-album">', '<span class="z-close z-action-close" zdata-box=".z-album">&times;</span>', '<div class="z-album-content ' + z.animCls + ' ' + _getAnim() + '">', '<div class="z-imgbox"></div>', '<div class="z-tipbox"></div>', '</div>', '</div>', ]
             var html = $(htmls.join(''))
-            var loading = $(z.loadingHtml).html('&#xe623;')
+            var loading = $(z.loadingHtml).html('&#xe64b;')
             var box = html.find('.z-album-content')
             var imgbox = html.find('.z-imgbox')
             var tipbox = html.find('.z-tipbox')
@@ -1841,8 +1849,8 @@
                     show(othis)
                 }
             })
-            _this.find('.z-nav-child').on(_ck, function(event) {
-                event.stopPropagation()
+            _this.find('.z-nav-child').on(_ck, function(e) {
+                _prevent(e)
             })
         } else {
             if (type == 'hover') {
@@ -2085,7 +2093,7 @@
             })
             _modalHeight(html)
             html.find('.z-modal-footer .z-btn').on(_ck, function() {
-                cb && cb($(this).index())
+                cb && cb($(this).index(), $(this))
             })
             html.trigger(showed, html)
         })
@@ -2344,6 +2352,7 @@
         $.resetForm()
         // 添加浏览器class
         $(_b).addClass('browser-' + browser.name)
+        if (browser.isMobile) $(_b).addClass('browser-Mobile')
         // ie8不支持cover问题
         if (!$.supportCss3('backgroundSize')) {
             $('.z-cover').each(function() {
