@@ -2135,12 +2135,7 @@
      * @return {str}     地址
      */
     function getBackgroundUrl(ele) {
-        var src = ele.css('backgroundImage').replace(/url\([\'\"]?(.*)[\'\"]?\)/, "$1").toString()
-        var leg = src.length - 1
-        if (src[leg] === '\'' || src[leg] === '\"') {
-            src = src.substr(0, leg)
-        }
-        return src
+        return ele.css('backgroundImage').replace(/url\([\'\"]?(.*?)[\'\"]?\)/g, "$1")
     }
     /**
      * 获取z的路径，判断文件是否已加载
